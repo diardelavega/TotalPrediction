@@ -1,5 +1,5 @@
 
-#TODO Test pending
+
 
 
 #libraries required
@@ -12,7 +12,7 @@
   library(RWeka)
   library(rpart)
 
-  bestOfSize <- 3  
+  #bestOfSize <- 3  
 }
 
 
@@ -22,30 +22,30 @@
 crfvInit <- function(){
 #initializes datasets and call for the crfv accuracy estimation
   
-  crfv_dts_Struct <- c() # the struct that will keep all the dataStores created
+  crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
+  bestOfSize <-3
+  # ret <- scorePredFunc(df, ndf, 10,bestOfSize)   # complet dataset crfv
+  # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
   
-  ret <- scorePredFunc(df, ndf, 10)   # complet dataset crfv
-  crfv_dts_Struct[length(crfv_dts_Struct)+1:2] <-ret
-  
-  if(max(ndf$week)>20){  # second half dataset crfv
-    ret <- scorePredFunc(df[which(df$week>max(df$week)/2),], ndf[which(ndf$week>max(ndf$week)/2),], 10)
-    crfv_dts_Struct[length(crfv_dts_Struct)+1:2] <-ret
-  }
+  # if(max(ndf$week)>20){  # second half dataset crfv
+  #   bestOfSize <-3
+  #   ret <- scorePredFunc(df[which(df$week>max(df$week)/2),], ndf[which(ndf$week>max(ndf$week)/2),], 10,bestOfSize)
+  #   crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+  # }
   
   if(max(ndf$week)>10){  # last 6 weeks dataset crfv
-    ret <- scorePredFunc(df[which(df$week>max(df$week)-6),], ndf[which(ndf$week>max(ndf$week)-6),], 10)
-    crfv_dts_Struct[length(crfv_dts_Struct)+1:2] <-ret
+    bestOfSize <-1
+    ret <- scorePredFunc(df[which(df$week>max(df$week)-6),], ndf[which(ndf$week>max(ndf$week)-6),], 10,bestOfSize)
+    crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
   }
   
   #------- someway to store the  crfv_dts_Struct
 }
 
-
-
-scorePredFunc <- function(dataset_f,dataset_d,crfoldNr){
+scorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
   # executes the crfv for all the algorithms we provide and stores the best results
-  fds <- DataStore$new()  # to keep the instances of the  full datasets
-  dds <- DataStore$new()  # to keep the instances of the  diff datasets
+  fds <- AlgoDtf$new()  # to keep the instances of the  full datasets
+  dds <- AlgoDtf$new()  # to keep the instances of the  diff datasets
   
   for(algorithm in c("C50"
                      #,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
@@ -72,7 +72,7 @@ scorePredFunc <- function(dataset_f,dataset_d,crfoldNr){
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_df)
+    cur3best <- treBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
 
     
@@ -87,14 +87,13 @@ scorePredFunc <- function(dataset_f,dataset_d,crfoldNr){
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_ndf)
+    cur3best <- treBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
   }# for algorithms
  return (c(fds,dds)) 
 }
 
-
-treBestChoser <- function(lst){
+treBestChoser <- function(lst,bestOfSize){
   # i know that the first 3 instances i put in have different acc between them
   # after the third i check onli if the new accval is biger than the worst one 
   # in, otherwise (worst accval or equal i dont want it)
@@ -108,16 +107,38 @@ treBestChoser <- function(lst){
         bv[length(bv)+1] <- lst[i] 
     }
     else{ # with 3 instances in, compare to find and eliminate the worst
-      if(bv[[1]]$accVal < bv[[2]]$accVal) {worstIdx = 1}else{worstIdx = 2}
-      if(bv[[worstIdx]]$accVal > bv[[3]]$accVal) {worstIdx = 3}
-      
-      if(bv[[worstIdx]]$accVal < lst[[i]]$accVal){ bv[worstIdx] <- lst[i] }
+      if(bestOfSize==1){
+        if(bv[[1]]$accVal < lst[[i]]$accVal) { bv[[1]] <- lst[[i]]}
+      }
+      else if(bestOfSize==3){
+        #@TODO fix for best of size ==1
+        if(bv[[1]]$accVal < bv[[2]]$accVal) {
+          tmpInstance <-bv[[1]];  bv[[1]] <- bv[[2]];  bv[[2]] <- tmpInstance; }
+        if(bv[[2]]$accVal < bv[[3]]$accVal) {
+          if(bv[[1]]$accVal < bv[[3]]$accVal) { 
+            tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
+          else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
+        }
+        if(bv[[3]]$accVal < lst[[i]]$accVal){ 
+          if(lst[[i]]$accVal != bv[[1]]$accVal & lst[[i]]$accVal != bv[[2]]$accVal)
+          bv[3] <- lst[i] }
+      }# el if size==3
     }
   }# for
-  print(bv)
-  return (bv)
+  
+  if(bestOfSize==3){
+    if(bv[[2]]$accVal < bv[[3]]$accVal) {# last sorting
+      if(bv[[1]]$accVal < bv[[3]]$accVal) { 
+        tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
+      else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
+    }
+  }
+  for(k in 1:bestOfSize){
+    print(bv[[k]]$accVal)  
+  }
+  
+  return (bv[1:bestOfSize])
 }
-
 
 scoreCrfv <-function(ho,algorithm,folds){
   if(is.na(ho)){
@@ -152,16 +173,26 @@ scoreCrfv <-function(ho,algorithm,folds){
     # browser()
     
     tmp.predict <- predict(tmp.model, newdata = test, type = "class")
+    
+    #--- totFtScore pred
+      # derivedPred <-c()
+      # tmpAcc=0
+      # for (j in 1:length(tmp.predict)){
+      #   if(tmp.predict[j]>=3 && test$scoreOutcome[j]=="O"){tmpAcc=tmpAcc+1}
+      #   else if(tmp.predict[j]<=2 && test$scoreOutcome[j]=="U"){tmpAcc=tmpAcc+1}
+      # }
+      # accuracy[i] <- tmpAcc/length(tmp.predict)
+    # ---------------------
+      
     conf.mat <- table(test$scoreOutcome, tmp.predict)
     #errs[i] <- 1-sum(diag(conf.mat))/sum(conf.mat)
-    accuracy[i] <- sum(diag(conf.mat)) / sum(conf.mat) 
+    accuracy[i] <- sum(diag(conf.mat)) / sum(conf.mat)
   }
   #gen_accuracy[length(gen_accuracy)+1]<<-100*mean(accuracy)
   #print(sprintf("average error using k-fold cross-validation: %.3f percent", 100*mean(errs)))
   print(sprintf("average accuracy using k-fold cross-validation: %.3f percent ", 100*mean(accuracy)))
   return(100*mean(accuracy))
 }
-
 
 #-----------
 #1 - 5/  5
@@ -452,3 +483,290 @@ differencedScoreNoBet <- function(i){
   )}
 }
 
+#---------------------TotFtscore
+fulltotFtScoreBet <- function(i){
+  if (i==-1){# return size of atts datasets
+    return(5)
+  }
+  
+  if (i==1){
+    return( totFtScore~ 
+              t1+               t1Points+         t1Classification+ t1Form+          
+              t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
+              t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
+              t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+              t2+               t2Points+         t2Classification+ t2Form+           
+              t2Atack+          t2AtackIn+        t2AtackOut+       t2Defense+        t2DefenseIn+      t2DefenseOut+    
+              t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
+              t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+              bet_1+            bet_X+            bet_2+            bet_O+            bet_U)
+  }
+  
+  else if(i==2){return( totFtScore~ 
+                          t1+               t1Points+         t1Classification+ t1Form+          
+                          t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
+                          t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+
+                          t1WinsIn+         t1WinsOut+       t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+                          t2+               t2Points+         t2Classification+ t2Form+           
+                          t2Atack+          t2AtackIn+        t2AtackOut+       t2Defense+        t2DefenseIn+      t2DefenseOut+    
+                          t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                          t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+                          bet_O+            bet_U)}
+  
+  else if(i==3){return(totFtScore~ 
+                         t1+               t1Form+           #t1Points+         #t1Classification+
+                         t1Atack+          t1Defense+        
+                         t1AvgHtScoreIn+   t1AvgFtScoreIn+   t1AvgHtGgResult+  t1AvgFtGgResult+  
+                         t1WinsIn+         t1DrawsIn+        t1LosesIn+
+                         t2+               t2Form+            #t2Points+         #t2Classification+
+                         t2Atack+          t2Defense+        
+                         t2AvgHtScoreOut+  t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                         t2WinsOut+        t2DrawsOut+       t2LosesOut+
+                         bet_O+            bet_U)}
+  
+  else if(i==4){return(totFtScore~#week+  
+                         t1+               
+                         #t1Points+         t1Classification+ t1Form+          
+                         t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+      
+                         t1AtackIn+        #t1AtackOut+        
+                         t1DefenseIn+      #t1DefenseOut+     
+                         t1AvgHtScoreIn+   #t1AvgHtScoreOut+ 
+                         t1AvgFtScoreIn+   #t1AvgFtScoreOut+  
+                         #t1AvgHtGgResult+  t1AvgFtGgResult+  
+                         t1WinsIn+         #t1WinsOut+       
+                         t1DrawsIn+        #t1DrawsOut+       
+                         t1LosesIn+        #t1LosesOut+       
+                         t2+               
+                         #t2Points+         t2Classification+ t2Form+           
+                         t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+     
+                         t2AtackOut+       #t2AtackIn+               
+                         t2DefenseOut+     #t2DefenseIn+      
+                         t2AvgHtScoreOut+  #t2AvgHtScoreIn+   
+                         t2AvgFtScoreOut+  #t2AvgFtScoreIn+   
+                         #t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                         t2WinsOut+        #t2WinsIn+         
+                         t2DrawsOut+       #t2DrawsIn+        
+                         t2LosesOut+       #t2LosesIn+        
+                         bet_O+            bet_U)}
+  
+  else if(i==5){return(totFtScore~  
+                         #t1+              
+                         #t1Points+
+                         #t1Classification+ t1Form+          
+                         t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
+                         #t1Atack+          t1Defense+        
+                         t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
+                         #t1AvgHtScoreIn+   t1AvgHtScoreOut+ 
+                         t1AvgFtScoreIn+   t1AvgFtScoreOut+  
+                         #t1AvgHtGgResult+  t1AvgFtGgResult+  
+                         #t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+     
+                         #t2+
+                         #t2Points+       
+                         #t2Classification+ t2Form+ 
+                         t2Form1Diff+      t2Form2Diff+      #t2Form3Diff+      t2Form4Diff+     
+                         #t2Atack+          t2Defense+        
+                         t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
+                         #t2AvgHtScoreIn+   t2AvgHtScoreOut+  
+                         t2AvgFtScoreIn+   t2AvgFtScoreOut+
+                         #t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                         #t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+                         #bet_1+            bet_X+            bet_2+       
+                         owd+  old+ odd+  #mfd1+ mfd2
+                         bet_O+            bet_U)}
+}
+
+# 6 - 9 /4
+fulltotFtScoreNoBet <- function(i){
+  if (i==-1){# return size of atts datasets
+    return(4)
+  }
+  
+  if(i==1){return(totFtScore~ 
+                    t1+               t1Points+         t1Classification+ t1Form+          
+                    t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
+                    t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+
+                    t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+                    t2+               t2Points+         t2Classification+ t2Form+           
+                    t2Atack+          t2AtackIn+        t2AtackOut+       t2Defense+        t2DefenseIn+      t2DefenseOut+    
+                    t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                    t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut)}
+  
+  else if(i==2){return(totFtScore~ 
+                         t1+               t1Form+          
+                         t1Atack+          t1Defense+        
+                         t1AvgHtScoreIn+   t1AvgFtScoreIn+   t1AvgFtGgResult+  #t1AvgHtGgResult+  
+                         t1WinsIn+         t1DrawsIn+        t1LosesIn+
+                         t2+               t2Form+           
+                         t2Atack+          t2Defense+        
+                         t2AvgHtScoreOut+  t2AvgFtScoreOut+  t2AvgFtGgResult+ #t2AvgHtGgResult+  
+                         t2WinsOut+        t2DrawsOut+       t2LosesOut
+                       #bet_O+            bet_U
+  )}
+  
+  else if(i==3){return(totFtScore~week+  
+                         #t1+               
+                         #t1Points+         t1Classification+ 
+                         t1Form+          
+                         #t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+      
+                         t1AtackIn+        #t1AtackOut+        
+                         t1DefenseIn+      #t1DefenseOut+     
+                         t1AvgHtScoreIn+   #t1AvgHtScoreOut+ 
+                         t1AvgFtScoreIn+   #t1AvgFtScoreOut+  
+                         #t1AvgHtGgResult+  t1AvgFtGgResult+  
+                         t1WinsIn+         #t1WinsOut+       
+                         t1DrawsIn+        #t1DrawsOut+       
+                         t1LosesIn+        #t1LosesOut+       
+                         #t2+               
+                         #t2Points+         t2Classification+ 
+                         t2Form+           
+                         #t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+     
+                         t2AtackOut+       #t2AtackIn+               
+                         t2DefenseOut+     #t2DefenseIn+      
+                         t2AvgHtScoreOut+  #t2AvgHtScoreIn+   
+                         t2AvgFtScoreOut+  #t2AvgFtScoreIn+   
+                         #t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                         t2WinsOut+        #t2WinsIn+         
+                         t2DrawsOut+       #t2DrawsIn+        
+                         t2LosesOut#+       #t2LosesIn+        
+                       #et_O+            bet_U
+  )}
+  
+  else if(i==4){return(totFtScore~  t1+              
+                         #t1Points+
+                         t1Classification+ t1Form+          
+                         t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
+                         t1Atack+          t1Defense+        
+                         t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
+                         t1AvgHtScoreIn+   t1AvgHtScoreOut+ 
+                         t1AvgFtScoreIn+   t1AvgFtScoreOut+  
+                         #t1AvgHtGgResult+  t1AvgFtGgResult+  
+                         #t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+     
+                         t2+
+                         #t2Points+       
+                         t2Classification+ t2Form+ 
+                         t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+     
+                         t2Atack+          t2Defense+        
+                         t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
+                         t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  
+                         #t2AvgHtGgResult+  t2AvgFtGgResult+ 
+                         #t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+                         #bet_1+            bet_X+            bet_2+       
+                         owd+  old+ odd+  mfd1+ mfd2
+                       #bet_O+            bet_U
+  )}
+}
+
+# 1 - 3 nrs /3
+differencedtotFtScoreBet <- function(i){
+  if (i==-1){# return size of atts datasets
+    return(3)
+  }
+  
+  if(i==1){return(totFtScore~  mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
+                    #f1d+ f2d+ f3d+ f4d+
+                    t1adoe+          t2adoe+           t12e+             t21e+
+                    owd+         odd+          old+    doav_ht+ doav_ft+
+                    dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
+                    datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
+                    bet_1+       bet_X+       bet_2+ bet_O+       bet_U )}
+  
+  else if(i==2){return(totFtScore~t1+t2+   t1Form+ t2Form+
+                         #mfd1+      mfd2+  mfd+  #
+                         #t1Classification+ t2Classification+ 
+                         #pd+  fd+  
+                         #f1d+ f2d+ f3d+ f4d+
+                         t1adoe+          t2adoe+           t12e+             t21e+
+                         owd+         odd+          old+    
+                         doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                         #datkin+      datkout+     
+                         #ddefin+      ddefout+   
+                         dav_ftin+    dav_ftout+
+                         bet_O+       bet_U)}
+  
+  else if(i==3){return(totFtScore~  mfd1+      mfd2+   # t1Classification+ t2Classification+  
+                         pd+  fd+  
+                         t1adoe+          t2adoe+           t12e+             t21e+
+                         owd+         odd+          old+    doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
+                         datkin+      datkout+     ddef+        ddefin+      ddefout+   dav_ftin+    dav_ftout+
+                         bet_O+       bet_U)}
+}
+
+# 4 - 7 nrs /4
+differencedtotFtScoreNoBet <- function(i){
+  if (i==-1){# return size of atts datasets
+    return(4)
+  } 
+  
+  if(i==1){return( totFtScore~t1+t2+  
+                     #mfd1+      mfd2+    #
+                     #t1Classification+ t2Classification+ 
+                     pd+  fd+  
+                     #f1d+ f2d+ f3d+ f4d+
+                     t1adoe+          t2adoe+           
+                     t12e+             t21e+
+                     owd+         odd+          old+ 
+                     
+                     doav_ht+     doav_ft+
+                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                     datk+        ddef+        
+                     datkin+      datkout+
+                     ddefin+       ddefout+   
+                     dav_ftin+    dav_ftout
+                   #bet_O+       bet_U
+                   
+  )}
+  
+  # not so good results
+  else if(i==2){return(totFtScore~#t1+t2+  
+                         mfd1+      mfd2+    #
+                         #t1Classification+ t2Classification+ 
+                         #pd+  fd+  
+                         #f1d+ f2d+ f3d+ f4d+
+                         t1adoe+          t2adoe+           t12e+             t21e+
+                         owd+         odd+          old+    
+                         doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                         
+                         datkin+      datkout+     
+                         ddefin+      ddefout+   
+                         dav_ftin+    dav_ftout
+                       #bet_O+       bet_U
+  )}
+  
+  #midle algo -> higher accuracy
+  else if(i==3){return(totFtScore~t1+t2+  
+                         #mfd1+      mfd2+  
+                         mfd+  #
+                         #t1Classification+ t2Classification+ 
+                         #pd+  fd+  
+                         #f1d+ f2d+ f3d+ f4d+
+                         t1adoe+          t2adoe+           
+                         #t12e+             t21e+
+                         owd+         odd+          old+    
+                         doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                         datkin+      datkout+     
+                         ddefin+      ddefout+   
+                         dav_ftin+    dav_ftout
+                       #bet_O+       bet_U
+  )}
+  
+  else if(i==4){return(totFtScore~
+                         #t1+t2+  
+                         mfd1+      mfd2+  #mfd+  #
+                         #t1Classification+ t2Classification+ 
+                         #pd+  fd+  
+                         #f1d+ f2d+ f3d+ f4d+
+                         t1adoe+          t2adoe+           t12e+             t21e+
+                         owd+         odd+          old+    
+                         doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                         
+                         #datkin+      datkout+     
+                         #ddefin+      ddefout+   
+                         dav_ftin+    dav_ftout
+                       #bet_O+       bet_U
+  )}
+}
