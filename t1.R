@@ -48,67 +48,92 @@ AlgoData <- setRefClass("AlgoData",
               )         
 )
 
-CleanDtf <- setRefClass("CleanDtf",
+CleanScoreDtf <- setRefClass("CleanDtf",
             fields = list(algoDataList="vector",predAtt="character",
+                    ensambleMat="matrix", ensambleCount="numeric",      
                     fmat="matrix",fcount="numeric",f2mat="matrix",f2count="numeric",
                     f5mat="matrix",f5count="numeric",
                     betmat="matrix",betcount="numeric",nobetmat="matrix",nobetcount="numeric",
                     fullmat="matrix",fullcount="numeric",diffmat="matrix",diffcount="numeric"),
         methods = list(
-          predCalc= function(tt){
+          predCalcScore= function(tt){
             #TODO : for every instance in the Dtf, predict the match results, sum thir probabilities 
             # and present them
-            initMatrixes();
+            initMatrixes(length(tt));
             
             for (algdat in algoDataList) {
               for (ins in algdat$instList) {
                 model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                preVec <- predFunc()
+                predVec <- predict(model,tt)
                 
+                retMat <-scoreResultCount(predVec,ins$accVal)
+                ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
+                if(algdat$dtfCategory %in% c("df","ndf")){fmat <<- fmat+retMat; fcount<<-fcount+1}
+                else if(algdat$dtfCategory %in% c("df2","ndf2")){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
+                else if(algdat$dtfCategory %in% c("df5","ndf5")){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
+                
+                if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
+                
+                if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
+                else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
               }
             }
-            
           },
-          initMatrixes=function(){
+          initMatrixes=function(ttlength){
             #set to 0 all matrixes and counters
-            fmat[,]<<-0; fcount<<-0; f2mat[,]<<-0; f2count<<-0; f5mat[,]<<-0; f5count<<-0;
-            betmat[,]<<-0; betcount<<-0; nobetmat[,]<<-0; nobetcount<<-0;
-            fullmat[,]<<-0; fullcount<<-0; diffmat[,]<<-0; diffcount<<-0;
+            ensambleMat <<-matrix(nrow =2, ncol = ttlength, data = 0)
+            fmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            f2mat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            f5mat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            betcount<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            nobetmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            fullmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            diffmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            
+            ensambleCount <<-0; fcount<<-0; f2count<<-0; f5count<<-0; 
+            betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
           }
+          #@ TODo functions that return the weighted accuracy for every 
         )
 )
 
+
+#@ TODO think better a plan tomake the crfv and end up with these structures completed with data
+
 modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
+  #generates a model for prediction based on the parameters from the best crfv results
+  
   # get train based on df_category
+  if(dfCategory == "df"){train <- df}
+  else if(dfCategory == "ndf"){train <- ndf}
+  else if(dfCategory == "df2"){train <- df[which(df$week>max(df$week)/2),]}
+  else if(dfCategory == "ndf2"){train <- ndf[which(ndf$week>max(ndf$week)/2),]}
+  else if(dfCategory == "df5"){train <- df[which(df$week>max(df$week)-6),]}
+  else if(dfCategory == "ndf5"){train <-ndf[which(ndf$week>max(ndf$week)-6),]}
   
-  #TODO find ho based on  bet,fullDiff,attDtsNr, predAtt
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
-  
-  
-  
   
   if(algorithm=="C50"){tmp.model <- C5.0(ho , train,trails=10)}
   else if(algorithm=="J48"){tmp.model <- J48(ho , train)}
   else if(algorithm=="svm"){tmp.model <- svm(ho , train)}
   else if(algorithm=="naiveBayes"){tmp.model <- naiveBayes(ho , train )}
   else if(algorithm=="randomForest"){tmp.model <- randomForest(ho , train )}
-  
   else if(algorithm=="rpart"){tmp.model <- rpart(ho , train)}
   else if(algorithm=="bagging"){tmp.model <- bagging(ho , train )}
-  #else if(algorithm=="bootest"){tmp.model <- bootest(ho , train, method = "class")}
-  
   else if(algorithm=="PART"){tmp.model <- PART(ho , train )}
   else if(algorithm=="JRip"){tmp.model <- JRip(ho , train )}
   else if(algorithm=="OneR"){tmp.model <- OneR(ho , train )}
   else if(algorithm=="AdaBoostM1"){tmp.model <- AdaBoostM1(ho , train )}
-  #else if(algorithm=="MultiBoostAB"){tmp.model <- MultiBoostAB(ho , train )}
   else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
   else if(algorithm=="lgm"){tmp.model <- lgm(ho , train )}
   
+  return (tmp.model)
 }
 
 
 attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
+  # unifies the distinct functions for the att_dts_Nr .
   switch (predAtt,
     "head" = {switch(fullDiff,
                      full={switch (bet,
@@ -175,9 +200,44 @@ attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
 
 
 
+#####---------- XXXXXXResultCount__ series of func to summ accuracy for each prediction
 
+scoreResultCount <- function(pv,acc){
+  temp_mat <- matrix(nrow = 2,ncol = length(pv),data = 0)
+  for(i in pv){
+    if(pv[i]=="O"){temp_mat[1,i]<-acc}
+    else if(pv[i]=="U"){temp_mat[2,i]<-acc}
+  }
+  return (temp_mat)
+}
 
+HeadResultCount <- function(pv,acc){
+  temp_mat <- matrix(nrow = 3,ncol = length(pv),data = 0)
+  for(i in pv){
+    if(pv[i]=="1"){temp_mat[1,i]<-acc}
+    else if(pv[i]=="2"){temp_mat[2,i]<-acc}
+    else if(pv[i]=="X"){temp_mat[3,i]<-acc}
+  }
+  return (temp_mat)
+}
 
+p2ResultCount <- function(pv,acc){
+  temp_mat <- matrix(nrow = 2,ncol = length(pv),data = 0)
+  for(i in pv){
+    if(pv[i]=="Y"){temp_mat[1,i]<-acc}
+    else if(pv[i]=="N"){temp_mat[2,i]<-acc}
+  }
+  return (temp_mat)
+}
+
+p1ResultCount <- function(pv,acc){
+  temp_mat <- matrix(nrow = 2,ncol = length(pv),data = 0)
+  for(i in pv){
+    if(pv[i]=="Y"){temp_mat[1,i]<-acc}
+    else if(pv[i]=="N"){temp_mat[2,i]<-acc}
+  }
+  return (temp_mat)
+}
 
 
 
