@@ -66,7 +66,6 @@ CleanDtf <- setRefClass("CleanDtf",
                 preVec <- predFunc()
                 
               }
-              
             }
             
           },
@@ -83,6 +82,7 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   # get train based on df_category
   
   #TODO find ho based on  bet,fullDiff,attDtsNr, predAtt
+  ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
   
   
   
@@ -108,6 +108,70 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
 }
 
 
+attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
+  switch (predAtt,
+    "head" = {switch(fullDiff,
+                     full={switch (bet,
+                                   "yes" = return (fullScoreBet(attDtsNr)),
+                                   "no" = return (fullScoreNoBet(attDtsNr))
+                     )},
+                     diff={switch (bet,
+                                   "yes" = return (differencedScoreBet(attDtsNr)),
+                                   "no" = return (differencedScoreNoBet(attDtsNr))
+                     )})
+    },
+    "score" = {switch(fullDiff,
+                      full={switch (bet,
+                        "yes" = return (fullScoreBet(attDtsNr)),
+                        "no" = return (fullScoreNoBet(attDtsNr))
+                      )},
+                      diff={switch (bet,
+                         "yes" = return (differencedScoreBet(attDtsNr)),
+                         "no" = return (differencedScoreNoBet(attDtsNr))
+                      )})
+              },
+    "2p" = {switch(fullDiff,
+                   full={switch (bet,
+                                 "yes" = return (fullScoreBet(attDtsNr)),
+                                 "no" = return (fullScoreNoBet(attDtsNr))
+                   )},
+                   diff={switch (bet,
+                                 "yes" = return (differencedScoreBet(attDtsNr)),
+                                 "no" = return (differencedScoreNoBet(attDtsNr))
+                   )})
+    },
+    "1p" = {switch(fullDiff,
+                   full={switch (bet,
+                                 "yes" = return (fullScoreBet(attDtsNr)),
+                                 "no" = return (fullScoreNoBet(attDtsNr))
+                   )},
+                   diff={switch (bet,
+                                 "yes" = return (differencedScoreBet(attDtsNr)),
+                                 "no" = return (differencedScoreNoBet(attDtsNr))
+                   )})
+    },
+    "totFt" = {switch(fullDiff,
+                      full={switch (bet,
+                                    "yes" = return (fullScoreBet(attDtsNr)),
+                                    "no" = return (fullScoreNoBet(attDtsNr))
+                      )},
+                      diff={switch (bet,
+                                    "yes" = return (differencedScoreBet(attDtsNr)),
+                                    "no" = return (differencedScoreNoBet(attDtsNr))
+                      )})
+    },
+    "totHt" = {switch(fullDiff,
+                      full={switch (bet,
+                                    "yes" = return (fullScoreBet(attDtsNr)),
+                                    "no" = return (fullScoreNoBet(attDtsNr))
+                      )},
+                      diff={switch (bet,
+                                    "yes" = return (differencedScoreBet(attDtsNr)),
+                                    "no" = return (differencedScoreNoBet(attDtsNr))
+                      )})
+    }
+  )
+}
 
 
 
@@ -147,3 +211,11 @@ for( i in 1:5){
   a[r,i]<- sample(1,1,10)
 }
 
+aa="bar"
+switch(aa,foo={print("foo")},bar={print("bar")})
+k=7
+
+switch (aa,
+  foo = {if(k>5){print("k>5 oooo")}else if(k<5){print("k<5 aaaa")}},
+  "bar" = {if(k>5){print("k>5 sssss")}else if(k<5){print("k<5 llll")}}
+)

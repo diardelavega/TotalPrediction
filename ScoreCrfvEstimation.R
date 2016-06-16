@@ -44,8 +44,8 @@ crfvInit <- function(){
 
 scorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
   # executes the crfv for all the algorithms we provide and stores the best results
-  fds <- AlgoDtf$new()  # to keep the instances of the  full datasets
-  dds <- AlgoDtf$new()  # to keep the instances of the  diff datasets
+  fds <- DataStore$new()  # to keep the instances of the  full datasets
+  dds <- DataStore$new()  # to keep the instances of the  diff datasets
   
   for(algorithm in c("C50"
                      #,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
