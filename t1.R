@@ -95,6 +95,7 @@ CleanScoreDtf <- setRefClass("CleanDtf",
             betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
           }
           #@ TODo functions that return the weighted accuracy for every 
+          
         )
 )
 
