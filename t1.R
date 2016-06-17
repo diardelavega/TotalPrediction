@@ -14,12 +14,9 @@ Instance <- setRefClass("Instance",
                             ttacc=ttacc/length(ttResultsVec)
                             
                             switch (dfCategory,
-                              "df" = {dflen <-dim(df)[1] },
-                              "ndf" = { dflen <-dim(df)[1] },
-                              "df2" = { dflen <-dim(df2)[1] },
-                              "ndf2" = {dflen <-dim(df2)[1] },
-                              "df5" = { dflen <-dim(df5)[1] }, 
-                              "ndf5" = { dflen <-dim(df5)[1] }
+                              "f" = {dflen <-dim(df)[1] },
+                              "f2" = { dflen <-dim(df2)[1] },
+                              "f5" = { dflen <-dim(df5)[1] }
                             )
                             #value of new accuracy with the new component
                             nac <- (accVal * dflen + ttacc * length(ttResultsVec))/(dflen +  length(ttResultsVec))
@@ -92,9 +89,9 @@ CleanScoreDtf <- setRefClass("CleanDtf",
                 
                 retMat <-scoreResultCount(predVec,ins$accVal)
                 ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
-                if(algdat$dtfCategory %in% c("df","ndf")){fmat <<- fmat+retMat; fcount<<-fcount+1}
-                else if(algdat$dtfCategory %in% c("df2","ndf2")){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
-                else if(algdat$dtfCategory %in% c("df5","ndf5")){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
+                if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
+                else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
+                else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                 
                 if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                 else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
@@ -106,14 +103,15 @@ CleanScoreDtf <- setRefClass("CleanDtf",
           },
           initMatrixes=function(ttlength){
             #set to 0 all matrixes and counters
-            ensambleMat <<-matrix(nrow =2, ncol = ttlength, data = 0)
-            fmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            f2mat<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            f5mat<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            betcount<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            nobetmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            fullmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
-            diffmat<<-matrix(nrow =2, ncol = ttlength, data = 0)
+            rowlen <-2
+            ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            f5mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            betcount<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            nobetmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            fullmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+            diffmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
             
             ensambleCount <<-0; fcount<<-0; f2count<<-0; f5count<<-0; 
             betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
@@ -137,12 +135,17 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   #generates a model for prediction based on the parameters from the best crfv results
   
   # get train based on df_category
-  if(dfCategory == "df"){train <- df}
-  else if(dfCategory == "ndf"){train <- ndf}
-  else if(dfCategory == "df2"){train <- df[which(df$week>max(df$week)/2),]}
-  else if(dfCategory == "ndf2"){train <- ndf[which(ndf$week>max(ndf$week)/2),]}
-  else if(dfCategory == "df5"){train <- df[which(df$week>max(df$week)-6),]}
-  else if(dfCategory == "ndf5"){train <-ndf[which(ndf$week>max(ndf$week)-6),]}
+  switch (dfCategory,
+    f = {switch (fulDiff,
+                  "full" = {train <- df},
+                  "diff" = {train <- ndf})},
+    f2 = {switch (fulDiff,
+                  "full" = {train <- df[which(df$week>max(df$week)/2),]},
+                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)/2),]})},
+    f5 = {switch (fulDiff,
+                  "full" = {train <- df[which(df$week>max(df$week)-6),]},
+                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)-6),]})}
+  )
   
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
   
@@ -243,12 +246,12 @@ scoreResultCount <- function(pv,acc){
   return (temp_mat)
 }
 
-HeadResultCount <- function(pv,acc){
+headResultCount <- function(pv,acc){
   temp_mat <- matrix(nrow = 3,ncol = length(pv),data = 0)
   for(i in pv){
     if(pv[i]=="1"){temp_mat[1,i]<-acc}
-    else if(pv[i]=="2"){temp_mat[2,i]<-acc}
-    else if(pv[i]=="X"){temp_mat[3,i]<-acc}
+    else if(pv[i]=="X"){temp_mat[2,i]<-acc}
+    else if(pv[i]=="2"){temp_mat[3,i]<-acc}
   }
   return (temp_mat)
 }

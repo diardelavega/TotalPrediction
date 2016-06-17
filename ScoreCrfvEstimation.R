@@ -21,31 +21,43 @@
 # supose we have df & ndf datasets
 crfvInit <- function(){
 #initializes datasets and call for the crfv accuracy estimation
+  folds <- 10;
+  
   
   crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <-3
-  # ret <- scorePredFunc(df, ndf, 10,bestOfSize)   # complet dataset crfv
-  # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-  
-  # if(max(ndf$week)>20){  # second half dataset crfv
-  #   bestOfSize <-3
-  #   ret <- scorePredFunc(df[which(df$week>max(df$week)/2),], ndf[which(ndf$week>max(ndf$week)/2),], 10,bestOfSize)
-  #   crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-  # }
+  ret <- scorePredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
+  crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+
+  if(max(ndf$week)>20){  # second half dataset crfv
+    bestOfSize <-3
+    ret <- scorePredFunc("f2",folds,bestOfSize)
+    crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+  }
   
   if(max(ndf$week)>10){  # last 6 weeks dataset crfv
     bestOfSize <-1
-    ret <- scorePredFunc(df[which(df$week>max(df$week)-6),], ndf[which(ndf$week>max(ndf$week)-6),], 10,bestOfSize)
+    ret <- scorePredFunc("f5",folds,bestOfSize)
     crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
   }
   
   #------- someway to store the  crfv_dts_Struct
 }
 
-scorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
+scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   # executes the crfv for all the algorithms we provide and stores the best results
-  fds <- DataStore$new()  # to keep the instances of the  full datasets
-  dds <- DataStore$new()  # to keep the instances of the  diff datasets
+  # return  AlgoData obj of the requested dataframe category {f,f2,f5}
+  
+  fds <- AlgoData$new(dfCategory=dataframeCategory)  # to keep the instances of the  full datasets
+  dds <- AlgoData$new(dfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
+  
+  switch (dataframeCategory,
+    "f" = {dataset_f <- df; dataset_d<- ndf},
+    "f2" = {dataset_f <- df[which(df$week>max(df$week)/2),]; 
+            dataset_d<- ndf[which(ndf$week>max(ndf$week)/2),]},
+    "f5" = {dataset_f <- df[which(df$week>max(df$week)-6),]; 
+            dataset_d<- ndf[which(ndf$week>max(ndf$week)-6),]}
+  )
   
   for(algorithm in c("C50"
                      #,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
@@ -63,12 +75,12 @@ scorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
     
     for(i in 1:fullScoreBet(-1)){
       acc <- scoreCrfv(fullScoreBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory)
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     for(i in 1:fullScoreNoBet(-1)){
       acc <- scoreCrfv(fullScoreNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory)
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -78,12 +90,12 @@ scorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
     
     for(i in 1:differencedScoreBet(-1)){
       acc <- scoreCrfv(differencedScoreBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory)
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     for(i in 1:differencedScoreNoBet(-1)){
       acc <- scoreCrfv(differencedScoreNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory)
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -97,6 +109,7 @@ treBestChoser <- function(lst,bestOfSize){
   # i know that the first 3 instances i put in have different acc between them
   # after the third i check onli if the new accval is biger than the worst one 
   # in, otherwise (worst accval or equal i dont want it)
+  # return a list of Instabce obj with the best accVal
   
   bv <-c()
   bv[1]<- lst[1]
