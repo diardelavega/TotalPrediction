@@ -1,7 +1,31 @@
 
 Instance <- setRefClass("Instance",
-                        fields = list(algo="character", attsDtsNr="numeric",
-                                      accVal="numeric",fullDiff="character",bet="character")
+                        fields = list(algo="character", attsDtsNr="numeric",dfCategory="character",
+                        accVal="numeric",fullDiff="character",bet="character",predvec="vector"),
+                        methods = list(
+                          accuracyReavaluation= function(ttResultsVec){
+                            if(length(predvec)!=length(ttResultsVec)){
+                              print("Prediction and results vector do not match");  return()}
+                            
+                            ttacc<-0;  # calculate prediction acccuracy
+                            for(i in 1:length(ttResultsVec)){
+                              if(ttResultsVec[i]==predvec[i]){ttacc=ttacc+1}
+                            }
+                            ttacc=ttacc/length(ttResultsVec)
+                            
+                            switch (dfCategory,
+                              "df" = {dflen <-dim(df)[1] },
+                              "ndf" = { dflen <-dim(df)[1] },
+                              "df2" = { dflen <-dim(df2)[1] },
+                              "ndf2" = {dflen <-dim(df2)[1] },
+                              "df5" = { dflen <-dim(df5)[1] }, 
+                              "ndf5" = { dflen <-dim(df5)[1] }
+                            )
+                            #value of new accuracy with the new component
+                            nac <- (accVal * dflen + ttacc * length(ttResultsVec))/(dflen +  length(ttResultsVec))
+                            accVal<<-nac                          
+                          }
+                        )
 )
 
 
@@ -95,7 +119,14 @@ CleanScoreDtf <- setRefClass("CleanDtf",
             betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
           }
           #@ TODo functions that return the weighted accuracy for every 
-          
+          getEnsamble = function(){return(ensambleMat/ensambleCount)}
+          getF = function(){return(fmat/fcount)}
+          getF2 = function(){return(f2mat/f2count)}
+          getF5 = function(){return(f5mat/f5count)}
+          getBet = function(){return(betmat/betcount)}
+          getNoBet = function(){return(nobetmat/nobetcount)}
+          getFull = function(){return(fullmat/fullcount)}
+          getDiff = function(){return(diffmat/diffcount)}
         )
 )
 
@@ -272,11 +303,11 @@ for( i in 1:5){
   a[r,i]<- sample(1,1,10)
 }
 
-aa="bar"
+aa="fo"
 switch(aa,foo={print("foo")},bar={print("bar")})
 k=7
 
 switch (aa,
-  foo = {if(k>5){print("k>5 oooo")}else if(k<5){print("k<5 aaaa")}},
+  "foo" = {if(k>5){print("k>5 oooo")}else if(k<5){print("k<5 aaaa")}},
   "bar" = {if(k>5){print("k>5 sssss")}else if(k<5){print("k<5 llll")}}
 )
