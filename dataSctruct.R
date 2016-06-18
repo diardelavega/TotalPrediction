@@ -27,7 +27,6 @@ Instance <- setRefClass("Instance",
 
 
 AlgoData <- setRefClass("AlgoData",
-              # a field with the new moderated value for the overall crf_validation accuracy value
               # dtfCategory (df,ndf,df2,ndf2,df5,ndf5), attPred -> (ScoreOutcome, totFtScore, headOutcome, 2p,1p)
               # to consider a list of support predAtts like : *score| totFt; score|2p, 2p|totHt)
               fields = list( instList="vector", avgAcc="numeric", dtfCategory="character"),
@@ -69,7 +68,7 @@ AlgoData <- setRefClass("AlgoData",
               )         
 )
 
-CleanScoreDtf <- setRefClass("CleanDtf",
+CleanScoreDtf <- setRefClass("CleanScoreDtf",
             fields = list(algoDataList="vector",predAtt="character",
                     ensambleMat="matrix", ensambleCount="numeric",      
                     fmat="matrix",fcount="numeric",f2mat="matrix",f2count="numeric",
@@ -86,6 +85,7 @@ CleanScoreDtf <- setRefClass("CleanDtf",
               for (ins in algdat$instList) {
                 model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
                 predVec <- predict(model,tt)
+                ins$predvec  <<-predVec
                 
                 retMat <-scoreResultCount(predVec,ins$accVal)
                 ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
@@ -116,7 +116,14 @@ CleanScoreDtf <- setRefClass("CleanDtf",
             ensambleCount <<-0; fcount<<-0; f2count<<-0; f5count<<-0; 
             betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
           },
-          #@ TODo functions that return the weighted accuracy for every 
+          accuracyRecalc =function(predResultVec){
+            # for every Instance obj in the Dtf, call accuracy re-evaluation
+            for (algdat in algoDataList) {
+              for (ins in algdat$instList) {
+                ins$accuracyReavaluation(predResultVec)
+              }}
+          },
+          
           getEnsamble = function(){return(ensambleMat/ensambleCount)},
           getF = function(){return(fmat/fcount)},
           getF2 = function(){return(f2mat/f2count)},
@@ -129,7 +136,7 @@ CleanScoreDtf <- setRefClass("CleanDtf",
 )
 
 
-#@ TODO think better a plan tomake the crfv and end up with these structures completed with data
+#@ TODO test score Dtf an if succesfull implement head, 2p, 1p cleanDtfs
 
 modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   #generates a model for prediction based on the parameters from the best crfv results
@@ -277,7 +284,8 @@ p1ResultCount <- function(pv,acc){
 
 
 
-pf <- AlgoData$new()
+pf <- AlgoData$new(dtfCategory="c")
+pf$dtfCategory<-"cc"
 
 a<-  Instance$new(algo = "C50",attsDtsNr=1,accVal=333, bet="yes", fullDiff="full")
 pf$instList <- c(a)

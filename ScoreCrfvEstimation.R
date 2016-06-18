@@ -22,23 +22,26 @@
 crfvInit <- function(){
 #initializes datasets and call for the crfv accuracy estimation
   folds <- 10;
+  csDtf <<- CleanScoreDtf$new(predAtt="score")
   
-  
-  crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
-  bestOfSize <-3
-  ret <- scorePredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
-  crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-
-  if(max(ndf$week)>20){  # second half dataset crfv
-    bestOfSize <-3
-    ret <- scorePredFunc("f2",folds,bestOfSize)
-    crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-  }
+  # crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
+  # bestOfSize <-3
+  # ret <- scorePredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
+  # # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+  # csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
+  # 
+  # if(max(ndf$week)>20){  # second half dataset crfv
+  #   bestOfSize <-3
+  #   ret <- scorePredFunc("f2",folds,bestOfSize)
+  #   # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+  #   csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
+  # }
   
   if(max(ndf$week)>10){  # last 6 weeks dataset crfv
     bestOfSize <-1
     ret <- scorePredFunc("f5",folds,bestOfSize)
-    crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+    # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+    csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
   }
   
   #------- someway to store the  crfv_dts_Struct
@@ -48,8 +51,8 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   # executes the crfv for all the algorithms we provide and stores the best results
   # return  AlgoData obj of the requested dataframe category {f,f2,f5}
   
-  fds <- AlgoData$new(dfCategory=dataframeCategory)  # to keep the instances of the  full datasets
-  dds <- AlgoData$new(dfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
+  fds <- AlgoData$new(dtfCategory=dataframeCategory)  # to keep the instances of the  full datasets
+  dds <- AlgoData$new(dtfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
   
   switch (dataframeCategory,
     "f" = {dataset_f <- df; dataset_d<- ndf},
@@ -389,7 +392,7 @@ differencedScoreBet <- function(i){
   
   if(i==1){return(scoreOutcome~  mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
                     #f1d+ f2d+ f3d+ f4d+
-                    t1adoe+          t2adoe+           t12e+             t21e+
+                    t1adoe+          t2adoe+           t1e+             t2e+
                     owd+         odd+          old+    doav_ht+ doav_ft+
                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
                     datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
@@ -400,7 +403,7 @@ differencedScoreBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -411,7 +414,7 @@ differencedScoreBet <- function(i){
   
   else if(i==3){return(scoreOutcome~  mfd1+      mfd2+   # t1Classification+ t2Classification+  
                          pd+  fd+  
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
                          datkin+      datkout+     ddef+        ddefin+      ddefout+   dav_ftin+    dav_ftout+
@@ -430,7 +433,7 @@ differencedScoreNoBet <- function(i){
                      pd+  fd+  
                      #f1d+ f2d+ f3d+ f4d+
                      t1adoe+          t2adoe+           
-                     t12e+             t21e+
+                     t1e+             t2e+
                      owd+         odd+          old+ 
                      
                      doav_ht+     doav_ft+
@@ -449,7 +452,7 @@ differencedScoreNoBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -468,7 +471,7 @@ differencedScoreNoBet <- function(i){
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
                          t1adoe+          t2adoe+           
-                         #t12e+             t21e+
+                         #t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -484,7 +487,7 @@ differencedScoreNoBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -677,7 +680,7 @@ differencedtotFtScoreBet <- function(i){
   
   if(i==1){return(totFtScore~  mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
                     #f1d+ f2d+ f3d+ f4d+
-                    t1adoe+          t2adoe+           t12e+             t21e+
+                    t1adoe+          t2adoe+           t1e+             t2e+
                     owd+         odd+          old+    doav_ht+ doav_ft+
                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
                     datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
@@ -688,7 +691,7 @@ differencedtotFtScoreBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -699,7 +702,7 @@ differencedtotFtScoreBet <- function(i){
   
   else if(i==3){return(totFtScore~  mfd1+      mfd2+   # t1Classification+ t2Classification+  
                          pd+  fd+  
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
                          datkin+      datkout+     ddef+        ddefin+      ddefout+   dav_ftin+    dav_ftout+
@@ -718,7 +721,7 @@ differencedtotFtScoreNoBet <- function(i){
                      pd+  fd+  
                      #f1d+ f2d+ f3d+ f4d+
                      t1adoe+          t2adoe+           
-                     t12e+             t21e+
+                     t1e+             t2e+
                      owd+         odd+          old+ 
                      
                      doav_ht+     doav_ft+
@@ -737,7 +740,7 @@ differencedtotFtScoreNoBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -756,7 +759,7 @@ differencedtotFtScoreNoBet <- function(i){
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
                          t1adoe+          t2adoe+           
-                         #t12e+             t21e+
+                         #t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
@@ -772,7 +775,7 @@ differencedtotFtScoreNoBet <- function(i){
                          #t1Classification+ t2Classification+ 
                          #pd+  fd+  
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t12e+             t21e+
+                         t1adoe+          t2adoe+           t1e+             t2e+
                          owd+         odd+          old+    
                          doav_ht+ doav_ft+
                          dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
