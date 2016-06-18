@@ -24,18 +24,18 @@ crfvInit <- function(){
   folds <- 10;
   csDtf <<- CleanScoreDtf$new(predAtt="score")
   
-  # crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
-  # bestOfSize <-3
-  # ret <- scorePredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
-  # # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-  # csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
-  # 
-  # if(max(ndf$week)>20){  # second half dataset crfv
-  #   bestOfSize <-3
-  #   ret <- scorePredFunc("f2",folds,bestOfSize)
-  #   # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
-  #   csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
-  # }
+  crfv_score_Struct <<- c() # the struct that will keep all the dataStores created
+  bestOfSize <-3
+  ret <- scorePredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
+  # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+  csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
+
+  if(max(ndf$week)>20){  # second half dataset crfv
+    bestOfSize <-3
+    ret <- scorePredFunc("f2",folds,bestOfSize)
+    # crfv_score_Struct[length(crfv_score_Struct)+1:2] <<-ret
+    csDtf$algoDataList[length(csDtf$algoDataList)+1:2]<<-ret
+  }
   
   if(max(ndf$week)>10){  # last 6 weeks dataset crfv
     bestOfSize <-1
@@ -63,7 +63,7 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   )
   
   for(algorithm in c("C50"
-                     #,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
+                     ,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
                      )){
     print(algorithm)
     
