@@ -75,6 +75,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                     ensambleCount="numeric", fcount="numeric",f2count="numeric", f5count="numeric",
                     betcount="numeric",nobetcount="numeric", fullcount="numeric",diffcount="numeric"),
         methods = list(
+          scoreMatOrientation= function(){cat("1 row - O  \n2 row - U \n") },
           initMatrixes=function(ttlength){
             print("init mats")
             #set to 0 all matrixes and counters
@@ -100,7 +101,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           },
           predCalcScore= function(tt){
             initMatrixes(dim(tt)[1]);
-            
+            newTt()# regulate tt with ndf and t1,t2 classification factors
              algcount <-0
             for (algdat in algoDataList) {
               for (ins in algdat$instList) {
@@ -130,7 +131,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
             }
           },
           
-          getEnsamble = function(){return(ensambleMat/ensambleCount)},
+          getEnsamble = function(){scoreMatOrientation(); return(ensambleMat/ensambleCount)},
           getF = function(){return(fmat/fcount)},
           getF2 = function(){return(f2mat/f2count)},
           getF5 = function(){return(f5mat/f5count)},
@@ -146,76 +147,239 @@ aa <- CleanScoreDtf$new()
 aa$algoDataList <- csDtf$algoDataList
 aa$predAtt <- "score"
 aa$predCalcScore(tt)
+aa$getEnsamble()
 #---------
 
-
-{CleanHeadDtf <- setRefClass("CleanHeadDtf",
-                             fields = list(algoDataList="vector",predAtt="character",
-                                           ensambleMat="matrix", ensambleCount="numeric",      
-                                           fmat="matrix",fcount="numeric",f2mat="matrix",f2count="numeric",
-                                           f5mat="matrix",f5count="numeric",
-                                           betmat="matrix",betcount="numeric",nobetmat="matrix",nobetcount="numeric",
-                                           fullmat="matrix",fullcount="numeric",diffmat="matrix",diffcount="numeric"),
-                             methods = list(
-                               predCalcHead= function(tt){
-                                 #TODO : for every instance in the Dtf, predict the match results, sum thir probabilities 
-                                 # and present them
-                                 initMatrixes(length(tt));
-                                 
-                                 for (algdat in algoDataList) {
-                                   for (ins in algdat$instList) {
-                                     model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                     predVec <- predict(model,tt)
-                                     ins$predvec  <<-predVec
-                                     
-                                     retMat <-headResultCount(predVec,ins$accVal)
-                                     ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
-                                     if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
-                                     else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
-                                     else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                     
-                                     if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
-                                     else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                     
-                                     if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
-                                     else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
+#head
+{
+  CleanHeadDtf <- setRefClass("CleanHeadDtf",
+                               fields = list(algoDataList="vector",predAtt="character",
+                                             ensambleMat="matrix", fmat="matrix",f2mat="matrix", f5mat="matrix", 
+                                             betmat="matrix", nobetmat="matrix",fullmat="matrix",diffmat="matrix",
+                                             ensambleCount="numeric", fcount="numeric",f2count="numeric", f5count="numeric",
+                                             betcount="numeric",nobetcount="numeric", fullcount="numeric",diffcount="numeric"),
+                               methods = list(
+                                 headMatOrientation= function(){cat("1 row - 1  \n2 row - X \n3 row - 2 \n") },
+                                 initMatrixes=function(ttlength){
+                                   print("init mats")
+                                   #set to 0 all matrixes and counters
+                                   rowlen <-3
+                                   ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   f5mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   betmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   nobetmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   fullmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   diffmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                   
+                                   ensambleCount <<- 0; fcount<<- 0; f2count<<- 0; f5count<<- 0; 
+                                   betcount<<- 0; nobetcount<<- 0; fullcount<<- 0; diffcount<<- 0;
+                                 },
+                                 accuracyRecalc =function(predResultVec){
+                                   # for every Instance obj in the Dtf, call accuracy re-evaluation
+                                   for (algdat in algoDataList) {
+                                     for (ins in algdat$instList) {
+                                       ins$accuracyReavaluation(predResultVec)
+                                     }}
+                                 },
+                                 predCalcScore= function(tt){
+                                   initMatrixes(dim(tt)[1]);
+                                   newTt()# regulate tt with ndf and t1,t2 classification factors
+                                   algcount <-0
+                                   for (algdat in algoDataList) {
+                                     for (ins in algdat$instList) {
+                                       algcount=algcount+1
+                                       cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
+                                       
+                                       model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
+                                       predVec <- as.vector(predict(model,tt, type = "class"))
+                                       print(predVec)
+                                       
+                                       ins$predvec  <<-predVec
+                                       
+                                       retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
+                                       # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
+                                       
+                                       ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
+                                       if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
+                                       else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
+                                       else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
+                                       
+                                       if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                       else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
+                                       
+                                       if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
+                                       else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
+                                     }
                                    }
-                                 }
-                               },
-                               initMatrixes=function(ttlength){
-                                 #set to 0 all matrixes and counters
-                                 rowlen <-3
-                                 ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 f5mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 betcount<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 nobetmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 fullmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
-                                 diffmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                 },
                                  
-                                 ensambleCount <<-0; fcount<<-0; f2count<<-0; f5count<<-0; 
-                                 betcount<<-0;nobetcount<<-0;fullcount<<-0;diffcount<<-0;
-                               },
-                               accuracyRecalc =function(predResultVec){
-                                 # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                 for (algdat in algoDataList) {
-                                   for (ins in algdat$instList) {
-                                     ins$accuracyReavaluation(predResultVec)
-                                   }}
-                               },
-                               
-                               getEnsamble = function(){return(ensambleMat/ensambleCount)},
-                               getF = function(){return(fmat/fcount)},
-                               getF2 = function(){return(f2mat/f2count)},
-                               getF5 = function(){return(f5mat/f5count)},
-                               getBet = function(){return(betmat/betcount)},
-                               getNoBet = function(){return(nobetmat/nobetcount)},
-                               getFull = function(){return(fullmat/fullcount)},
-                               getDiff = function(){return(diffmat/diffcount)}
-                             )
-)}
+                                 getEnsamble = function(){headMatOrientation(); return(ensambleMat/ensambleCount)},
+                                 getF = function(){return(fmat/fcount)},
+                                 getF2 = function(){return(f2mat/f2count)},
+                                 getF5 = function(){return(f5mat/f5count)},
+                                 getBet = function(){return(betmat/betcount)},
+                                 getNoBet = function(){return(nobetmat/nobetcount)},
+                                 getFull = function(){return(fullmat/fullcount)},
+                                 getDiff = function(){return(diffmat/diffcount)}
+                               )
+  )
+}
 
+#2p
+{
+  Clean2pDtf <- setRefClass("Clean2pDtf",
+                              fields = list(algoDataList="vector",predAtt="character",
+                                            ensambleMat="matrix", fmat="matrix",f2mat="matrix", f5mat="matrix", 
+                                            betmat="matrix", nobetmat="matrix",fullmat="matrix",diffmat="matrix",
+                                            ensambleCount="numeric", fcount="numeric",f2count="numeric", f5count="numeric",
+                                            betcount="numeric",nobetcount="numeric", fullcount="numeric",diffcount="numeric"),
+                              methods = list(
+                                p2MatOrientation= function(){cat("1 row - Yes  \n2 row - No \n ") },
+                                initMatrixes=function(ttlength){
+                                  print("init mats")
+                                  #set to 0 all matrixes and counters
+                                  rowlen <-3
+                                  ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  f5mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  betmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  nobetmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  fullmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  diffmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  
+                                  ensambleCount <<- 0; fcount<<- 0; f2count<<- 0; f5count<<- 0; 
+                                  betcount<<- 0; nobetcount<<- 0; fullcount<<- 0; diffcount<<- 0;
+                                },
+                                accuracyRecalc =function(predResultVec){
+                                  # for every Instance obj in the Dtf, call accuracy re-evaluation
+                                  for (algdat in algoDataList) {
+                                    for (ins in algdat$instList) {
+                                      ins$accuracyReavaluation(predResultVec)
+                                    }}
+                                },
+                                predCalcScore= function(tt){
+                                  initMatrixes(dim(tt)[1]);
+                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  algcount <-0
+                                  for (algdat in algoDataList) {
+                                    for (ins in algdat$instList) {
+                                      algcount=algcount+1
+                                      cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
+                                      
+                                      model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
+                                      predVec <- as.vector(predict(model,tt, type = "class"))
+                                      print(predVec)
+                                      
+                                      ins$predvec  <<-predVec
+                                      
+                                      retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
+                                      # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
+                                      
+                                      ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
+                                      if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
+                                      else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
+                                      else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
+                                      
+                                      if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                      else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
+                                      
+                                      if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
+                                      else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
+                                    }
+                                  }
+                                },
+                                
+                                getEnsamble = function(){p2MatOrientation(); return(ensambleMat/ensambleCount)},
+                                getF = function(){return(fmat/fcount)},
+                                getF2 = function(){return(f2mat/f2count)},
+                                getF5 = function(){return(f5mat/f5count)},
+                                getBet = function(){return(betmat/betcount)},
+                                getNoBet = function(){return(nobetmat/nobetcount)},
+                                getFull = function(){return(fullmat/fullcount)},
+                                getDiff = function(){return(diffmat/diffcount)}
+                              )
+  )
+}
+
+#1p
+{
+  Clean1pDtf <- setRefClass("Clean1pDtf",
+                              fields = list(algoDataList="vector",predAtt="character",
+                                            ensambleMat="matrix", fmat="matrix",f2mat="matrix", f5mat="matrix", 
+                                            betmat="matrix", nobetmat="matrix",fullmat="matrix",diffmat="matrix",
+                                            ensambleCount="numeric", fcount="numeric",f2count="numeric", f5count="numeric",
+                                            betcount="numeric",nobetcount="numeric", fullcount="numeric",diffcount="numeric"),
+                              methods = list(
+                                p12MatOrientation= function(){cat("1 row - Yes  \n2 row - No \n ") },
+                                initMatrixes=function(ttlength){
+                                  print("init mats")
+                                  #set to 0 all matrixes and counters
+                                  rowlen <-3
+                                  ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  f5mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  betmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  nobetmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  fullmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  diffmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
+                                  
+                                  ensambleCount <<- 0; fcount<<- 0; f2count<<- 0; f5count<<- 0; 
+                                  betcount<<- 0; nobetcount<<- 0; fullcount<<- 0; diffcount<<- 0;
+                                },
+                                accuracyRecalc =function(predResultVec){
+                                  # for every Instance obj in the Dtf, call accuracy re-evaluation
+                                  for (algdat in algoDataList) {
+                                    for (ins in algdat$instList) {
+                                      ins$accuracyReavaluation(predResultVec)
+                                    }}
+                                },
+                                predCalcScore= function(tt){
+                                  initMatrixes(dim(tt)[1]);
+                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  algcount <-0
+                                  for (algdat in algoDataList) {
+                                    for (ins in algdat$instList) {
+                                      algcount=algcount+1
+                                      cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
+                                      
+                                      model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
+                                      predVec <- as.vector(predict(model,tt, type = "class"))
+                                      print(predVec)
+                                      
+                                      ins$predvec  <<-predVec
+                                      
+                                      retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
+                                      # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
+                                      
+                                      ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
+                                      if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
+                                      else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
+                                      else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
+                                      
+                                      if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                      else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
+                                      
+                                      if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
+                                      else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
+                                    }
+                                  }
+                                },
+                                
+                                getEnsamble = function(){p1MatOrientation(); return(ensambleMat/ensambleCount)},
+                                getF = function(){return(fmat/fcount)},
+                                getF2 = function(){return(f2mat/f2count)},
+                                getF5 = function(){return(f5mat/f5count)},
+                                getBet = function(){return(betmat/betcount)},
+                                getNoBet = function(){return(nobetmat/nobetcount)},
+                                getFull = function(){return(fullmat/fullcount)},
+                                getDiff = function(){return(diffmat/diffcount)}
+                              )
+  )
+}
 
 #@ TODO test score Dtf an if succesfull implement head, 2p, 1p cleanDtfs
 
@@ -262,12 +426,12 @@ attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
   switch (predAtt,
     "head" = {switch(fullDiff,
                      full={switch (bet,
-                                   "yes" = return (fullScoreBet(attDtsNr)),
-                                   "no" = return (fullScoreNoBet(attDtsNr))
+                                   "yes" = return (fullHeadBet(attDtsNr)),
+                                   "no" = return (fullHeadNoBet(attDtsNr))
                      )},
                      diff={switch (bet,
-                                   "yes" = return (differencedScoreBet(attDtsNr)),
-                                   "no" = return (differencedScoreNoBet(attDtsNr))
+                                   "yes" = return (differencedHeadBet(attDtsNr)),
+                                   "no" = return (differencedHeadNoBet(attDtsNr))
                      )})
     },
     "score" = {switch(fullDiff,
