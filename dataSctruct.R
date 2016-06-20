@@ -251,7 +251,7 @@ aa$getEnsamble()
                                 initMatrixes=function(ttlength){
                                   print("init mats")
                                   #set to 0 all matrixes and counters
-                                  rowlen <-3
+                                  rowlen <-2
                                   ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
                                   fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
                                   f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
@@ -328,7 +328,7 @@ aa$getEnsamble()
                                 initMatrixes=function(ttlength){
                                   print("init mats")
                                   #set to 0 all matrixes and counters
-                                  rowlen <-3
+                                  rowlen <-2
                                   ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
                                   fmat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
                                   f2mat<<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
@@ -628,7 +628,7 @@ attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
                          "no" = return (differencedScoreNoBet(attDtsNr))
                       )})
               },
-    "2p" = {switch(fullDiff,
+    "p2" = {switch(fullDiff,
                    full={switch (bet,
                                  "yes" = return (full2pBet(attDtsNr)),
                                  "no" = return (full2pNoBet(attDtsNr))
@@ -638,7 +638,7 @@ attDtsFunc <- function(attDtsNr,bet,fullDiff,predAtt){
                                  "no" = return (differenced2pNoBet(attDtsNr))
                    )})
     },
-    "1p" = {switch(fullDiff,
+    "p1" = {switch(fullDiff,
                    full={switch (bet,
                                  "yes" = return (full1pBet(attDtsNr)),
                                  "no" = return (full1pNoBet(attDtsNr))
@@ -726,7 +726,6 @@ totFtResultCount <- function(pv,acc){
   }
   return (temp_mat)
 }
-
 
 totHtResultCount <- function(pv,acc){
   temp_mat <- matrix(nrow = 6,ncol = length(pv),data = 0)
