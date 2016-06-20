@@ -19,7 +19,7 @@
 
 
 # supose we have df & ndf datasets
-crfvInit <- function(){
+scoreCrfvInit <- function(){
 #initializes datasets and call for the crfv accuracy estimation
   folds <- 10;
   csDtf <<- CleanScoreDtf$new(predAtt="score")
@@ -78,12 +78,12 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:fullScoreBet(-1)){
       acc <- scoreCrfv(fullScoreBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory)
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     for(i in 1:fullScoreNoBet(-1)){
       acc <- scoreCrfv(fullScoreNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory)
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -93,12 +93,12 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:differencedScoreBet(-1)){
       acc <- scoreCrfv(differencedScoreBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory)
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     for(i in 1:differencedScoreNoBet(-1)){
       acc <- scoreCrfv(differencedScoreNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory)
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -108,7 +108,7 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
  return (c(fds,dds)) 
 }
 
-treBestChoser <- function(lst,bestOfSize){
+scoreTreBestChoser <- function(lst,bestOfSize){
   # i know that the first 3 instances i put in have different acc between them
   # after the third i check onli if the new accval is biger than the worst one 
   # in, otherwise (worst accval or equal i dont want it)

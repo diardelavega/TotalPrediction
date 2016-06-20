@@ -1,25 +1,34 @@
 
 Instance <- setRefClass("Instance",
-                        fields = list(algo="character", attsDtsNr="numeric",dfCategory="character",
+                        fields = list(algo="character", attsDtsNr="numeric",dfCategory="character",ptype="character",
                         accVal="numeric",fullDiff="character",bet="character",predvec="vector"),
                         methods = list(
-                          accuracyReavaluation= function(ttResultsVec){
-                            if(length(predvec)!=length(ttResultsVec)){
-                              print("Prediction and results vector do not match");  return()}
-                            
+                          reEvaluate =function(ttResultsVec){
+                              if(length(predvec)!=length(ttResultsVec)){
+                                print("Prediction and results vector do not match");  return()}
+                              switch (dfCategory,
+                                      "f" = {dflen <-dim(df)[1] },
+                                      "f2" = { dflen <-dim(df2)[1] },
+                                      "f5" = { dflen <-dim(df5)[1] }
+                              )
+                              
+                              if(ptype=="categoric"){accuracyReEvaluation(ttResultsVec, dflen)}
+                              else if(ptype=="numeric"){errorReEvaluation(ttResultsVec, dflen)}
+                            },
+                          errorReEvaluation = function(ttResultsVec, dflen){
+                            curent_errr <- sqrt(1/length(predvec) * sum( (tpredvec-tttResultsVec)^2 ))
+                            nac <- (accVal * dflen + curent_errr * length(ttResultsVec)) / (dflen +  length(ttResultsVec))
+                            accVal<<-nac 
+                          },
+                          accuracyReEvaluation= function(ttResultsVec, dflen){
                             ttacc<-0;  # calculate prediction acccuracy
                             for(i in 1:length(ttResultsVec)){
                               if(ttResultsVec[i]==predvec[i]){ttacc=ttacc+1}
                             }
                             ttacc=ttacc/length(ttResultsVec)
-                            
-                            switch (dfCategory,
-                              "f" = {dflen <-dim(df)[1] },
-                              "f2" = { dflen <-dim(df2)[1] },
-                              "f5" = { dflen <-dim(df5)[1] }
-                            )
+                           
                             #value of new accuracy with the new component
-                            nac <- (accVal * dflen + ttacc * length(ttResultsVec))/(dflen +  length(ttResultsVec))
+                            nac <- (accVal * dflen + ttacc * length(ttResultsVec)) / (dflen +  length(ttResultsVec))
                             accVal<<-nac                          
                           }
                         )
