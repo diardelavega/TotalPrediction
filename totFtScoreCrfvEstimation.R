@@ -1,7 +1,4 @@
 
-#TODO Test pending
-
-
 #libraries required
 {
   library(plyr)
@@ -14,9 +11,6 @@
   
   #bestOfSize <- 3  
 }
-
-
-
 
 # supose we have df & ndf datasets
 crfvInit <- function(){
@@ -44,6 +38,9 @@ crfvInit <- function(){
 
 totFtScorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
   # executes the crfv for all the algorithms we provide and stores the best results
+  #  since we are handling goals the accuracy value is actually the squared mean error rate of the prediction algorithms
+  # we leave the var acc & accuracy for conventon
+    
   fds <- AlgoDtf$new()  # to keep the instances of the  full datasets
   dds <- AlgoDtf$new()  # to keep the instances of the  diff datasets
   
@@ -95,8 +92,8 @@ totFtScorePredFunc <- function(dataset_f,dataset_d,crfoldNr,bestOfSize){
 }
 
 treBestChoser <- function(lst,bestOfSize){
-  # i know that the first 3 instances i put in have different acc between them
-  # after the third i check onli if the new accval is biger than the worst one 
+  # i know that the first 3 instances i put in have different err between them
+  # after the third i check only if the new accval is biger than the worst one 
   # in, otherwise (worst accval or equal i dont want it)
   #browser()
   bv <-c()
@@ -107,20 +104,22 @@ treBestChoser <- function(lst,bestOfSize){
     else if (length(bv)<bestOfSize) { 
       bv[length(bv)+1] <- lst[i] 
     }
+    
+    # the best instances are the ones with lowest error rate
     else{ # with 3 instances in, compare to find and eliminate the worst
       if(bestOfSize==1){
-        if(bv[[1]]$accVal < lst[[i]]$accVal) { bv[[1]] <- lst[[i]]}
+        if(bv[[1]]$accVal > lst[[i]]$accVal) { bv[[1]] <- lst[[i]]}
       }
       else if(bestOfSize==3){
         #@TODO fix for best of size ==1
-        if(bv[[1]]$accVal < bv[[2]]$accVal) {
+        if(bv[[1]]$accVal > bv[[2]]$accVal) {
           tmpInstance <-bv[[1]];  bv[[1]] <- bv[[2]];  bv[[2]] <- tmpInstance; }
-        if(bv[[2]]$accVal < bv[[3]]$accVal) {
-          if(bv[[1]]$accVal < bv[[3]]$accVal) { 
+        if(bv[[2]]$accVal > bv[[3]]$accVal) {
+          if(bv[[1]]$accVal > bv[[3]]$accVal) { 
             tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
           else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
         }
-        if(bv[[3]]$accVal < lst[[i]]$accVal){ 
+        if(bv[[3]]$accVal > lst[[i]]$accVal){ 
           if(lst[[i]]$accVal != bv[[1]]$accVal & lst[[i]]$accVal != bv[[2]]$accVal)
             bv[3] <- lst[i] }
       }# el if size==3
@@ -128,8 +127,8 @@ treBestChoser <- function(lst,bestOfSize){
   }# for
   
   if(bestOfSize==3){
-    if(bv[[2]]$accVal < bv[[3]]$accVal) {# last sorting
-      if(bv[[1]]$accVal < bv[[3]]$accVal) { 
+    if(bv[[2]]$accVal > bv[[3]]$accVal) {# last sorting
+      if(bv[[1]]$accVal > bv[[3]]$accVal) { 
         tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
       else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
     }
@@ -147,7 +146,7 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
     return(0)
   }
   
-  accuracy <- c()
+  erre <- c()
   #calc cros fold validation given the attributes involved
   for (i in 1:length(folds)) {
     test <- ldply(folds[i], data.frame)
@@ -173,34 +172,38 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
     else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
     else if(algorithm=="lgm"){tmp.model <- lgm(ho , train )}
      
-    
-    #browser()
     tmp.predict <- predict(tmp.model, newdata = test)
-    # print(tmp.predict)
-    # print(test$scoreOutcome)
     
-    #--- totFtScore pred
-    derivedPred <-c()
-    tmpAcc=0
-    for (j in 1:length(tmp.predict)){
-      if(tmp.predict[j]>=2.6 && test$scoreOutcome[j]=="O"){tmpAcc=tmpAcc+1}
-      else if(tmp.predict[j]<=2.5 && test$scoreOutcome[j]=="U"){tmpAcc=tmpAcc+1}
+    #--- totFtScore pred  sqrt(1/n * sum[ (pred[i]-val[i])^2 ] )
+    # n=length(tmp.predict)
+    # pred=mp.predict
+    # val =test$totFtScore
+    {
+        #   s=0;
+        # for (j in 1:length(tmp.predict)){
+        #   d2 <-( mp.predict[j] - test$totFtScore[j])^2
+        #   s=s+d2
+        # }
     }
-    accuracy[i] <- tmpAcc/length(tmp.predict)
-    # ---------------------
+    # smse<- sqrt(s/j)
     
-    # conf.mat <- table(test$scoreOutcome, tmp.predict)
-    # #errs[i] <- 1-sum(diag(conf.mat))/sum(conf.mat)
-    # accuracy[i] <- sum(diag(conf.mat)) / sum(conf.mat)
+    erre[i]<-sqrt(1/length(tmp.predict) * sum( (tmp.predict-test$totFtScore)^2 ))
+    
+    
+    # tmpAcc=0
+    # for (j in 1:length(tmp.predict)){
+    #   if(tmp.predict[j]>=2.6 && test$scoreOutcome[j]=="O"){tmpAcc=tmpAcc+1}
+    #   else if(tmp.predict[j]<=2.5 && test$scoreOutcome[j]=="U"){tmpAcc=tmpAcc+1}
+    # }
+    # accuracy[i] <- tmpAcc/length(tmp.predict)
+    # ---------------------
   }
-  #gen_accuracy[length(gen_accuracy)+1]<<-100*mean(accuracy)
-  #print(sprintf("average error using k-fold cross-validation: %.3f percent", 100*mean(errs)))
-  print(sprintf("average accuracy using k-fold cross-validation: %.3f percent ", 100*mean(accuracy)))
-  return(100*mean(accuracy))
+  print(sprintf("mean squared error rate with k-fold cross-validation: %.3f percent ", mean(erre)))
+  return(mean(erre))
 }
 
-
 #---------------------TotFtscore
+# att_datasets are not optimized but taken default from score crfv estimation
 fulltotFtScoreBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(5)
