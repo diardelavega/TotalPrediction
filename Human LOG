@@ -1,0 +1,8 @@
+!./ Human log.
+
+1) test newly implemented crfv scripts for optimal att_dts and store to apropriate functions.
+
+2) populate the new DTF with data from the competition
+
+3) test the ReEvaluation method for the 2 kinds of ptype {numeric, categoric}
+
