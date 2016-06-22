@@ -1,18 +1,16 @@
 
-folds <- split(ndf, cut(sample(1:nrow(ndf)),10))
+folds <- split(df, cut(sample(1:nrow(df)),10))
 folds <- split(df2, cut(sample(1:nrow(df2)),10))
 folds <- split(df5, cut(sample(1:nrow(df5)),10))
 accuracy<- rep(NA, length(folds))
 
 gen_accuracy <- c();
-for(algorithm in c("naiveBayes","randomForest","rpart"
-                   #"C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1"
+for(algorithm in c("C50","J48","svm","bagging", "JRip","AdaBoostM1",
+                    "naiveBayes","randomForest","rpart"
                    )){
   print(algorithm); set.seed(1234);
-  crv(h1,algorithm)  }
+  crv(full1pBet(1),algorithm)  }
 mean(gen_accuracy)
-
-
 
 crv <-function(ho,algorithm){
   if(is.na(ho)){
@@ -47,7 +45,7 @@ crv <-function(ho,algorithm){
     
     
     tmp.predict <- predict(tmp.model, newdata = test, type = "class")
-    conf.mat <- table(test$ht2pOutcome, tmp.predict)
+    conf.mat <- table(test$ht1pOutcome, tmp.predict)
     #errs[i] <- 1-sum(diag(conf.mat))/sum(conf.mat)
     accuracy[i] <- sum(diag(conf.mat)) / sum(conf.mat) 
   }
@@ -56,11 +54,13 @@ crv <-function(ho,algorithm){
   print(sprintf("average accuracy using k-fold cross-validation: %.3f percent ", 100*mean(accuracy)))
 }
 
-full2pBet <- function(i){
+
+
+full1pBet <- function(i){
   if(i==-1){return(6)}
   
   if(i==1){
-    return(ht2pOutcome~ 
+    return(ht1pOutcome~ 
              t1+               t1Points+         t1Classification+ t1Form+          
              t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
              t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
@@ -73,7 +73,7 @@ full2pBet <- function(i){
   }
   
   if(i==2){
-    return(ht2pOutcome~ 
+    return(ht1pOutcome~ 
              t1+               t1Points+         t1Classification+ t1Form+          
              t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
              t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
@@ -85,7 +85,7 @@ full2pBet <- function(i){
              bet_1+            bet_X+            bet_U)
   }
 
-  if(i==3){return(ht2pOutcome~ 
+  if(i==3){return(ht1pOutcome~ 
                     t1+               #t1Points+         t1Classification+ t1Form+          
                     t1Atack+          #t1AtackIn+        t1AtackOut+       
                     t1Defense+        #t1DefenseIn+      t1DefenseOut+
@@ -102,7 +102,7 @@ full2pBet <- function(i){
                     t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+
                     bet_1+            bet_X+            bet_2)}
   
-  if(i==4){return(ht2pOutcome~ t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
+  if(i==4){return(ht1pOutcome~ t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
                     #t1Atack+          t1Defense+        
                     t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
                     #t1AvgHtScoreIn+   t1AvgHtScoreOut+ 
@@ -124,7 +124,7 @@ full2pBet <- function(i){
                     bet_O+            bet_U)}
   
   if(i==5){# good distribution of good results
-    return(ht2pOutcome~ #week+ #t1+
+    return(ht1pOutcome~ #week+ #t1+
                     #t1Form+
                     t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
                     #t1Atack+          t1Defense+        
@@ -153,7 +153,7 @@ full2pBet <- function(i){
            )}
   
   if(i==6){# partially veri high results
-    return(ht2pOutcome~ #week+ #t1+
+    return(ht1pOutcome~ #week+ #t1+
                     #t1Form+
                     t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
                     #t1Atack+          t1Defense+        
@@ -184,10 +184,10 @@ full2pBet <- function(i){
                     bet_O+            bet_U)}
 }
 
-full2pNoBet <- function(i){
+full1pNoBet <- function(i){
   if (i==-1){return(5)}
   
-  if(i==1){return(ht2pOutcome~ 
+  if(i==1){return(ht1pOutcome~ 
                     t1+               t1Points+         t1Classification+ t1Form+          
                     t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
                     t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
@@ -199,7 +199,7 @@ full2pNoBet <- function(i){
                   # bet_1+            bet_X+            bet_2+            bet_O+            bet_U
   )}
   
-  if(i==2){return(ht2pOutcome~ 
+  if(i==2){return(ht1pOutcome~ 
                     t1+               #t1Points+         t1Classification+ t1Form+          
                     t1Atack+          #t1AtackIn+        t1AtackOut+       
                     t1Defense+        #t1DefenseIn+      t1DefenseOut+
@@ -216,7 +216,7 @@ full2pNoBet <- function(i){
                     t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut)}
   
   if(i==3){# good distributed results (to the previously not good att_dts)
-    return(ht2pOutcome~ 
+    return(ht1pOutcome~ 
                     #t1+               #t1Points+         t1Classification+ 
                     t1Form+          
                     t1Atack+          #t1AtackIn+        t1AtackOut+       
@@ -237,7 +237,7 @@ full2pNoBet <- function(i){
                   )}
   
   if(i==4){# diversification of good results
-    return(ht2pOutcome~ 
+    return(ht1pOutcome~ 
                     #t1+               t1Form+           #t1Points+         #t1Classification+
                     t1Atack+          t1Defense+        
                     t1AvgHtScoreIn+   t1AvgFtScoreIn+   t1AvgHtGgResult+  t1AvgFtGgResult+  
@@ -250,7 +250,7 @@ full2pNoBet <- function(i){
                   )}
   
   if(i==5){return(
-    ht2pOutcome~ 
+    ht1pOutcome~ 
       t1Form1Diff+      t1Form2Diff+      #t1Form3Diff+      t1Form4Diff+     
       #t1Atack+          t1Defense+        
       t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
@@ -275,10 +275,10 @@ full2pNoBet <- function(i){
   )}
 }
 
-differenciated2pBet <- function(i){
+differenciated1pBet <- function(i){
   if (i==-1){return(6)}
   
-  if(i==1){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+  if(i==1){return(ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
                     #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     #t1adoe+      t2adoe+      t1e+         t2e+
@@ -292,7 +292,7 @@ differenciated2pBet <- function(i){
                     #ddef+        #ddefin+      ddefout  
                     #bet_1+       bet_X+       bet_2
                     bet_O+       bet_U)}
-  if(i==2){return(ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+  if(i==2){return(ht1pOutcome~  mfd1+      mfd2+     pd+  fd+  
                     t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     # t1adoe+      t2adoe+       t1e+         t2e+
@@ -308,7 +308,7 @@ differenciated2pBet <- function(i){
                     #ddefin+      ddefout+
                     bet_1+       bet_X+       bet_2+
                     bet_O+       bet_U)}
-  if(i==3){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+  if(i==3){return(ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
                     t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     #t1adoe+      t2adoe+      t1e+         t2e+
@@ -323,7 +323,7 @@ differenciated2pBet <- function(i){
                   #bet_O+       bet_U
                   
   )}
-  if(i==4){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+  if(i==4){return(ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
                     #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     #t1adoe+      t2adoe+      t1e+         t2e+
@@ -336,7 +336,7 @@ differenciated2pBet <- function(i){
                     #ddef+        #ddefin+      ddefout  
                     #bet_1+       bet_X+       bet_2#+ 
                     bet_O+       bet_U)}
-  if(i==5){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+  if(i==5){return(ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
                     #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     t1adoe+      t2adoe+      t1e+         t2e+
@@ -349,7 +349,7 @@ differenciated2pBet <- function(i){
                     ddef+        #ddefin+      ddefout  
                     bet_1+       bet_X+       bet_2#+ bet_O+       bet_U
   )}
-  if(i==6){return(ht2pOutcome~  t1+ t2+ mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
+  if(i==6){return(ht1pOutcome~  t1+ t2+ mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
                     f1d+ f2d+ f3d+ f4d+ t1Form+ t2Form+
                     t1adoe+          t2adoe+           t1e+             t2e+
                     owd+         odd+          old+    doav_ht+ doav_ft+
@@ -362,11 +362,11 @@ differenciated2pBet <- function(i){
   
 }
 
-differenciated2pNoBet <- function(i){
+differenciated1pNoBet <- function(i){
   if (i==-1){return(6)}
   
   if(i==1){# partially high acc for the lower ones
-    return(ht2pOutcome~  #mfd1+      mfd2+     pd+  fd+  
+    return(ht1pOutcome~  #mfd1+      mfd2+     pd+  fd+  
                     #t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
                     f1d+ f2d+    #f3d+ f4d+ 
                     #t1adoe+      t2adoe+       
@@ -384,7 +384,7 @@ differenciated2pNoBet <- function(i){
   )}
   
   if(i==2){
-    return(ht2pOutcome~  #mfd1+      mfd2+     pd+  fd+  
+    return(ht1pOutcome~  #mfd1+      mfd2+     pd+  fd+  
                     #t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
                     #f1d+ f2d+    f3d+ f4d+ 
                     t1adoe+      t2adoe+       
@@ -404,7 +404,7 @@ differenciated2pNoBet <- function(i){
                   )}
   
   if(i==3){#generaly very high results
-    return(h10 <- ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+    return(h10 <- ht1pOutcome~  mfd1+      mfd2+     pd+  fd+  
              t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
              #f1d+ f2d+    f3d+ f4d+ 
              # t1adoe+      t2adoe+       t1e+         t2e+
@@ -421,7 +421,7 @@ differenciated2pNoBet <- function(i){
     )}
   
   if(i==4){#partialy high results
-    return(ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+    return(ht1pOutcome~  mfd1+      mfd2+     pd+  fd+  
              t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
              #f1d+ f2d+    f3d+ f4d+ 
              #t1adoe+      t2adoe+      
@@ -440,7 +440,7 @@ differenciated2pNoBet <- function(i){
   
   if(i==5){# algorithms with bad results generaly have good results
     return(
-    ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+    ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
       #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
       #f1d+ f2d+    f3d+ f4d+ 
       #t1adoe+      t2adoe+      t1e+         t2e+
@@ -457,7 +457,7 @@ differenciated2pNoBet <- function(i){
   
   if(i==6){
     return(
-      ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+      ht1pOutcome~   mfd1+      mfd2+     pd+  fd+  
         #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
         #f1d+ f2d+    f3d+ f4d+ 
         t1adoe+      t2adoe+      t1e+         t2e+
