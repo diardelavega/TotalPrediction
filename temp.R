@@ -1,13 +1,15 @@
 
-folds <- split(df, cut(sample(1:nrow(df)),10))
+folds <- split(ndf, cut(sample(1:nrow(ndf)),10))
 folds <- split(df2, cut(sample(1:nrow(df2)),10))
 folds <- split(df5, cut(sample(1:nrow(df5)),10))
 accuracy<- rep(NA, length(folds))
 
 gen_accuracy <- c();
-for(algorithm in c("C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1")){
+for(algorithm in c("naiveBayes","randomForest","rpart"
+                   #"C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1"
+                   )){
   print(algorithm); set.seed(1234);
-  crv(f1,algorithm)  }
+  crv(h1,algorithm)  }
 mean(gen_accuracy)
 
 
@@ -273,5 +275,199 @@ full2pNoBet <- function(i){
   )}
 }
 
+differenciated2pBet <- function(i){
+  if (i==-1){return(6)}
+  
+  if(i==1){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+                    #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    #t1adoe+      t2adoe+      t1e+         t2e+
+                    owd+         odd+         old+         
+                    doav_ht+     #doav_ft+
+                    dav_htin+    dav_htout+
+                    #dav_ftin+    dav_ftout+   
+                    doav_ht+   #doav_ft
+                    #dwin+        dwout+       ddin+      ddout+       dlin+        dlout+ datk+    
+                    #datk+        #datkin+      datkout+     
+                    #ddef+        #ddefin+      ddefout  
+                    #bet_1+       bet_X+       bet_2
+                    bet_O+       bet_U)}
+  if(i==2){return(ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+                    t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    # t1adoe+      t2adoe+       t1e+         t2e+
+                    owd+         odd+         old+         
+                    doav_ht+     #doav_ft+
+                    dav_htin+    dav_htout+
+                    dav_ftin+    dav_ftout+
+                    doav_ht+   #doav_ft
+                    dwin+        dwout+       ddin+      ddout+       dlin+        dlout+
+                    datk+        #
+                    #datkin+      datkout+     
+                    ddef+        #
+                    #ddefin+      ddefout+
+                    bet_1+       bet_X+       bet_2+
+                    bet_O+       bet_U)}
+  if(i==3){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+                    t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    #t1adoe+      t2adoe+      t1e+         t2e+
+                    owd+         odd+         old+         
+                    doav_ht+     doav_ft+
+                    dav_htin+    dav_htout+
+                    dav_ftin+    dav_ftout+   doav_ht+   doav_ft+
+                    #dwin+        dwout+       ddin+      ddout+       dlin+        dlout+ datk+    
+                    #datk+        #datkin+      datkout+     
+                    #ddef+        #ddefin+      ddefout  
+                    bet_1+       bet_X+       bet_2
+                  #bet_O+       bet_U
+                  
+  )}
+  if(i==4){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+                    #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    #t1adoe+      t2adoe+      t1e+         t2e+
+                    #owd+         odd+         old+         
+                    doav_ht+     doav_ft+
+                    dav_htin+    dav_htout+
+                    dav_ftin+    dav_ftout+   doav_ht+   doav_ft+
+                    #dwin+        dwout+       ddin+      ddout+       dlin+        dlout+ datk+    
+                    #datk+        #datkin+      datkout+     
+                    #ddef+        #ddefin+      ddefout  
+                    #bet_1+       bet_X+       bet_2#+ 
+                    bet_O+       bet_U)}
+  if(i==5){return(ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+                    #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    t1adoe+      t2adoe+      t1e+         t2e+
+                    #owd+         odd+         old+         
+                    doav_ht+     doav_ft+
+                    dav_htin+    dav_htout+
+                    dav_ftin+    dav_ftout+   doav_ht+   doav_ft+
+                    #dwin+        dwout+       ddin+      ddout+       dlin+        dlout+ datk+    
+                    datk+        #datkin+      datkout+     
+                    ddef+        #ddefin+      ddefout  
+                    bet_1+       bet_X+       bet_2#+ bet_O+       bet_U
+  )}
+  if(i==6){return(ht2pOutcome~  t1+ t2+ mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
+                    f1d+ f2d+ f3d+ f4d+ t1Form+ t2Form+
+                    t1adoe+          t2adoe+           t1e+             t2e+
+                    owd+         odd+          old+    doav_ht+ doav_ft+
+                    dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
+                    datk+        datkin+      datkout+     
+                    ddef+        ddefin+      ddefout+  
+                    dav_htin+    dav_htout+
+                    dav_ftin+    dav_ftout+   doav_ht+   doav_ft+
+                    bet_1+       bet_X+       bet_2+ bet_O+       bet_U)}
+  
+}
+
+differenciated2pNoBet <- function(i){
+  if (i==-1){return(6)}
+  
+  if(i==1){# partially high acc for the lower ones
+    return(ht2pOutcome~  #mfd1+      mfd2+     pd+  fd+  
+                    #t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    f1d+ f2d+    #f3d+ f4d+ 
+                    #t1adoe+      t2adoe+       
+                    #t1e+         t2e+
+                    owd+         odd+         old+         
+                    doav_ht+     #doav_ft+
+                    dav_htin+    dav_htout+
+                    #dav_ftin+    dav_ftout+
+                    doav_ht+   #doav_ft
+                    dwin+        dwout+       ddin+      ddout+       dlin+        dlout+
+                    #datk+        #
+                    datkin+      datkout+     
+                    #ddef        #
+                    ddefin+      ddefout
+  )}
+  
+  if(i==2){
+    return(ht2pOutcome~  #mfd1+      mfd2+     pd+  fd+  
+                    #t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
+                    #f1d+ f2d+    f3d+ f4d+ 
+                    t1adoe+      t2adoe+       
+                    #t1e+         t2e+
+                    owd+         odd+         old+         
+                    doav_ht+     #doav_ft+
+                    dav_htin+    dav_htout+
+                    #dav_ftin+    dav_ftout+
+                    doav_ht+   #doav_ft
+                    dwin+        dwout+       ddin+      ddout+       dlin+        dlout
+                  #datk+        #
+                  #datkin+      datkout+     
+                  #ddef        #
+                  #ddefin+      ddefout+
+                  #bet_1+       bet_X+       bet_2
+                  #bet_O+       bet_U
+                  )}
+  
+  if(i==3){#generaly very high results
+    return(h10 <- ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+             t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
+             #f1d+ f2d+    f3d+ f4d+ 
+             # t1adoe+      t2adoe+       t1e+         t2e+
+             owd+         odd+         old+         
+             doav_ht+     #doav_ft+
+             dav_htin+    dav_htout+
+             dav_ftin+    dav_ftout+
+             doav_ht+   #doav_ft
+             dwin+        dwout+       ddin+      ddout+       dlin+        dlout+
+             datk+        #datkin+      datkout+     
+             ddef        #ddefin+      ddefout  
+           #bet_1+       bet_X+       bet_2+
+           #bet_O+       bet_U
+    )}
+  
+  if(i==4){#partialy high results
+    return(ht2pOutcome~  mfd1+      mfd2+     pd+  fd+  
+             t1+ t2+   #t1Form+ t2Form+   t1Classification+ t2Classification+   
+             #f1d+ f2d+    f3d+ f4d+ 
+             #t1adoe+      t2adoe+      
+             #t1e+         t2e+
+             owd+         odd+         old+         
+             doav_ht+     #doav_ft+
+             dav_htin+    dav_htout+
+             #dav_ftin+    dav_ftout+   
+             doav_ht+   #doav_ft
+             dwin+        dwout+       ddin+      ddout+       dlin+        dlout
+           #datk+        #datkin+      datkout+     
+           #ddef+        #ddefin+      ddefout  
+           #bet_1+       bet_X+       bet_2
+           #bet_O+       bet_U
+    )}
+  
+  if(i==5){# algorithms with bad results generaly have good results
+    return(
+    ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+      #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+      #f1d+ f2d+    f3d+ f4d+ 
+      #t1adoe+      t2adoe+      t1e+         t2e+
+      owd+         odd+         old+         
+      doav_ht+     doav_ft+
+      dav_htin+    dav_htout+
+      dav_ftin+    dav_ftout+   doav_ht+   doav_ft
+    #dwin+        dwout+       ddin+      ddout+       dlin+        dlout+ datk+    
+    #datk+        #datkin+      datkout+     
+    #ddef+        #ddefin+      ddefout  
+    #bet_1+       bet_X+       bet_2+
+    #bet_O+       bet_U
+    )}
+  
+  if(i==6){
+    return(
+      ht2pOutcome~   mfd1+      mfd2+     pd+  fd+  
+        #t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+   
+        #f1d+ f2d+    f3d+ f4d+ 
+        t1adoe+      t2adoe+      t1e+         t2e+
+        owd+         odd+         old+         doav_ht+     doav_ft+
+        dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
+        datk+        datkin+      datkout+     
+        ddef+        ddefin+      ddefout+  
+        dav_htin+    dav_htout+
+        dav_ftin+    dav_ftout+   doav_ht+   doav_ft
+    )}
+}
 
 
