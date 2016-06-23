@@ -13,7 +13,7 @@
 
 
 
-folds <- split(df, cut(sample(1:nrow(df)),10))
+folds <- split(ndf, cut(sample(1:nrow(ndf)),10))
 folds <- split(df2, cut(sample(1:nrow(df2)),10))
 folds <- split(df5, cut(sample(1:nrow(df5)),10))
 accuracy<- rep(NA, length(folds))
@@ -54,135 +54,6 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
   print(sprintf("mean squared error rate with k-fold cross-validation: %.3f percent ", mean(erre)))
   return(mean(erre))
 }
-
-
-
-
-
-
-
-
-f1 <- totFtScore~  #owd+  old+ odd+  mfd1+ mfd2+
- # t1+
-  #t1Points+
-  t1Classification+ t1Form+
-  t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
-  t1Atack+          t1Defense+
-  t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
-  t1AvgHtScoreIn+   t1AvgHtScoreOut+
-  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
-  # t1AvgHtGgResult+  t1AvgFtGgResult+
-  t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-  # t2+
-  # t2Points+
-  t2Classification+ t2Form+
-  t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+
-  t2Atack+          t2Defense+
-  t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
-  t2AvgHtScoreIn+   t2AvgHtScoreOut+
-  t2AvgFtScoreIn+   t2AvgFtScoreOut+
-  # t2AvgHtGgResult+  t2AvgFtGgResult+
-  t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut
-  #bet_1+            bet_X+            bet_2+
-  #bet_O+            bet_U
-
-
-
-
-
-
-f2 <- totFtScore~  #owd+  old+ odd+  mfd1+ mfd2+
-  # t1+
-  #t1Points+
-  t1Classification+ t1Form+
-  # t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
-  t1Atack+          t1Defense+
-  t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
-  t1AvgHtScoreIn+   t1AvgHtScoreOut+
-  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
-  t1AvgHtGgResult+  t1AvgFtGgResult+
-  # t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-  # t2+
-  # t2Points+
-  t2Classification+ t2Form+
-  # t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+
-  t2Atack+          t2Defense+
-  t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
-  t2AvgHtScoreIn+   t2AvgHtScoreOut+
-  t2AvgFtScoreIn+   t2AvgFtScoreOut
-  # t2AvgHtGgResult+  t2AvgFtGgResult+
-  # t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut
-#bet_1+            bet_X+            bet_2+
-#bet_O+            bet_U
-
-
-
-
-
-
-
-f3 <- totFtScore~  #owd+  old+ odd+  mfd1+ mfd2+
-  # t1+
-  #t1Points+        t1Form+
-  #t1Classification+ 
-  # t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
-  t1Atack+          t1Defense+
-  # t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
-  t1AvgHtScoreIn+   t1AvgHtScoreOut+
-  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
-  t1AvgHtGgResult+  t1AvgFtGgResult+
-  # t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-  # t2+
-  #t2Points+       t2Form+
-  #t2Classification+ t2Form+
-  # t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+
-  t2Atack+          t2Defense+
-  # t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
-  t2AvgHtScoreIn+   t2AvgHtScoreOut+
-  t2AvgFtScoreIn+   t2AvgFtScoreOut
-# t2AvgHtGgResult+  t2AvgFtGgResult+
-#t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut
-#bet_1+            bet_X+            bet_2+
-#bet_O+            bet_U
-
-
-f2 <- totFtScore~  #owd+  old+ odd+  mfd1+ mfd2+
-  # t1+
-  #t1Points+        t1Form+
-  #t1Classification+ 
-  # t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
-  # t1Atack+          t1Defense+
-  t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
-  t1AvgHtScoreIn+   t1AvgHtScoreOut+
-  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
-  # t1AvgHtGgResult+  t1AvgFtGgResult+
-  # t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-  # t2+
-  #t2Points+       t2Form+
-  #t2Classification+ t2Form+
-  # t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+
-  # t2Atack+          t2Defense+
-  t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
-  t2AvgHtScoreIn+   t2AvgHtScoreOut+
-  t2AvgFtScoreIn+   t2AvgFtScoreOut
-# t2AvgHtGgResult+  t2AvgFtGgResult+
-#t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut
-#bet_1+            bet_X+            bet_2+
-#bet_O+            bet_U
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
