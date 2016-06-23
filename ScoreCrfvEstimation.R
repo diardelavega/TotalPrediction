@@ -7,7 +7,7 @@
   library(ipred)
   library(RWeka)
   library(rpart)
-
+  library(tree)
   #bestOfSize <- 3  
 }
 

@@ -5,54 +5,140 @@ folds <- split(df5, cut(sample(1:nrow(df5)),10))
 accuracy<- rep(NA, length(folds))
 
 gen_accuracy <- c();
-for(algorithm in c("C50","J48","svm","bagging", "JRip","AdaBoostM1",
-                    "naiveBayes","randomForest","rpart"
+for(algorithm in c(#"svm","lm",,"bagging"
+                   "lm"
                    )){
   print(algorithm); set.seed(1234);
-  crv(full1pBet(1),algorithm)  }
+  gen_accuracy[length(gen_accuracy)+1]<- totFtScoreCrfv(f1,algorithm,folds)  }
 mean(gen_accuracy)
 
-crv <-function(ho,algorithm){
-  if(is.na(ho)){
-    print("This ho is not found") 
-    return(0)
-  }
-  
-  accuracy <-c()
-  
-  #calc cros fold validation given the attributes involved
+totFtScoreCrfv <-function(ho,algorithm,folds){
+  # if(is.na(ho)){ print("This ho is not found");  return(0) }
+  erre <- c()
   for (i in 1:length(folds)) {
     test <- ldply(folds[i], data.frame)
     train <- ldply(folds[-i], data.frame)
     tmp.model<-c()
-    #browser()
-    #tmp.model <- algorithm(ho , train, method = "class")#,trails=trails)
-    if(algorithm=="C50"){tmp.model <- C5.0(ho , train,trails=10)}
-    else if(algorithm=="J48"){tmp.model <- J48(ho , train)}
-    else if(algorithm=="svm"){tmp.model <- svm(ho , train)}
-    else if(algorithm=="naiveBayes"){tmp.model <- naiveBayes(ho , train )}
-    else if(algorithm=="randomForest"){tmp.model <- randomForest(ho , train )}
-    
+    # browser()
+    if(algorithm=="svm"){tmp.model <- svm(ho , train)}
+    else if(algorithm=="naiveBayes"){tmp.model <- naiveBayes(ho , train)}
     else if(algorithm=="rpart"){tmp.model <- rpart(ho , train)}
     else if(algorithm=="bagging"){tmp.model <- bagging(ho , train )}
-    #else if(algorithm=="bootest"){tmp.model <- bootest(ho , train, method = "class")}
-    
     else if(algorithm=="PART"){tmp.model <- PART(ho , train )}
     else if(algorithm=="JRip"){tmp.model <- JRip(ho , train )}
     else if(algorithm=="OneR"){tmp.model <- OneR(ho , train )}
-    else if(algorithm=="AdaBoostM1"){tmp.model <- AdaBoostM1(ho , train )}
-    #else if(algorithm=="MultiBoostAB"){tmp.model <- MultiBoostAB(ho , train )}
+    else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
+    else if(algorithm=="glm"){tmp.model <- glm(ho , train )}
     
+    tmp.predict <- predict(tmp.model, newdata = test)
     
-    tmp.predict <- predict(tmp.model, newdata = test, type = "class")
-    conf.mat <- table(test$ht1pOutcome, tmp.predict)
-    #errs[i] <- 1-sum(diag(conf.mat))/sum(conf.mat)
-    accuracy[i] <- sum(diag(conf.mat)) / sum(conf.mat) 
+    #--- totFtScore pred  sqrt(1/n * sum[ (pred[i]-val[i])^2 ] )
+    # n=length(tmp.predict)
+    # pred=mp.predict
+    # val =test$totFtScore
+    
+    erre[i]<-sqrt(1/length(tmp.predict) * sum( (tmp.predict-test$totFtScore)^2 ))
   }
-  gen_accuracy[length(gen_accuracy)+1]<<-100*mean(accuracy)
-  #print(sprintf("average error using k-fold cross-validation: %.3f percent", 100*mean(errs)))
-  print(sprintf("average accuracy using k-fold cross-validation: %.3f percent ", 100*mean(accuracy)))
+  print(erre)
+  print(sprintf("mean squared error rate with k-fold cross-validation: %.3f percent ", mean(erre)))
+  return(mean(erre))
 }
+
+
+
+
+
+
+
+f1 <- totFtScore~  owd+  old+ odd+  mfd1+ mfd2+
+  t1+
+  t1Points+
+  t1Classification+ t1Form+
+  t1Form1Diff+      t1Form2Diff+      t1Form3Diff+      t1Form4Diff+     
+  t1Atack+          t1Defense+
+  t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+     
+  t1AvgHtScoreIn+   t1AvgHtScoreOut+
+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
+  t1AvgHtGgResult+  t1AvgFtGgResult+
+  t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+  t2+
+  t2Points+
+  t2Classification+ t2Form+
+  t2Form1Diff+      t2Form2Diff+      t2Form3Diff+      t2Form4Diff+
+  t2Atack+          t2Defense+
+  t2AtackIn+        t2AtackOut+       t2DefenseIn+      t2DefenseOut+    
+  t2AvgHtScoreIn+   t2AvgHtScoreOut+
+  t2AvgFtScoreIn+   t2AvgFtScoreOut+
+  # t2AvgHtGgResult+  t2AvgFtGgResult+
+  t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+
+  bet_1+            bet_X+            bet_2+
+  bet_O+            bet_U
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

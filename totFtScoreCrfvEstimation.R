@@ -17,7 +17,7 @@ totFtCrfvInit <- function(){
   folds <- 10;
   tftDtf <<- CleanTotFtDtf$new(predAtt="totFt")
   
-  crfv_TotFtscore_Struct <<- c() # the struct that will keep all the dataStores created
+  # crfv_TotFtscore_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <- 3
   ret <- totFtScorePredFunc("f",folds,bestOfSize)   # complet dataset crfv
   # crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
@@ -189,25 +189,9 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
     # n=length(tmp.predict)
     # pred=mp.predict
     # val =test$totFtScore
-    {
-        #   s=0;
-        # for (j in 1:length(tmp.predict)){
-        #   d2 <-( mp.predict[j] - test$totFtScore[j])^2
-        #   s=s+d2
-        # }
-    }
-    # smse<- sqrt(s/j)
     
     erre[i]<-sqrt(1/length(tmp.predict) * sum( (tmp.predict-test$totFtScore)^2 ))
     
-    
-    # tmpAcc=0
-    # for (j in 1:length(tmp.predict)){
-    #   if(tmp.predict[j]>=2.6 && test$scoreOutcome[j]=="O"){tmpAcc=tmpAcc+1}
-    #   else if(tmp.predict[j]<=2.5 && test$scoreOutcome[j]=="U"){tmpAcc=tmpAcc+1}
-    # }
-    # accuracy[i] <- tmpAcc/length(tmp.predict)
-    # ---------------------
   }
   print(sprintf("mean squared error rate with k-fold cross-validation: %.3f percent ", mean(erre)))
   return(mean(erre))
