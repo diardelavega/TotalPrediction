@@ -56,8 +56,7 @@ totFtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
                   dataset_d <- ndf[which(ndf$week>max(ndf$week)-6),]}
   )
   
-  for(algorithm in c( "JRip", "OneR","svm","lm","lgm","naiveBayes"
-                     #,"randomForest","rpart","bagging", "PART","AdaBoostM1"
+  for(algorithm in c( "glm","svm","lm","bagging","Bagging"
   )){
     print(algorithm)
     
@@ -185,6 +184,8 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
 }
 
 #---------------------TotFtscore
+
+
 
 fullTotFtBet <- function(i){
   if (i==-1){return (3)}
