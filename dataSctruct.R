@@ -131,7 +131,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                 else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                 else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                 
-                if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                 else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                 
                 if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}

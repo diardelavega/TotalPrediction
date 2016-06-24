@@ -51,7 +51,7 @@ scorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   dds <- AlgoData$new(dtfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
   
   switch (dataframeCategory,
-    "f" = {dataset_f <- df; dataset_d<- ndf},
+    "f"  = {dataset_f <- df; dataset_d<- ndf},
     "f2" = {dataset_f <- df[which(df$week>max(df$week)/2),]; 
             dataset_d<- ndf[which(ndf$week>max(ndf$week)/2),]},
     "f5" = {dataset_f <- df[which(df$week>max(df$week)-6),]; 

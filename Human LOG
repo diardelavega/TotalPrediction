@@ -1,5 +1,7 @@
 !./ Human log.
 
+
+* headdercrfv estimation attdts not optimized just copy paste from Score functions
 * in  the prediction function the att_dts function called is the Scorer ones not the respective ones
 --------------------------------------------------------
 1) test newly implemented crfv scripts for optimal att_dts and store to apropriate functions.
