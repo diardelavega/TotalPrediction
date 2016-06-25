@@ -500,7 +500,7 @@ differencedtotHtBet <- function(i){
   )}
 }
 
-differencedtotHtBet <- function(i){
+differencedtotHtNoBet <- function(i){
   if (i==-1){return (3)}
   
   else if(i==1){return(
