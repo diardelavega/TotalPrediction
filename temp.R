@@ -14,8 +14,11 @@
 # "glm","svm","lm","bagging","Bagging" 
 # "C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR"
 
-folds <- split(ndfn, cut(sample(1:nrow(ndf),replace = FALSE),10))
-folds <- split(dfn, cut(sample(1:nrow(dfn),replace = FALSE),10))
+sampsize =dim(dfn)[1]*2/3
+
+folds <- split(ndfn, cut(sample(1:nrow(ndfn),sampsize),10))
+folds <- split(dfn, cut(sample(1:nrow(dfn),sampsize),10))
+
 folds <- split(df2, cut(sample(1:nrow(df2)),10))
 folds <- split(df5, cut(sample(1:nrow(df5)),10))
 accuracy<- rep(NA, length(folds))
@@ -23,11 +26,11 @@ accuracy<- rep(NA, length(folds))
 
 
 gen_accuracy <- c();
-for(algorithm in c("OneR","AdaBoostM1", "C50","J48","bagging"
-  ,"naiveBayes","rpart", "PART","randomForest","svm", "JRip"
+for(algorithm in c("PART","naiveBayes","bagging"
+,"OneR","AdaBoostM1", "C50","J48","rpart", "svm", "JRip","randomForest"
                    )){
   print(algorithm); set.seed(1234);
-  gen_accuracy[length(gen_accuracy)+1]<- headCrfv(differencedheadBet(1),algorithm,folds)  }
+  gen_accuracy[length(gen_accuracy)+1]<- headCrfv(fullheadBet(1),algorithm,folds)  }
 mean(gen_accuracy)
 
 headCrfv <-function(ho,algorithm,folds){
@@ -84,16 +87,24 @@ headCrfv <-function(ho,algorithm,folds){
   return(100*mean(accuracy))
 }
 
-f1 <- headOutcome~ mfd1+ mfd2+  odd+  old+  owd+
-  t1+               t1Points+         t1Classification+ t1Form+          
-  t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
-  t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
-  t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-  t2+               t2Points+         t2Classification+ t2Form+           
-  t2Atack+          t2AtackIn+        t2AtackOut+       t2Defense+        t2DefenseIn+      t2DefenseOut+    
-  t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
-  t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
-  bet_1+            bet_X+            bet_2+            bet_O+            bet_U
+f1 <- headOutcome~ #mfd1+ mfd2+  odd+  old+  owd+
+  t1+               
+  
+  # t1Form+          t1Points+         t1Classification+
+  # t1Atack+          t1Defense+        
+  t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+
+  # t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
+  # t1AvgHtGgResult+  t1AvgFtGgResult+  
+  # t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+  t2+               t2Points+         t2Classification+
+  # t2Form+           
+  # t2Atack+          t2Defense+        
+  t2DefenseIn+      t2DefenseOut+    t2AtackIn+        t2AtackOut+
+  # t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  
+  # t2AvgHtGgResult+  t2AvgFtGgResult+ 
+  # t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+  bet_1+            bet_X+            bet_2
+  # bet_O+            bet_U
 
 
 
@@ -104,17 +115,23 @@ fullheadBet <- function(i){
     return(5)
   }
   
-  if (i==1){
-    return( headOutcome~ 
-              t1+               t1Points+         t1Classification+ t1Form+          
-              t1Atack+          t1AtackIn+        t1AtackOut+       t1Defense+        t1DefenseIn+      t1DefenseOut+
-              t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  t1AvgHtGgResult+  t1AvgFtGgResult+  
-              t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
-              t2+               t2Points+         t2Classification+ t2Form+           
-              t2Atack+          t2AtackIn+        t2AtackOut+       t2Defense+        t2DefenseIn+      t2DefenseOut+    
-              t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  t2AvgHtGgResult+  t2AvgFtGgResult+ 
-              t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
-              bet_1+            bet_X+            bet_2+            bet_O+            bet_U)
+  if (i==1){#all over 40
+    return(  headOutcome~ #mfd1+ mfd2+  odd+  old+  owd+
+               # t1+               t1Points+         t1Classification+ 
+               t1Form+          
+               t1Atack+          t1Defense+        
+               # t1AtackIn+        t1AtackOut+       t1DefenseIn+      t1DefenseOut+
+               # t1AvgHtScoreIn+   t1AvgHtScoreOut+  t1AvgFtScoreIn+   t1AvgFtScoreOut+  
+               # t1AvgHtGgResult+  t1AvgFtGgResult+  
+               # t1WinsIn+         t1WinsOut+        t1DrawsIn+        t1DrawsOut+       t1LosesIn+        t1LosesOut+
+               # t2+               t2Points+         t2Classification+ 
+               t2Form+           
+               t2Atack+          t2Defense+        
+               # t2DefenseIn+      t2DefenseOut+    t2AtackIn+        t2AtackOut+       
+               # t2AvgHtScoreIn+   t2AvgHtScoreOut+  t2AvgFtScoreIn+   t2AvgFtScoreOut+  
+               # t2AvgHtGgResult+  t2AvgFtGgResult+ 
+               # t2WinsIn+         t2WinsOut+        t2DrawsIn+        t2DrawsOut+       t2LosesIn+        t2LosesOut+      
+               bet_1+            bet_X+            bet_2)         
   }
   
   else if(i==2){return( headOutcome~ 
