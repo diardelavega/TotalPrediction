@@ -30,13 +30,12 @@ accuracy<- rep(NA, length(folds))
 
 gen_accuracy <- c();
 for(algorithm in c("bagging","rpart","randomForest",
-  "PART","C50","J48",
-  "naiveBayes","OneR","AdaBoostM1",  "svm", "JRip"
+  "PART","C50","J48","OneR",
+  "naiveBayes","AdaBoostM1",  "svm", "JRip"
                    )){
   print(algorithm); set.seed(1234);
   gen_accuracy[length(gen_accuracy)+1]<- headCrfv(f1,algorithm,folds)  }
 mean(gen_accuracy)
-
 
 headCrfv <-function(ho,algorithm,folds){
   if(is.na(ho)){
@@ -94,13 +93,16 @@ headCrfv <-function(ho,algorithm,folds){
 
 
 
-f1  <- headOutcome~  t1+ t2+ mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
-  #f1d+ f2d+ f3d+ f4d+
-  t1adoe+          t2adoe+           t1e+             t2e+
-  owd+         odd+          old+    doav_ht+ doav_ft+
-  dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
-  datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
-  bet_1+       bet_X+       bet_2+ bet_O+       bet_U
+f1  <-headOutcome~  t1+t2+ #mfd1+      mfd2+    
+  t1Classification+ t2Classification+  pd+  fd+
+  # f1d+ f2d+ #f3d+ f4d+
+  # t1adoe+          t2adoe+           
+  t1e+             t2e+
+  owd+         odd+          old+    
+  # doav_ht+ doav_ft+
+  dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+  datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout
+  # bet_1+       bet_X+       bet_2+ bet_O+       bet_U
 
 
 
@@ -324,36 +326,74 @@ differencedheadBet <- function(i){
     return(3)
   }
   
-  if(i==1){return(headOutcome~  mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
+  if(i==1){return(headOutcome~  t1+t2+ mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+  
                     #f1d+ f2d+ f3d+ f4d+
-                    t1adoe+          t2adoe+           t1e+             t2e+
+                    t1adoe+          t2adoe+           
+                    t1e+             t2e+
                     owd+         odd+          old+    doav_ht+ doav_ft+
-                    dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
-                    datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
-                    bet_1+       bet_X+       bet_2+ bet_O+       bet_U )}
+                    dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                    # datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout+
+                    bet_1+       bet_X+       bet_2+ bet_O+       bet_U)}
   
-  else if(i==2){return(headOutcome~t1+t2+   t1Form+ t2Form+
-                         #mfd1+      mfd2+  mfd+  #
-                         #t1Classification+ t2Classification+ 
-                         #pd+  fd+  
-                         #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t1e+             t2e+
+  else if(i==2){return(headOutcome~  #t1+ t2+ 
+                         # mfd1+      mfd2+    t1Classification+ t2Classification+  pd+  fd+ f1d+ f2d+
+                         #f3d+ f4d+
+                         # t1adoe+          t2adoe+           
+                         # t1e+             t2e+
                          owd+         odd+          old+    
-                         doav_ht+ doav_ft+
-                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
-                         #datkin+      datkout+     
-                         #ddefin+      ddefout+   
-                         dav_ftin+    dav_ftout+
-                         bet_O+       bet_U)}
+                         # doav_ht+ doav_ft+
+                         # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+    
+                         datkin+      datkout+     
+                         # ddefin+      ddefout+   
+                         # dav_ftin+    dav_ftout+
+                         bet_1+       bet_X+       bet_2)}
   
-  else if(i==3){return(headOutcome~  mfd1+      mfd2+   # t1Classification+ t2Classification+  
-                         pd+  fd+  
-                         t1adoe+          t2adoe+           t1e+             t2e+
-                         owd+         odd+          old+    doav_ht+ doav_ft+
-                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ datk+    
-                         datkin+      datkout+     ddef+        ddefin+      ddefout+   dav_ftin+    dav_ftout+
-                         bet_O+       bet_U)}
+  else if(i==3){return(headOutcome~  #t1+ t2+ 
+                         # mfd1+      mfd2+    t1Classification+ t2Classification+  
+                         pd+  fd+
+                         # f1d+ f2d+ #f3d+ f4d+
+                         # t1adoe+          t2adoe+
+                         # t1e+             t2e+
+                         owd+         odd+          old+
+                         # doav_ht+ doav_ft+
+                         # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                         datkin+      datkout+     
+                         # ddefin+      ddefout+   
+                         # dav_ftin+    dav_ftout+
+                         bet_1+       bet_X+       bet_2)}
+  
+  else if(i==4){return( headOutcome~  t1+ t2+ 
+                          mfd1+      mfd2+    t1Classification+ t2Classification+
+                          # pd+  fd+
+                          # f1d+ f2d+ #f3d+ f4d+
+                          # t1adoe+          t2adoe+
+                          t1e+             t2e+
+                          owd+         odd+          old+
+                          # doav_ht+ doav_ft+
+                          # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                          datkin+      datkout+     
+                          # ddefin+      ddefout+   
+                          # dav_ftin+    dav_ftout+
+                          bet_1+       bet_X+       bet_2#+ bet_O+       bet_U
+  )}
+  
+  else if(i==5){return( headOutcome~  #t1+ t2+ 
+                          #mfd1+      mfd2+    t1Classification+ t2Classification+
+                          # pd+  fd+
+                          f1d+ f2d+ #f3d+ f4d+
+                          t1adoe+          t2adoe+
+                          # t1e+             t2e+
+                          # owd+         odd+          old+
+                          # doav_ht+ doav_ft+
+                          # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                          # datkin+      datkout+     
+                          # ddefin+      ddefout+   
+                          # dav_ftin+    dav_ftout+
+                          bet_1+       bet_X+       bet_2#+ bet_O+       bet_U
+  )}
 }
+
+
 
 # 4 - 7 nrs /4
 differencedheadNoBet <- function(i){
@@ -361,21 +401,15 @@ differencedheadNoBet <- function(i){
     return(4)
   } 
   
-  if(i==1){return( headOutcome~t1+t2+  
-                     #mfd1+      mfd2+    #
-                     #t1Classification+ t2Classification+ 
-                     pd+  fd+  
-                     #f1d+ f2d+ f3d+ f4d+
+  if(i==1){return( headOutcome~-headOutcome~  t1+t2+ mfd1+      mfd2+    
+                     t1Classification+ t2Classification+  pd+  fd+
+                     # f1d+ f2d+ #f3d+ f4d+
                      t1adoe+          t2adoe+           
                      t1e+             t2e+
-                     owd+         odd+          old+ 
-                     
-                     doav_ht+     doav_ft+
-                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
-                     datk+        ddef+        
-                     datkin+      datkout+
-                     ddefin+       ddefout+   
-                     dav_ftin+    dav_ftout
+                     owd+         odd+          old+    
+                     doav_ht+ doav_ft+
+                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                     datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout
                    #bet_O+       bet_U
                    
   )}
@@ -432,4 +466,6 @@ differencedheadNoBet <- function(i){
                        #bet_O+       bet_U
   )}
 }
+
+
 
