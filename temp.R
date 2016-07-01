@@ -29,9 +29,10 @@ accuracy<- rep(NA, length(folds))
 
 
 gen_accuracy <- c();
-for(algorithm in c("bagging","rpart","randomForest",
-  "PART","C50","J48","OneR",
-  "naiveBayes","AdaBoostM1",  "svm", "JRip"
+for(algorithm in c(#"bagging","randomForest",
+            #"naiveBayes","AdaBoostM1",  "svm", "JRip"
+            "rpart", "PART","C50","J48","OneR"
+  
                    )){
   print(algorithm); set.seed(1234);
   gen_accuracy[length(gen_accuracy)+1]<- headCrfv(f1,algorithm,folds)  }
@@ -103,6 +104,23 @@ f1  <-headOutcome~  t1+t2+ #mfd1+      mfd2+
   dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
   datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout
   # bet_1+       bet_X+       bet_2+ bet_O+       bet_U
+
+
+f1 <-headOutcome~t1+t2+  
+  mfd1+      mfd2+    #
+  # t1Classification+ t2Classification+
+  pd+  fd+
+  # f1d+ f2d+ #f3d+ f4d+
+  t1adoe+          t2adoe+
+  t1e+             t2e+
+  # owd+         odd+          old
+  # doav_ht+ doav_ft+
+  dwin+        dwout+       ddin+        ddout+       dlin+        dlout
+  
+  # datkin+      datkout+     
+  # ddefin+      ddefout
+  # dav_ftin+    dav_ftout
+#bet_1+       bet_X+       bet_2#+ bet_O+       bet_U
 
 
 
@@ -400,17 +418,20 @@ differencedheadNoBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(4)
   } 
-  
-  if(i==1){return( headOutcome~-headOutcome~  t1+t2+ mfd1+      mfd2+    
-                     t1Classification+ t2Classification+  pd+  fd+
-                     # f1d+ f2d+ #f3d+ f4d+
-                     t1adoe+          t2adoe+           
-                     t1e+             t2e+
+  #56.21212
+  if(i==1){return( headOutcome~#t1+t2+  
+                     mfd1+      mfd2+    #
+                     #t1Classification+ t2Classification+ 
+                     pd+  fd+
+                     #f1d+ f2d+ f3d+ f4d+
+                     t1adoe+          t2adoe+
+                     # t1e+             t2e+
                      owd+         odd+          old+    
-                     doav_ht+ doav_ft+
-                     dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
-                     datkin+      datkout+     ddefin+      ddefout+   dav_ftin+    dav_ftout
-                   #bet_O+       bet_U
+                     # doav_ht+ doav_ft+
+                     # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
+                     
+                     datkin+      datkout+     
+                     ddefin+      ddefout
                    
   )}
   
@@ -418,35 +439,31 @@ differencedheadNoBet <- function(i){
   else if(i==2){return(headOutcome~#t1+t2+  
                          mfd1+      mfd2+    #
                          #t1Classification+ t2Classification+ 
-                         #pd+  fd+  
+                         # pd+  fd+
                          #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           t1e+             t2e+
-                         owd+         odd+          old+    
-                         doav_ht+ doav_ft+
-                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
+                         t1adoe+          t2adoe+
+                         # t1e+             t2e+
+                         # owd+         odd+          old+    
+                         # doav_ht+ doav_ft+
+                         # dwin+        dwout+       ddin+        ddout+       dlin+        dlout+
                          
                          datkin+      datkout+     
-                         ddefin+      ddefout+   
+                         ddefin+      ddefout+
                          dav_ftin+    dav_ftout
-                       #bet_O+       bet_U
   )}
   
   #midle algo -> higher accuracy
-  else if(i==3){return(headOutcome~t1+t2+  
-                         #mfd1+      mfd2+  
-                         mfd+  #
-                         #t1Classification+ t2Classification+ 
-                         #pd+  fd+  
-                         #f1d+ f2d+ f3d+ f4d+
-                         t1adoe+          t2adoe+           
-                         #t1e+             t2e+
-                         owd+         odd+          old+    
-                         doav_ht+ doav_ft+
-                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout+ 
-                         datkin+      datkout+     
-                         ddefin+      ddefout+   
-                         dav_ftin+    dav_ftout
-                       #bet_O+       bet_U
+  else if(i==3){return(headOutcome~#t1+t2+  
+                         mfd1+      mfd2+    #
+                         # t1Classification+ t2Classification+
+                         pd+  fd+
+                         # f1d+ f2d+ #f3d+ f4d+
+                         t1adoe+          t2adoe+
+                         t1e+             t2e+
+                         # owd+         odd+          old+
+                         # doav_ht+ doav_ft+
+                         dwin+        dwout+       ddin+        ddout+       dlin+        dlout
+                       
   )}
   
   else if(i==4){return(headOutcome~

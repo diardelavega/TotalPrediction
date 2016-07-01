@@ -1,8 +1,13 @@
 !./ Human log.
 
 
-* headdercrfv estimation attdts not optimized just copy paste from Score functions
-* in  the prediction function the att_dts function called is the Scorer ones not the respective ones
+
+
+* bagging algorithms shows problems with t1 & t2 arguments of att_dts. i don't know why!
+
+-------------------------------------------------------------
+* headdercrfv estimation attdts not optimized just copy paste from Score functions --FXed
+* in  the prediction function the att_dts function called is the Scorer ones not the respective ones--Fixed
 --------------------------------------------------------
 1) test newly implemented crfv scripts for optimal att_dts and store to apropriate functions.
 
