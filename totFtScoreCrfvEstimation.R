@@ -12,6 +12,10 @@
   #bestOfSize <- 3  
 }
 
+
+rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
+rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
+
 # supose we have df & ndf datasets
 totFtCrfvInit <- function(){
   folds <- 10;

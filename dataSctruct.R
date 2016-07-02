@@ -77,6 +77,7 @@ AlgoData <- setRefClass("AlgoData",
               )         
 )
 
+{
 CleanScoreDtf <- setRefClass("CleanScoreDtf",
             fields = list(algoDataList="vector",predAtt="character",
                     ensambleMat="matrix", fmat="matrix",f2mat="matrix", f5mat="matrix", 
@@ -112,8 +113,14 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
             initMatrixes(dim(tt)[1]);
             newTt()# regulate tt with ndf and t1,t2 classification factors
              algcount <-0
-            for (algdat in algoDataList) {
-              for (ins in algdat$instList) {
+             
+          # for (algdat in algoDataList) {
+             # for (ins in algdat$instList) {
+            for (al_i in 1:length(algoDataList)) {
+              algdat <- algoDataList[[al_i]]
+              for (ins_j in 1:length( algdat$instList)) {
+                ins <- algdat$instList[[ins_j]]
+                  
                 algcount=algcount+1
                 cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                 
@@ -121,7 +128,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                 predVec <- as.vector(predict(model,tt, type = "class"))
                 print(predVec)
                 
-                ins$predvec  <<-predVec
+                algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
+                # ins$predvec  <<-predVec
                 
                 retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
                 # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -150,6 +158,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           getDiff = function(){return(diffmat/diffcount)}
         )
 )
+}
  #### test for git libe
 #---------
 aa <- CleanScoreDtf$new()
@@ -157,6 +166,11 @@ aa$algoDataList <- csDtf$algoDataList
 aa$predAtt <- "score"
 aa$predCalcScore(tt)
 aa$getEnsamble()
+
+bb <- CleanHeadDtf$new()
+bb$algoDataList <- hDtf$algoDataList
+bb$predAtt <- "head"
+bb$predCalcScore(tt)
 #---------
 #@ TODO a function to show a  vector composed of the dominant accuracy || error results   
 
@@ -198,8 +212,10 @@ aa$getEnsamble()
                                    initMatrixes(dim(tt)[1]);
                                    newTt()# regulate tt with ndf and t1,t2 classification factors
                                    algcount <-0
-                                   for (algdat in algoDataList) {
-                                     for (ins in algdat$instList) {
+                                   for (al_i in 1:length(algoDataList)) {
+                                     algdat <- algoDataList[[al_i]]
+                                     for (ins_j in 1:length( algdat$instList)) {
+                                       ins <- algdat$instList[[ins_j]]
                                        algcount=algcount+1
                                        cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                        
@@ -207,7 +223,7 @@ aa$getEnsamble()
                                        predVec <- as.vector(predict(model,tt, type = "class"))
                                        print(predVec)
                                        
-                                       ins$predvec  <<-predVec
+                                       algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
                                        
                                        retMat <-headResultCount(as.vector(predVec),ins$accVal)
                                        # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -217,7 +233,7 @@ aa$getEnsamble()
                                        else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                        else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                                        
-                                       if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                       if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                        else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                                        
                                        if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
@@ -275,8 +291,10 @@ aa$getEnsamble()
                                   initMatrixes(dim(tt)[1]);
                                   newTt()# regulate tt with ndf and t1,t2 classification factors
                                   algcount <-0
-                                  for (algdat in algoDataList) {
-                                    for (ins in algdat$instList) {
+                                  for (al_i in 1:length(algoDataList)) {
+                                    algdat <- algoDataList[[al_i]]
+                                    for (ins_j in 1:length( algdat$instList)) {
+                                      ins <- algdat$instList[[ins_j]]
                                       algcount=algcount+1
                                       cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                       
@@ -284,7 +302,7 @@ aa$getEnsamble()
                                       predVec <- as.vector(predict(model,tt, type = "class"))
                                       print(predVec)
                                       
-                                      ins$predvec  <<-predVec
+                                      algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
                                       
                                       retMat <-p2ResultCount(as.vector(predVec),ins$accVal)
                                       # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -294,7 +312,7 @@ aa$getEnsamble()
                                       else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                       else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                                       
-                                      if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                      if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                       else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                                       
                                       if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
@@ -352,8 +370,10 @@ aa$getEnsamble()
                                   initMatrixes(dim(tt)[1]);
                                   newTt()# regulate tt with ndf and t1,t2 classification factors
                                   algcount <-0
-                                  for (algdat in algoDataList) {
-                                    for (ins in algdat$instList) {
+                                  for (al_i in 1:length(algoDataList)) {
+                                    algdat <- algoDataList[[al_i]]
+                                    for (ins_j in 1:length( algdat$instList)) {
+                                      ins <- algdat$instList[[ins_j]]
                                       algcount=algcount+1
                                       cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                       
@@ -361,7 +381,7 @@ aa$getEnsamble()
                                       predVec <- as.vector(predict(model,tt, type = "class"))
                                       print(predVec)
                                       
-                                      ins$predvec  <<-predVec
+                                      algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
                                       
                                       retMat <-p1ResultCount(as.vector(predVec),ins$accVal)
                                       # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -371,7 +391,7 @@ aa$getEnsamble()
                                       else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                       else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                                       
-                                      if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                      if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                       else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                                       
                                       if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
@@ -438,8 +458,10 @@ aa$getEnsamble()
                                 initMatrixes(dim(tt)[1]);
                                 newTt()# regulate tt with ndf and t1,t2 classification factors
                                 algcount <-0
-                                for (algdat in algoDataList) {
-                                  for (ins in algdat$instList) {
+                                for (al_i in 1:length(algoDataList)) {
+                                  algdat <- algoDataList[[al_i]]
+                                  for (ins_j in 1:length( algdat$instList)) {
+                                    ins <- algdat$instList[[ins_j]]
                                     algcount=algcount+1
                                     cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                     
@@ -447,7 +469,7 @@ aa$getEnsamble()
                                     predVec <- as.vector(predict(model,tt, type = "class"))
                                     print(predVec)
                                     
-                                    ins$predvec  <<-predVec
+                                    algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
                                     
                                     retMat <-totFtResultCount(as.vector(predVec),ins$accVal)
                                     # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -457,7 +479,7 @@ aa$getEnsamble()
                                     else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                     else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                                     
-                                    if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                    if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                     else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                                     
                                     if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
@@ -524,8 +546,10 @@ aa$getEnsamble()
                                    initMatrixes(dim(tt)[1]);
                                    newTt()# regulate tt with ndf and t1,t2 classification factors
                                    algcount <-0
-                                   for (algdat in algoDataList) {
-                                     for (ins in algdat$instList) {
+                                   for (al_i in 1:length(algoDataList)) {
+                                     algdat <- algoDataList[[al_i]]
+                                     for (ins_j in 1:length( algdat$instList)) {
+                                       ins <- algdat$instList[[ins_j]]
                                        algcount=algcount+1
                                        cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                        
@@ -533,7 +557,7 @@ aa$getEnsamble()
                                        predVec <- as.vector(predict(model,tt, type = "class"))
                                        print(predVec)
                                        
-                                       ins$predvec  <<-predVec
+                                       algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
                                        
                                        retMat <-totHtResultCount(as.vector(predVec),ins$accVal)
                                        # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
@@ -543,7 +567,7 @@ aa$getEnsamble()
                                        else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                        else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
                                        
-                                       if(ins$bet =="bet"){betmat <<- betmat+retMat; betcount<<-betcount+1}
+                                       if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                        else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
                                        
                                        if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
@@ -582,9 +606,10 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
                   "full" = {train <- df[which(df$week>max(df$week)-6),]},
                   "diff" = {train <- ndf[which(ndf$week>max(ndf$week)-6),]})}
   )
+  # cat(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt,"\n")
   
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
-  
+  # print(ho)
   if(algorithm=="C50"){tmp.model <- C5.0(ho , train,trails=10)}
   else if(algorithm=="J48"){tmp.model <- J48(ho , train)}
   else if(algorithm=="svm"){tmp.model <- svm(ho , train)}

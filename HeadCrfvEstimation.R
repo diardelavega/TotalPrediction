@@ -10,6 +10,10 @@
 }
 
 
+rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv)
+rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
+
+
 # supose we have df & ndf datasets
 headCrfvInit <- function(){
   #initializes datasets and call for the crfv accuracy estimation
@@ -68,13 +72,13 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:fullScoreBet(-1)){
-      acc <- headCrfv(fullScoreBet(i),algorithm,folds_f)
+    for(i in 1:fullHeadBet(-1)){
+      acc <- headCrfv(fullHeadBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
-    for(i in 1:fullScoreNoBet(-1)){
-      acc <- headCrfv(fullScoreNoBet(i),algorithm,folds_f)
+    for(i in 1:fullHeadNoBet(-1)){
+      acc <- headCrfv(fullHeadNoBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
@@ -83,13 +87,13 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
     
-    for(i in 1:differencedScoreBet(-1)){
-      acc <- headCrfv(differencedScoreBet(i),algorithm,folds_d)
+    for(i in 1:differencedHeadBet(-1)){
+      acc <- headCrfv(differencedHeadBet(i),algorithm,folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
-    for(i in 1:differencedScoreNoBet(-1)){
-      acc <- headCrfv(differencedScoreNoBet(i),algorithm, folds_d)
+    for(i in 1:differencedHeadNoBet(-1)){
+      acc <- headCrfv(differencedHeadNoBet(i),algorithm, folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
@@ -193,7 +197,7 @@ headCrfv <-function(ho,algorithm,folds){
 }
 
 #-----------
-fullheadBet <- function(i){
+fullHeadBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(5)
   }
@@ -304,7 +308,7 @@ fullheadBet <- function(i){
 }
 
 # 6 - 9 /4
-fullheadNoBet <- function(i){
+fullHeadNoBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(4)
   }
@@ -406,7 +410,7 @@ fullheadNoBet <- function(i){
 }
 
 # 1 - 3 nrs /3
-differencedheadBet <- function(i){
+differencedHeadBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(3)
   }
@@ -478,10 +482,8 @@ differencedheadBet <- function(i){
   )}
 }
 
-
-
 # 4 - 7 nrs /4
-differencedheadNoBet <- function(i){
+differencedHeadNoBet <- function(i){
   if (i==-1){# return size of atts datasets
     return(4)
   } 

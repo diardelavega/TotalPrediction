@@ -11,8 +11,8 @@
   #bestOfSize <- 3  
 }
 
-
-
+rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv)
+rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
 
 # supose we have df & ndf datasets
 scoreCrfvInit <- function(){

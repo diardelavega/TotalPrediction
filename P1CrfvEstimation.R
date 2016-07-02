@@ -8,6 +8,8 @@
   library(RWeka)
   library(rpart)
 }
+rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv)
+rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
 
 
 # supose we have df & ndf datasets
@@ -68,12 +70,12 @@ p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:fullScoreBet(-1)){
+    for(i in 1:full1pBet(-1)){
       acc <- p1Crfv(full1pBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
-    for(i in 1:fullScoreNoBet(-1)){
+    for(i in 1:full1pNoBet(-1)){
       acc <- p1Crfv(full1pNoBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
@@ -83,12 +85,12 @@ p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
     
-    for(i in 1:differencedScoreBet(-1)){
+    for(i in 1:differenced1pBet(-1)){
       acc <- p1Crfv(differenced1pBet(i),algorithm,folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
-    for(i in 1:differencedScoreNoBet(-1)){
+    for(i in 1:differenced1pNoBet(-1)){
       acc <- p1Crfv(differenced1pNoBet(i),algorithm, folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
@@ -193,7 +195,6 @@ p1Crfv <-function(ho,algorithm,folds){
 }
 
 #-----------
-
 full1pBet <- function(i){
   if(i==-1){return(6)}
   

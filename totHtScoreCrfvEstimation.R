@@ -12,12 +12,16 @@
   #bestOfSize <- 3  
 }
 
+rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv)
+rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet)
+
+
 # supose we have df & ndf datasets
 totHtCrfvInit <- function(){
   folds <- 10;
   thtDtf <<- CleanTotHtDtf$new(predAtt="totHt")
   
-  crfv_TotHtscore_Struct <<- c() # the struct that will keep all the dataStores created
+  # crfv_TotHtscore_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <- 3
   ret <- totHtScorePredFunc("f",folds,bestOfSize)   # complet dataset crfv
   # crfv_TotHtscore_Struct[length(crfv_TotHtscore_Struct)+1:2] <<-ret
@@ -331,7 +335,6 @@ fullTotHtBet <- function(i){
   }
 }
 
-
 fullTotHtNoBet <- function(i){
   if(i==-1){return(3)}
   
@@ -423,7 +426,7 @@ fullTotHtNoBet <- function(i){
   
 }
 
-differencedtotHtBet <- function(i){
+differencedTotHtBet <- function(i){
   if (i==-1){return (4)}
   
   else if(i==1){return(
@@ -500,7 +503,7 @@ differencedtotHtBet <- function(i){
   )}
 }
 
-differencedtotHtNoBet <- function(i){
+differencedTotHtNoBet <- function(i){
   if (i==-1){return (3)}
   
   else if(i==1){return(
