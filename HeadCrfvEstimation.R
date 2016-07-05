@@ -68,18 +68,17 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     set.seed(1234)
     folds_d <- split(dataset_d, cut(sample(1:nrow(dataset_d)),crfoldNr)) # differenced
     
-    
     accuracy_df <- list()
     accuracy_ndf <- list()
     
     for(i in 1:fullHeadBet(-1)){
       acc <- headCrfv(fullHeadBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     for(i in 1:fullHeadNoBet(-1)){
       acc <- headCrfv(fullHeadNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -89,12 +88,12 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:differencedHeadBet(-1)){
       acc <- headCrfv(differencedHeadBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     for(i in 1:differencedHeadNoBet(-1)){
       acc <- headCrfv(differencedHeadNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results

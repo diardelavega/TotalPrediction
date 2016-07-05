@@ -74,12 +74,12 @@ p2PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:full2pBet(-1)){
       acc <- p2Crfv(full2pBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     for(i in 1:full2pNoBet(-1)){
       acc <- p2Crfv(full2pNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -89,12 +89,12 @@ p2PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:differenced2pBet(-1)){
       acc <- p2Crfv(differenced2pBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     for(i in 1:differenced2pNoBet(-1)){
       acc <- p2Crfv(differenced2pNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results

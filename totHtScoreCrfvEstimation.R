@@ -75,12 +75,12 @@ totHtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:fullTotHtBet(-1)){
       acc <- totHtScoreCrfv(fullTotHtBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     for(i in 1:fullTotHtNoBet(-1)){
       acc <- totHtScoreCrfv(fullTotHtNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
@@ -90,12 +90,12 @@ totHtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     for(i in 1:differencedTotHtBet(-1)){
       acc <- totHtScoreCrfv(differencedTotHtBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     for(i in 1:differencedTotHtNoBet(-1)){
       acc <- totHtScoreCrfv(differencedTotHtNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
+      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results

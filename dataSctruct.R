@@ -1,7 +1,7 @@
 
 Instance <- setRefClass("Instance",
                         fields = list(algo="character", attsDtsNr="numeric",dfCategory="character",ptype="character",
-                        accVal="numeric",fullDiff="character",bet="character",predvec="vector"),
+                        accVal="numeric",original_accVal="numeric",fullDiff="character",bet="character",predvec="vector"),
                         methods = list(
                           reEvaluate =function(ttResultsVec){
                               if(length(predvec)!=length(ttResultsVec)){
@@ -77,6 +77,7 @@ AlgoData <- setRefClass("AlgoData",
               )         
 )
 
+#score
 {
 CleanScoreDtf <- setRefClass("CleanScoreDtf",
             fields = list(algoDataList="vector",predAtt="character",
@@ -160,45 +161,6 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
         )
 )
 }
- #### test for git libe
-#---------
-aa <- CleanScoreDtf$new()
-aa$algoDataList <- csDtf$algoDataList
-aa$predAtt <- "score"
-aa$predCalcScore(tt)
-aa$getEnsamble()
-
-bb <- CleanHeadDtf$new()
-bb$algoDataList <- hDtf$algoDataList
-bb$predAtt <- "head"
-bb$ensambleMat <- bb2$ensambleMat
-bb$ensambleCount <-bb2$ensambleCount 
-bb$predCalcScore(tt)
-
-
-cc <- CleanTotFtDtf$new()
-cc$algoDataList <- tftDtf$algoDataList
-cc$predAtt <- "totFt"
-cc$predCalcScore(tt)
-
-gg <- CleanTotFtDtf$new()
-gg$algoDataList <- thtDtf$algoDataList
-gg$predAtt <- "totFt"
-gg$predCalcScore(tt)
-
-
-dd <- Clean2pDtf$new()
-dd$algoDataList <- p2Dtf$algoDataList
-dd$predAtt <- "p2"
-dd$predCalcScore(tt)
-
-ee <- Clean1pDtf$new()
-ee$algoDataList <- p1Dtf$algoDataList
-ee$predAtt <- "p1"
-ee$predCalcScore(tt)
-#---------
-#@ TODO a function to show a  vector composed of the dominant accuracy || error results   
-
 
 #head
 {
@@ -794,63 +756,3 @@ totHtResultCount <- function(pv,acc){
 
 
 #--===============================-USAGE
-pf <- AlgoData$new(dtfCategory="c")
-pf$dtfCategory<-"cc"
-
-a<-  Instance$new(algo = "C50",attsDtsNr=1,accVal=333, bet="yes", fullDiff="full")
-pf$instList <- c(a)
-
-for (i in 1:10){
-pf$instList[length(pf$instList)+1] <-  Instance$new(algo = "C50",attsDtsNr=1,accVal=i, bet="yes", fullDiff="full") }
-
-pf$betInstance()
-
-for(ins in pf$instList){
-  print(ins$algo)
-}
-
-
-
-totFtCrfvInit()
-thtDtf$predCalcScore(tt)
-rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
-rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
-# tftDtf
-
-
-totHtCrfvInit ()
-thtDtf$predCalcScore(tt)
-rm(totHtCrfvInit,totHtScorePredFunc,totHtTreBestChoser,totHtCrfv)
-rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet)
-# thtDtf
-
-
-p2CrfvInit()
-p2Dtf$predCalcScore(tt)
-rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv)
-rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
-# p2Dtf
-
-p1CrfvInit()
-p1Dtf$predCalcScore(tt)
-rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv)
-rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
-# p1Dtf
-
-headCrfvInit()
-hDtf$predCalcScore(tt)
-rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv)
-rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
-
-scoreCrfvInit()
-csDtf$predCalcScore(tt)
-rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv)
-rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
-
-
-
-tftDtf$predCalcScore(tt)
-thtDtf$predCalcScore(tt)
-p2Dtf$predCalcScore(tt)
-p1Dtf$predCalcScore(tt)
-hDtf$predCalcScore(tt)
