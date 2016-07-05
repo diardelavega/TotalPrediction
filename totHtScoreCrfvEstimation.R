@@ -73,33 +73,33 @@ totHtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:fulltotHtScoreBet(-1)){
-      acc <- totHtScoreCrfv(fulltotHtScoreBet(i),algorithm,folds_f)
+    for(i in 1:fullTotHtBet(-1)){
+      acc <- totHtScoreCrfv(fullTotHtBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
-    for(i in 1:fulltotHtScoreNoBet(-1)){
-      acc <- totHtScoreCrfv(fulltotHtScoreNoBet(i),algorithm,folds_f)
+    for(i in 1:fullTotHtNoBet(-1)){
+      acc <- totHtScoreCrfv(fullTotHtNoBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_df,bestOfSize)
+    cur3best <- totHtTreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
     
-    for(i in 1:differencedtotHtScoreBet(-1)){
-      acc <- totHtScoreCrfv(differencedtotHtScoreBet(i),algorithm,folds_d)
+    for(i in 1:differencedTotHtBet(-1)){
+      acc <- totHtScoreCrfv(differencedTotHtBet(i),algorithm,folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
-    for(i in 1:differencedtotHtScoreNoBet(-1)){
-      acc <- totHtScoreCrfv(differencedtotHtScoreNoBet(i),algorithm, folds_d)
+    for(i in 1:differencedTotHtNoBet(-1)){
+      acc <- totHtScoreCrfv(differencedTotHtNoBet(i),algorithm, folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_ndf,bestOfSize)
+    cur3best <- totHtTreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
   }# for algorithms
   return (c(fds,dds)) 
@@ -141,17 +141,19 @@ totHtTreBestChoser <- function(lst,bestOfSize){
   }# for
   
   if(bestOfSize==3){
+    if(length(bv)==3){
     if(bv[[2]]$accVal > bv[[3]]$accVal) {# last sorting
       if(bv[[1]]$accVal > bv[[3]]$accVal) { 
         tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
       else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
     }
+    }
   }
-  for(k in 1:bestOfSize){
+  for(k in 1:length(bv)){
     print(bv[[k]]$accVal)  
   }
   
-  return (bv[1:bestOfSize])
+  return (bv[1:length(bv)])
 }
 
 totHtScoreCrfv <-function(ho,algorithm,folds){
@@ -168,48 +170,16 @@ totHtScoreCrfv <-function(ho,algorithm,folds){
     tmp.model<-c()
     # browser()
     #tmp.model <- algorithm(ho , train, method = "class")#,trails=trails)
-    if(algorithm=="C50"){tmp.model <- C5.0(ho , train,trails=10)}
-    else if(algorithm=="J48"){tmp.model <- J48(ho , train)}
-    else if(algorithm=="svm"){tmp.model <- svm(ho , train)}
+         if(algorithm=="svm"){tmp.model <- svm(ho , train)}
     else if(algorithm=="naiveBayes"){tmp.model <- naiveBayes(ho , train )}
-    else if(algorithm=="randomForest"){tmp.model <- randomForest(ho , train )}
-    
-    else if(algorithm=="rpart"){tmp.model <- rpart(ho , train)}
     else if(algorithm=="bagging"){tmp.model <- bagging(ho , train )}
-    #else if(algorithm=="bootest"){tmp.model <- bootest(ho , train, method = "class")}
-    
-    else if(algorithm=="PART"){tmp.model <- PART(ho , train )}
-    else if(algorithm=="JRip"){tmp.model <- JRip(ho , train )}
-    else if(algorithm=="OneR"){tmp.model <- OneR(ho , train )}
-    else if(algorithm=="AdaBoostM1"){tmp.model <- AdaBoostM1(ho , train )}
-    #else if(algorithm=="MultiBoostAB"){tmp.model <- MultiBoostAB(ho , train )}
     else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
-    else if(algorithm=="lgm"){tmp.model <- lgm(ho , train )}
+    else if(algorithm=="glm"){tmp.model <- glm(ho , train, family=poisson(link = "log") )}
+    else if(algorithm=="Bagging"){tmp.model <- Bagging(ho , train )}
     
     tmp.predict <- predict(tmp.model, newdata = test)
     
-    #--- totHtScore pred  sqrt(1/n * sum[ (pred[i]-val[i])^2 ] )
-    # n=length(tmp.predict)
-    # pred=mp.predict
-    # val =test$totHtScore
-    {
-      #   s=0;
-      # for (j in 1:length(tmp.predict)){
-      #   d2 <-( mp.predict[j] - test$totHtScore[j])^2
-      #   s=s+d2
-      # }
-    }
-    # smse<- sqrt(s/j)
-    
-    erre[i]<-sqrt(1/length(tmp.predict) * sum( (tmp.predict-test$totHtScore)^2 ))
-    
-    
-    # tmpAcc=0
-    # for (j in 1:length(tmp.predict)){
-    #   if(tmp.predict[j]>=2.6 && test$scoreOutcome[j]=="O"){tmpAcc=tmpAcc+1}
-    #   else if(tmp.predict[j]<=2.5 && test$scoreOutcome[j]=="U"){tmpAcc=tmpAcc+1}
-    # }
-    # accuracy[i] <- tmpAcc/length(tmp.predict)
+    erre[i]<-sqrt(mean( (tmp.predict-test$totHtScore)^2 ))
     # ---------------------
   }
   print(sprintf("mean squared error rate with k-fold cross-validation: %.3f percent ", mean(erre)))

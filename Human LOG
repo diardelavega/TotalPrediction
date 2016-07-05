@@ -1,5 +1,11 @@
 !./ Human log.
 
+
+
+
+the recalculation function might not work becouse we call a variable and change its val instead of the actual object,(same problem as with the predVector ins asigment)
+
+-----------------------------------------------
 * getBet function in head and score dtf doesnt work
 
 * scoreCdf score mat orientation is not compiled , works on an older version  

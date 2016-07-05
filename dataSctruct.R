@@ -8,10 +8,10 @@ Instance <- setRefClass("Instance",
                                 print("Prediction and results vector do not match");  return()}
                               switch (dfCategory,
                                       "f" = {dflen <-dim(df)[1] },
-                                      "f2" = { dflen <-dim(df2)[1] },
-                                      "f5" = { dflen <-dim(df5)[1] }
+                                      "f2" = { dflen <-dim(df[which(df$week>max(df$week)/2),])[1] },
+                                      "f5" = { dflen <-dim(df[which(df$week>max(df$week)-6),])[1] }
                               )
-                              
+                              cat(ptype,dfCategory,"\n")
                               if(ptype=="categoric"){accuracyReEvaluation(ttResultsVec, dflen)}
                               else if(ptype=="numeric"){errorReEvaluation(ttResultsVec, dflen)}
                             },
@@ -36,7 +36,7 @@ Instance <- setRefClass("Instance",
 
 
 AlgoData <- setRefClass("AlgoData",
-              # dtfCategory (df,ndf,df2,ndf2,df5,ndf5), attPred -> (ScoreOutcome, totFtScore, headOutcome, 2p,1p)
+              # dtfCategory (f,f2,f5), attPred -> (ScoreOutcome, totFtScore, headOutcome, 2p,1p)
               # to consider a list of support predAtts like : *score| totFt; score|2p, 2p|totHt)
               fields = list( instList="vector", avgAcc="numeric", dtfCategory="character"),
               methods= list(
@@ -104,9 +104,10 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           },
           accuracyRecalc =function(predResultVec){
             # for every Instance obj in the Dtf, call accuracy re-evaluation
-            for (algdat in algoDataList) {
-              for (ins in algdat$instList) {
-                ins$accuracyReavaluation(predResultVec)
+            for (al_i in 1:length(algoDataList)) {
+              for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                # ins$accuracyReavaluation(predResultVec)
               }}
           },
           predCalcScore= function(tt){
@@ -170,7 +171,31 @@ aa$getEnsamble()
 bb <- CleanHeadDtf$new()
 bb$algoDataList <- hDtf$algoDataList
 bb$predAtt <- "head"
+bb$ensambleMat <- bb2$ensambleMat
+bb$ensambleCount <-bb2$ensambleCount 
 bb$predCalcScore(tt)
+
+
+cc <- CleanTotFtDtf$new()
+cc$algoDataList <- tftDtf$algoDataList
+cc$predAtt <- "totFt"
+cc$predCalcScore(tt)
+
+gg <- CleanTotFtDtf$new()
+gg$algoDataList <- thtDtf$algoDataList
+gg$predAtt <- "totFt"
+gg$predCalcScore(tt)
+
+
+dd <- Clean2pDtf$new()
+dd$algoDataList <- p2Dtf$algoDataList
+dd$predAtt <- "p2"
+dd$predCalcScore(tt)
+
+ee <- Clean1pDtf$new()
+ee$algoDataList <- p1Dtf$algoDataList
+ee$predAtt <- "p1"
+ee$predCalcScore(tt)
 #---------
 #@ TODO a function to show a  vector composed of the dominant accuracy || error results   
 
@@ -203,9 +228,9 @@ bb$predCalcScore(tt)
                                  },
                                  accuracyRecalc =function(predResultVec){
                                    # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                   for (algdat in algoDataList) {
-                                     for (ins in algdat$instList) {
-                                       ins$accuracyReavaluation(predResultVec)
+                                   for (al_i in 1:length(algoDataList)) {
+                                     for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                                       algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                      }}
                                  },
                                  predCalcScore= function(tt){
@@ -282,9 +307,9 @@ bb$predCalcScore(tt)
                                 },
                                 accuracyRecalc =function(predResultVec){
                                   # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                  for (algdat in algoDataList) {
-                                    for (ins in algdat$instList) {
-                                      ins$accuracyReavaluation(predResultVec)
+                                  for (al_i in 1:length(algoDataList)) {
+                                    for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                                      algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                     }}
                                 },
                                 predCalcScore= function(tt){
@@ -361,9 +386,9 @@ bb$predCalcScore(tt)
                                 },
                                 accuracyRecalc =function(predResultVec){
                                   # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                  for (algdat in algoDataList) {
-                                    for (ins in algdat$instList) {
-                                      ins$accuracyReavaluation(predResultVec)
+                                  for (al_i in 1:length(algoDataList)) {
+                                    for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                                      algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                     }}
                                 },
                                 predCalcScore= function(tt){
@@ -449,9 +474,9 @@ bb$predCalcScore(tt)
                               },
                               accuracyRecalc =function(predResultVec){
                                 # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                for (algdat in algoDataList) {
-                                  for (ins in algdat$instList) {
-                                    ins$accuracyReavaluation(predResultVec)
+                                for (al_i in 1:length(algoDataList)) {
+                                  for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                                    algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                   }}
                               },
                               predCalcScore= function(tt){
@@ -466,7 +491,7 @@ bb$predCalcScore(tt)
                                     cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                     
                                     model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                    predVec <- as.vector(predict(model,tt, type = "class"))
+                                    predVec <- as.vector(predict(model,tt))
                                     print(predVec)
                                     
                                     algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
@@ -537,9 +562,9 @@ bb$predCalcScore(tt)
                                  },
                                  accuracyRecalc =function(predResultVec){
                                    # for every Instance obj in the Dtf, call accuracy re-evaluation
-                                   for (algdat in algoDataList) {
-                                     for (ins in algdat$instList) {
-                                       ins$accuracyReavaluation(predResultVec)
+                                   for (al_i in 1:length(algoDataList)) {
+                                     for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
+                                       algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                      }}
                                  },
                                  predCalcScore= function(tt){
@@ -554,7 +579,8 @@ bb$predCalcScore(tt)
                                        cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                        
                                        model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                       predVec <- as.vector(predict(model,tt, type = "class"))
+                                       # if()
+                                       predVec <- as.vector(predict(model,tt))
                                        print(predVec)
                                        
                                        algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
@@ -606,10 +632,9 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
                   "full" = {train <- df[which(df$week>max(df$week)-6),]},
                   "diff" = {train <- ndf[which(ndf$week>max(ndf$week)-6),]})}
   )
-  # cat(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt,"\n")
   
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
-  # print(ho)
+  
   if(algorithm=="C50"){tmp.model <- C5.0(ho , train,trails=10)}
   else if(algorithm=="J48"){tmp.model <- J48(ho , train)}
   else if(algorithm=="svm"){tmp.model <- svm(ho , train)}
@@ -621,8 +646,10 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   else if(algorithm=="JRip"){tmp.model <- JRip(ho , train )}
   else if(algorithm=="OneR"){tmp.model <- OneR(ho , train )}
   else if(algorithm=="AdaBoostM1"){tmp.model <- AdaBoostM1(ho , train )}
+  
+  else if(algorithm=="Bagging"){tmp.model <- Bagging(ho , train )}
   else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
-  else if(algorithm=="lgm"){tmp.model <- lgm(ho , train )}
+  else if(algorithm=="glm"){tmp.model <- glm(ho , family=poisson(), data = train )}
   
   return (tmp.model)
 }
@@ -784,24 +811,46 @@ for(ins in pf$instList){
 
 
 
+totFtCrfvInit()
+thtDtf$predCalcScore(tt)
+rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
+rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
+# tftDtf
 
-a <- matrix(nrow = 2,ncol = 5)
-b <- matrix(nrow = 2,ncol = 5)
 
-a[,]<-0
-b[,]<-0
+totHtCrfvInit ()
+thtDtf$predCalcScore(tt)
+rm(totHtCrfvInit,totHtScorePredFunc,totHtTreBestChoser,totHtCrfv)
+rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet)
+# thtDtf
 
-for( i in 1:5){
-#  a[1,i]<- 4
-  r<-sample(1:2,1)
-  a[r,i]<- sample(1,1,10)
-}
 
-aa="fo"
-switch(aa,foo={print("foo")},bar={print("bar")})
-k=7
+p2CrfvInit()
+p2Dtf$predCalcScore(tt)
+rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv)
+rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
+# p2Dtf
 
-switch (aa,
-  "foo" = {if(k>5){print("k>5 oooo")}else if(k<5){print("k<5 aaaa")}},
-  "bar" = {if(k>5){print("k>5 sssss")}else if(k<5){print("k<5 llll")}}
-)
+p1CrfvInit()
+p1Dtf$predCalcScore(tt)
+rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv)
+rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
+# p1Dtf
+
+headCrfvInit()
+hDtf$predCalcScore(tt)
+rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv)
+rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
+
+scoreCrfvInit()
+csDtf$predCalcScore(tt)
+rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv)
+rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
+
+
+
+tftDtf$predCalcScore(tt)
+thtDtf$predCalcScore(tt)
+p2Dtf$predCalcScore(tt)
+p1Dtf$predCalcScore(tt)
+hDtf$predCalcScore(tt)

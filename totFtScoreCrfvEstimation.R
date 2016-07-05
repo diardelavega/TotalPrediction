@@ -73,33 +73,33 @@ totFtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:fulltotFtScoreBet(-1)){
-      acc <- totFtScoreCrfv(fulltotFtScoreBet(i),algorithm,folds_f)
+    for(i in 1:fullTotFtBet(-1)){
+      acc <- totFtScoreCrfv(fullTotFtBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
-    for(i in 1:fulltotFtScoreNoBet(-1)){
-      acc <- totFtScoreCrfv(fulltotFtScoreNoBet(i),algorithm,folds_f)
+    for(i in 1:fullTotFtNoBet(-1)){
+      acc <- totFtScoreCrfv(fullTotFtNoBet(i),algorithm,folds_f)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_df,bestOfSize)
+    cur3best <- totFtTreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
     
-    for(i in 1:differencedtotFtScoreBet(-1)){
-      acc <- totFtScoreCrfv(differencedtotFtScoreBet(i),algorithm,folds_d)
+    for(i in 1:differencedTotFtBet(-1)){
+      acc <- totFtScoreCrfv(differencedTotFtBet(i),algorithm,folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
-    for(i in 1:differencedtotFtScoreNoBet(-1)){
-      acc <- totFtScoreCrfv(differencedtotFtScoreNoBet(i),algorithm, folds_d)
+    for(i in 1:differencedTotFtNoBet(-1)){
+      acc <- totFtScoreCrfv(differencedTotFtNoBet(i),algorithm, folds_d)
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_ndf,bestOfSize)
+    cur3best <- totFtTreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
   }# for algorithms
   return (c(fds,dds)) 
@@ -141,17 +141,19 @@ totFtTreBestChoser <- function(lst,bestOfSize){
   }# for
   
   if(bestOfSize==3){
+    if(length(bv)==3){
     if(bv[[2]]$accVal > bv[[3]]$accVal) {# last sorting
       if(bv[[1]]$accVal > bv[[3]]$accVal) { 
         tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
       else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
     }
+    }
   }
-  for(k in 1:bestOfSize){
+  for(k in 1:length(bv)){
     print(bv[[k]]$accVal)  
   }
   
-  return (bv[1:bestOfSize])
+  return (bv[1:length(bv)])
 }
 
 totFtScoreCrfv <-function(ho,algorithm,folds){
@@ -171,7 +173,7 @@ totFtScoreCrfv <-function(ho,algorithm,folds){
     else if(algorithm=="bagging"){tmp.model <- bagging(ho , train )}
     else if(algorithm=="Bagging"){tmp.model <- Bagging(ho , train )}
     else if(algorithm=="lm"){tmp.model <- lm(ho , train )}
-    else if(algorithm=="glm"){tmp.model <- glm(ho , train,family="gaussian" )}
+    else if(algorithm=="glm"){tmp.model <- glm(ho , train, family=poisson(link = "log") )}
      
     tmp.predict <- predict(tmp.model, newdata = test)
     
@@ -518,11 +520,11 @@ differencedTotFtBet <- function(i){
   )}
 }
 
-differencedTotFtNoBet- function(i){
+differencedTotFtNoBet <- function(i){
   if(i==-1){return(4)}
   
-  else if (i==1){return(
-    totFtScore~ 
+  else if (i==1){
+    return( totFtScore~ 
       # pd+  fd+  mfd1+      mfd2+     
       # t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+
       f1d+ f2d+   # f3d+ f4d+
@@ -540,8 +542,7 @@ differencedTotFtNoBet- function(i){
     # bet_O+       bet_U
   )}
   
-  else if (i==2){return(
-    totFtScore~ 
+  else if (i==2){return( totFtScore~ 
       # pd+  fd+  mfd1+      mfd2+     
       # t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+
       f1d+ f2d+    f3d+ f4d+
@@ -553,8 +554,7 @@ differencedTotFtNoBet- function(i){
       doav_ht+   doav_ft
   )}
   
-  else if (i==3){return(
-    totFtScore~ 
+  else if (i==3){return( totFtScore~ 
       # pd+  fd+  mfd1+      mfd2+     
       # t1+ t2+   t1Form+ t2Form+   t1Classification+ t2Classification+
       f1d+ f2d+    f3d+ f4d+
@@ -566,8 +566,7 @@ differencedTotFtNoBet- function(i){
       doav_ht+   doav_ft
   )}
   
-  else if (i==4){return(
-    totFtScore~ 
+  else if (i==4){return( totFtScore~ 
       f1d+ f2d+    #f3d+ f4d+
       doav_ft+
       # dav_htin+    dav_htout+

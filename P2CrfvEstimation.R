@@ -20,7 +20,7 @@ p2CrfvInit <- function(){
   folds <- 10;
   p2Dtf <<- Clean2pDtf$new(predAtt="p2")
   
-  crfv_p2_Struct <<- c() # the struct that will keep all the dataStores created
+  # crfv_p2_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <-3
   ret <- p2PredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
   # crfv_p2_Struct[length(crfv_p2_Struct)+1:2] <<-ret
@@ -83,7 +83,7 @@ p2PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
       accuracy_df[length(accuracy_df)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_df,bestOfSize)
+    cur3best <- p2TreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
     
@@ -98,7 +98,7 @@ p2PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
       accuracy_ndf[length(accuracy_ndf)+1] <- ins
     }
     #--- choose 3 instances with best results
-    cur3best <- treBestChoser(accuracy_ndf,bestOfSize)
+    cur3best <- p2TreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
   }# for algorithms
   return (c(fds,dds)) 
@@ -139,17 +139,19 @@ p2TreBestChoser <- function(lst,bestOfSize){
   }# for
   
   if(bestOfSize==3){
+    if(length(bv)==3){
     if(bv[[2]]$accVal < bv[[3]]$accVal) {# last sorting
       if(bv[[1]]$accVal < bv[[3]]$accVal) { 
         tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]];  bv[[2]] <- bv[[1]]; bv[[1]] <- tmpInstance }
       else {tmpInstance <-bv[[3]];  bv[[3]] <- bv[[2]]; bv[[2]] <- tmpInstance}
     }
+    }
   }
-  for(k in 1:bestOfSize){
+  for(k in 1:length(bv)){
     print(bv[[k]]$accVal)  
   }
   
-  return (bv[1:bestOfSize])
+  return (bv[1:length(bv)])
 }
 
 p2Crfv <-function(ho,algorithm,folds){
