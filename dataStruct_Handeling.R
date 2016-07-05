@@ -8,7 +8,40 @@ csDtf$algoDataList[[1]]$instList[[1]]$
     print( aa$algoDataList[[i]]$dtfCategory)
   }
   #---------
-aa <- CleanScoreDtf$new()
+
+# convert to new Instances
+{
+  aa <- CleanTotHtDtf$new()
+  aa$predAtt <- "totHt"
+  convfunc <- function(dtf){
+    
+    bigList <- list()
+    for(i in 1:length(dtf$algoDataList)){
+      alist <- list()
+      for(j in 1:length(dtf$algoDataList[[i]]$instList) ){
+        inst<- Instance$new()
+        inst$accVal <- dtf$algoDataList[[i]]$instList[[j]]$accVal
+        inst$original_accVal <- dtf$algoDataList[[i]]$instList[[j]]$accVal
+        inst$algo <-  dtf$algoDataList[[i]]$instList[[j]]$algo
+        inst$attsDtsNr <-  dtf$algoDataList[[i]]$instList[[j]]$attsDtsNr
+        inst$bet <-  dtf$algoDataList[[i]]$instList[[j]]$bet
+        inst$dfCategory <-  dtf$algoDataList[[i]]$instList[[j]]$dfCategory
+        inst$fullDiff <-  dtf$algoDataList[[i]]$instList[[j]]$fullDiff
+        inst$ptype <-  dtf$algoDataList[[i]]$instList[[j]]$ptype
+        alist[[j]] <- inst
+      }
+      ald <- AlgoData$new()
+      ald$instList <- alist
+      ald$dtfCategory <- dtf$algoDataList[[i]]$dtfCategory
+      print( ald$dtfCategory)
+      bigList[[i]] <-ald
+    }
+    aa$algoDataList<<- bigList
+  }#end of function
+  tftDtf<- aa
+  
+  
+aa <- Clean1pDtf$new()
 # aa$algoDataList <- csDtf$algoDataList
 aa$predAtt <- "score"
 bigList <- list()
@@ -39,6 +72,9 @@ for(i in 1:length(csDtf$algoDataList)){
 }
 aa$algoDataList<- bigList
 csDtf<- aa
+
+}
+
 
 
 
