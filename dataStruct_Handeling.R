@@ -116,7 +116,7 @@ ee$predCalcScore(tt)
 pf <- AlgoData$new(dtfCategory="c")
 pf$dtfCategory<-"cc"
 
-a<-  Instance$new(algo = "C50",attsDtsNr=1,accVal=333, bet="yes", fullDiff="full")
+a <- Instance$new(algo = "C50",attsDtsNr=1,accVal=333, bet="yes", fullDiff="full")
 pf$instList <- c(a)
 
 for (i in 1:10){

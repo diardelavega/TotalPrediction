@@ -16,31 +16,30 @@ rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
 
 # supose we have df & ndf datasets
 headCrfvInit <- function(){
-  #initializes datasets and call for the crfv accuracy estimation
+  # creates a Object (from datastruct prediction_Attribute_object) for a competition that has accumulated weeks of matches
+  # in the df & ndf dataframes
+  
+  #initializes datasets and call for the crfv(cross fold validation) accuracy estimation
   folds <- 10;
   hDtf <<- CleanHeadDtf$new(predAtt="head")
   
-  # crfv_p1_Struct <<- c() # the struct that will keep all the dataStores created
-  bestOfSize <-3
-  ret <- headPredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
-  # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
-  hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
+  # calc for all the data available (all the weeks of competition)
+  bestOfSize <-3                                           #nr of top from best results to chose from
+  ret <- headPredFunc("f" ,folds,bestOfSize)               # complet dataset crfv
+  hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret   # the ret val contains two algodata vals from full (df) & diff(ndf)
   
-  if(max(ndf$week)>20){  # second half dataset crfv
+  if(max(ndf$week)>20){  # calc the second half dataset crfv
     bestOfSize <-3
     ret <- headPredFunc("f2",folds,bestOfSize)
-    # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
     hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
   }
   
-  if(max(ndf$week)>10){  # last 6 weeks dataset crfv
+  if(max(ndf$week)>10){  # calc last 6 weeks dataset crfv
     bestOfSize <-1
     ret <- headPredFunc("f5",folds,bestOfSize)
-    # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
     hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
   }
   
-  #------- someway to store the  crfv_dts_Struct
 }
 
 headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
@@ -81,7 +80,7 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
       ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
       accuracy_df[length(accuracy_df)+1] <- ins
     }
-    #--- choose 3 instances with best results
+    #--- choose nr of instances with best results
     cur3best <- headTreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     

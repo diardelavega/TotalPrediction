@@ -16,11 +16,13 @@ Instance <- setRefClass("Instance",
                               else if(ptype=="numeric"){errorReEvaluation(ttResultsVec, dflen)}
                             },
                           errorReEvaluation = function(ttResultsVec, dflen){
+                            #in case the prediction attriute is totFt || totHt that have numeric values calc mean square root error
                             curent_errr <- sqrt(1/length(predvec) * sum( (tpredvec-tttResultsVec)^2 ))
                             nac <- (accVal * dflen + curent_errr * length(ttResultsVec)) / (dflen +  length(ttResultsVec))
                             accVal<<-nac 
                           },
                           accuracyReEvaluation= function(ttResultsVec, dflen){
+                            #in case the prediction attriute is of descrete value (1,x,2;o,u;Y,N) calc the accuracy
                             ttacc<-0;  # calculate prediction acccuracy
                             for(i in 1:length(ttResultsVec)){
                               if(ttResultsVec[i]==predvec[i]){ttacc=ttacc+1}
@@ -38,6 +40,8 @@ Instance <- setRefClass("Instance",
 AlgoData <- setRefClass("AlgoData",
               # dtfCategory (f,f2,f5), attPred -> (ScoreOutcome, totFtScore, headOutcome, 2p,1p)
               # to consider a list of support predAtts like : *score| totFt; score|2p, 2p|totHt)
+              # instList vector of instances
+              # so far methods unused
               fields = list( instList="vector", avgAcc="numeric", dtfCategory="character"),
               methods= list(
                 betInstance = function(){  #get the instances of the instList attr with bet
@@ -112,7 +116,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
               }}
           },
           predCalcScore= function(tt){
-            initMatrixes(dim(tt)[1]);
+            initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
             newTt()# regulate tt with ndf and t1,t2 classification factors
              algcount <-0
              
