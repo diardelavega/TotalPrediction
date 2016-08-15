@@ -7,24 +7,42 @@ runAll<- function(trPaths){
   DTFLoader();
   predAtt_Loader();
   libLoader();
+  dataStructLoader();
   
  
   
   for(path in trPaths){
-    # -1
+    # -1  create datasets to work with
     df <- read.csv(path);
     ndf <- diffFunc();
     
-    # -2
+    # -2 start the object that will hold the pred data CREATION
+    headCrfvInit();          # ret :hDtf 
+    scoreCrfvInit();         # ret :csDtf 
+    p1CrfvInit();            # ret :p1Dtf 
+    p2CrfvInit();            # ret :p2Dtf 
+    totFtCrfvInit();         # ret :tftDtf 
+    totHtCrfvInit();         # ret :thtDtf 
     
     
+    fileName <- gsub("Pred/Data","DTF",path);
+    #fileName <- gsub("Pred/Data","DTF",fileName);
     
-    
-    
+    #create a new file and sotr the dtf objs created for the competition
+    save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
   }
+}
+
+# remover <- function(){
+  # aparently we dont need to use remove afterall, we are not saving the entire workspace just the DTF objs
   
+  # remove all unwanted vars, save only the dtf objs
+  rm(df,ndf,DTFLoader,predAtt_Loader,diffFunc);
   
-  
+  DTFRemover();
+  dataStructRemover();
+  predAtt_Remover();
+  libRemover();
 }
 
 libLoader <- function(){
@@ -37,28 +55,15 @@ libLoader <- function(){
   library(rpart)
   library(tree)
 }
-
-remover <- function(){
-  # remove all unwanted vars, save only the dtf objs
-  rm(df,ndf,DTFLoader,predAtt_Loader,diffFunc);
-  
-  rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv)
-  rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
-  
-  rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv)
-  rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
-  
-  rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv)
-  rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
-  
-  rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv)
-  rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
-  
-  rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
-  rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
-  
-  rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
-  rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
+# libRemover <- function(){
+  detach(package:plyr, unload=TRUE)
+  detach(package:e1071, unload=TRUE)
+  detach(package:C50, unload=TRUE)
+  detach(package:randomForest, unload=TRUE)
+  detach(package:ipred, unload=TRUE)
+  detach(package:RWeka, unload=TRUE)
+  detach(package:rpart, unload=TRUE)
+  detach(package:tree, unload=TRUE)
 }
 
 DTFLoader <- function(){
@@ -69,6 +74,15 @@ DTFLoader <- function(){
   source("C:/TotalPrediction/totHtScoreCrfvEstimation.R"); 
   source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
 }
+# DTFRemover <- function(){
+  rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
+  rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv);
+  rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv);
+  rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv);
+  rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
+  rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
+  
+}
 
 predAtt_Loader <- function(){
   source("C:/TotalPrediction/Head_AttPredDataset.R");
@@ -78,11 +92,25 @@ predAtt_Loader <- function(){
   source("C:/TotalPrediction/totFt_AttPredDataset.R");
   source("C:/TotalPrediction/totHt_AttPredDataset.R");
 }
-
-dataStructLoader <- function(){
-  source("C:/TotalPrediction/dataStructure.R");
+# predAtt_Remover <- function(){
+  rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
+  rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
+  rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
+  rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
+  rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
+  rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
 }
 
+dataStructLoader <- function(){
+  # the file with the description of the structure of the DTF obj
+  source("C:/TotalPrediction/dataStructure.R");
+}
+# dataStructRemover <- function(){
+  rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
+  rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
+}
+
+#create the ndf dataframe from the df dataframe
 diffFunc <- function(){
   t1adoe <- df$t1AtackIn - abs(df$t2DefenseOut) # because defence is negative nr
   t2adoe <- abs(df$t1DefenseIn) - df$t2AtackOut
@@ -188,12 +216,4 @@ diffFunc <- function(){
   rm(datk,datkin,datkout,ddef,ddefin,ddefout,doav_ht,doav_ft,dav_htin,dav_htout,
      dav_ftin,dav_ftout, owd,odd,old,dwin,dwout,ddin,ddout,dlin,dlout,pd,fd,mfd1,mfd2,f1d,f2d,f3d,f4d,
      t1adoe,t2adoe,t1e,t2e )
-}
-
-
-#--------Test & Stuff
-trPaths <- c("hua","mua","beladona","maracaibo")
-
-for(path in trPaths){
-  print(path);
 }
