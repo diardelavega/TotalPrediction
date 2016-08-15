@@ -415,7 +415,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                             methods = list(
                               totFtMatOrientation= function(){
                                 print("the values represent error rate values; the smaller the better")
-                                print(" row 1 --:  0.5 > goals        .... 0")
+                                print(" row 1 --:  0.5 < goals        .... 0")
                                 print(" row 2 --:  0.6 <= goals < 1.5 .... 1")
                                 print(" row 3 --:  1.6 <= goals < 2.5 .... 2")
                                 print(" row 4 --:  2.6 <= goals < 3.5 .... 3")
@@ -503,7 +503,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                methods = list(
                                  totHtMatOrientation= function(){
                                    print("the values represent error rate values; the smaller the better")
-                                   print(" row 1 --:  0.5 > goals        .... 0")
+                                   print(" row 1 --:  0.5 < goals        .... 0")
                                    print(" row 2 --:  0.6 <= goals < 1.5 .... 1")
                                    print(" row 3 --:  1.6 <= goals < 2.5 .... 2")
                                    print(" row 4 --:  2.6 <= goals < 3.5 .... 3")
