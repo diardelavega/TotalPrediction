@@ -10,14 +10,14 @@ runAll<- function(trPaths){
   dataStructLoader();
   
   for(path in trPaths){
-    browser();
+    # browser();
     # -1  create datasets to work with
     dtf <<- read.csv(path);
     ndtf <<- diffFunc();
     
     # -2 start the object that will hold the pred data CREATION
-    headCrfvInit();          # ret :hDtf 
-    scoreCrfvInit();         # ret :csDtf 
+    # headCrfvInit();          # ret :hDtf 
+    # scoreCrfvInit();         # ret :csDtf 
     p1CrfvInit();            # ret :p1Dtf 
     p2CrfvInit();            # ret :p2Dtf 
     totFtCrfvInit();         # ret :tftDtf 
@@ -218,8 +218,10 @@ dataStructRemover <- function(){
 
 #create the ndf dataframe from the dtf dataframe
 
-#//-------
-fileName <- gsub("Pred/Data","DTF",patha);
+#-------
+# fileName <- gsub("Pred/Data","DTF",patha);
 
 #create a new file and sotr the dtf objs created for the competition
-save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
+# save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
+# patha <- "C://BastData/Pred/Data/Norway/Eliteserien__112__Data"
+
