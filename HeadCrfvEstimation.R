@@ -1,23 +1,8 @@
-#libraries required
-{
-  library(plyr)
-  library(e1071)  #svm
-  library(C50)
-  library(randomForest)
-  library(ipred)
-  library(RWeka)
-  library(rpart)
-}
 
-
-#rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv)
-#rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
-
-
-# supose we have df & ndf datasets
+# supose we have dtf & ndtf datasets
 headCrfvInit <- function(){
   # creates a Object (from datastruct prediction_Attribute_object) for a competition that has accumulated weeks of matches
-  # in the df & ndf dataframes
+  # in the dtf & ndtf dataframes
   
   #initializes datasets and call for the crfv(cross fold validation) accuracy estimation
   folds <- 10;
@@ -26,15 +11,15 @@ headCrfvInit <- function(){
   # calc for all the data available (all the weeks of competition)
   bestOfSize <-3                                           #nr of top from best results to chose from
   ret <- headPredFunc("f" ,folds,bestOfSize)               # complet dataset crfv
-  hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret   # the ret val contains two algodata vals from full (df) & diff(ndf)
+  hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret   # the ret val contains two algodata vals from full (dtf) & diff(ndtf)
   
-  if(max(ndf$week)>20){  # calc the second half dataset crfv
+  if(max(ndtf$week)>20){  # calc the second half dataset crfv
     bestOfSize <-3
     ret <- headPredFunc("f2",folds,bestOfSize)
     hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
   }
   
-  if(max(ndf$week)>10){  # calc last 6 weeks dataset crfv
+  if(max(ndtf$week)>10){  # calc last 6 weeks dataset crfv
     bestOfSize <-1
     ret <- headPredFunc("f5",folds,bestOfSize)
     hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
@@ -50,11 +35,11 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   dds <- AlgoData$new(dtfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
   
   switch (dataframeCategory,
-          "f" = {dataset_f <- df; dataset_d<- ndf},
-          "f2" = {dataset_f <- df[which(df$week>max(df$week)/2),]; 
-          dataset_d<- ndf[which(ndf$week>max(ndf$week)/2),]},
-          "f5" = {dataset_f <- df[which(df$week>max(df$week)-6),]; 
-          dataset_d<- ndf[which(ndf$week>max(ndf$week)-6),]}
+          "f" = {dataset_f <- dtf; dataset_d<- ndtf},
+          "f2" = {dataset_f <- dtf[which(dtf$week>max(dtf$week)/2),]; 
+          dataset_d<- ndtf[which(ndtf$week>max(ndtf$week)/2),]},
+          "f5" = {dataset_f <- dtf[which(dtf$week>max(dtf$week)-6),]; 
+          dataset_d<- ndtf[which(ndtf$week>max(ndtf$week)-6),]}
   )
   
   for(algorithm in c("C50"

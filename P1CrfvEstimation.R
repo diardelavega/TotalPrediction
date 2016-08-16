@@ -1,15 +1,3 @@
-#libraries required
-{
-  library(plyr)
-  library(e1071)  #svm
-  library(C50)
-  library(randomForest)
-  library(ipred)
-  library(RWeka)
-  library(rpart)
-}
-rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv)
-rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
 
 
 # supose we have df & ndf datasets

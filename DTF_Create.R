@@ -9,12 +9,12 @@ runAll<- function(trPaths){
   libLoader();
   dataStructLoader();
   
- 
-  
   for(path in trPaths){
+    browser();
     # -1  create datasets to work with
-    df <- read.csv(path);
-    ndf <- diffFunc();
+    #a<-read.csv(path);
+    dtf <<- read.csv(path);
+    ndtf <<- diffFunc();
     
     # -2 start the object that will hold the pred data CREATION
     headCrfvInit();          # ret :hDtf 
@@ -24,7 +24,6 @@ runAll<- function(trPaths){
     totFtCrfvInit();         # ret :tftDtf 
     totHtCrfvInit();         # ret :thtDtf 
     
-    
     fileName <- gsub("Pred/Data","DTF",path);
     #fileName <- gsub("Pred/Data","DTF",fileName);
     
@@ -33,16 +32,125 @@ runAll<- function(trPaths){
   }
 }
 
-# remover <- function(){
+diffFunc <- function(){
+  t1adoe <- dtf$t1AtackIn - abs(dtf$t2DefenseOut) # because defence is negative nr
+  t2adoe <- abs(dtf$t1DefenseIn) - dtf$t2AtackOut
+  t1e <- dtf$t1Atack - abs(dtf$t2Defense) # because defence is negative nr
+  t2e <- dtf$t2Atack - abs(dtf$t1Defense) 
+  #----------
+  datk <- dtf$t1Atack-dtf$t2Atack
+  datkin <- dtf$t1AtackIn-dtf$t2AtackIn
+  datkout <- dtf$t1AtackOut-dtf$t2AtackOut
+  ddef <- dtf$t1Defense-dtf$t2Defense
+  ddefin <- dtf$t1DefenseIn-dtf$t2DefenseIn
+  ddefout <- dtf$t1DefenseOut-dtf$t2DefenseOut
+  
+  
+  doav_ht <- dtf$t1AvgHtScoreIn-dtf$t2AvgHtScoreOut
+  doav_ft <- dtf$t1AvgFtScoreIn-dtf$t2AvgFtScoreOut
+  #----------
+  dav_htin <- dtf$t1AvgHtScoreIn-dtf$t2AvgHtScoreIn
+  dav_htout <-  dtf$t1AvgHtScoreOut-dtf$t2AvgHtScoreOut
+  dav_ftin <- dtf$t1AvgFtScoreIn-dtf$t2AvgFtScoreIn
+  dav_ftout <-  dtf$t1AvgFtScoreOut-dtf$t2AvgFtScoreOut
+  
+  
+  owd <- dtf$t1WinsIn-dtf$t2WinsOut
+  odd <- dtf$t1DrawsIn- dtf$t2DrawsOut
+  old <- dtf$t1LosesIn - dtf$t2LosesOut
+  #----------
+  dwin <- dtf$t1WinsIn-dtf$t2WinsIn
+  dwout <- dtf$t1WinsOut-dtf$t2WinsOut
+  ddin <- dtf$t1DrawsIn-dtf$t2DrawsIn
+  ddout <- dtf$t1DrawsOut-dtf$t2DrawsOut
+  dlin <- dtf$t1LosesIn-dtf$t2LosesIn
+  dlout <- dtf$t1LosesOut-dtf$t2LosesOut
+  
+  pd <- dtf$t1Points-dtf$t2Points
+  fd <- dtf$t1Form-dtf$t2Form
+  
+  mfd1<-c()
+  mfd2<-c()
+  for(i in 1:dim(dtf)[1]){mfd1[i] <- mean(dtf[i,13],dtf[i,14],dtf[i,15],dtf[i,16])}
+  for(i in 1:dim(dtf)[1]){mfd2[i] <- mean(dtf[i,39],dtf[i,40],dtf[i,41],dtf[i,42])}
+  #owd <- dtf$t1WinsIn-dtf$t2WinsOut
+  #odd <- dtf$t1DrawsIn- dtf$t2DrawsOut
+  #old <- dtf$t1LosesIn - dtf$t2LosesOut
+  #----------dtf data
+  dtf$mfd1 <<-mfd1
+  dtf$mfd2 <<-mfd2
+  dtf$odd <<- odd
+  dtf$old <<- old
+  dtf$owd <<-owd
+  
+  #ttdf$mfd1 <-mfd1
+  #ttdf$mfd2 <-mfd2
+  #ttdf$odd <- odd
+  #tdf$old<- old
+  #tdf$owd <-owd
+  #----------------
+  
+  
+  f1d <- dtf[,13]-dtf[,39]
+  f2d <- dtf[,14]-dtf[,40]
+  f3d <- dtf[,15]-dtf[,41]                 
+  f4d <- dtf[,16]-dtf[,42]
+  #--------------
+  ndf <- data.frame( 
+    mfd1,mfd2,pd,fd,
+    #  f1d,f2d,f3d,f4d,
+    t1adoe,t2adoe,t1e,t2e,
+    owd,odd,old,
+    dwin,dwout,ddin,ddout,dlin,dlout,
+    datk,datkin,datkout,ddef,ddefin,ddefout,
+    doav_ht,doav_ft,
+    dav_htin,dav_htout,dav_ftin,dav_ftout
+  )
+  
+  
+  ndf$week <- dtf$week
+  ndf$headOutcome <-dtf$headOutcome
+  ndf$scoreOutcome<-dtf$scoreOutcome
+  ndf$ht1pOutcome <-dtf$ht1pOutcome
+  ndf$ht2pOutcome <-dtf$ht2pOutcome
+  ndf$ggOutcome <-dtf$ggOutcome
+  ndf$totHtScore  <- dtf$totHtScore 
+  ndf$totFtScore <-dtf$totFtScore
+  ndf$t1 <-dtf$t1
+  ndf$t2<-dtf$t2
+  ndf$bet_1<-dtf$bet_1
+  ndf$bet_X<-dtf$bet_X
+  ndf$bet_2<-dtf$bet_2
+  ndf$bet_O<-dtf$bet_O
+  ndf$bet_U<-dtf$bet_U
+  ndf$t1Classification<-dtf$t1Classification
+  ndf$t2Classification<-dtf$t2Classification
+  ndf$mfd <- ndf$mfd1-ndf$mfd2
+  
+  ndf$t1Form <- dtf$t1Form 
+  ndf$t2Form <- dtf$t2Form 
+  ndf$f1d <- f1d
+  ndf$f2d <- f2d
+  ndf$f3d <- f3d
+  ndf$f4d <- f4d
+  
+  # rm(datk,datkin,datkout,ddef,ddefin,ddefout,doav_ht,doav_ft,dav_htin,dav_htout,
+  #    dav_ftin,dav_ftout, owd,odd,old,dwin,dwout,ddin,ddout,dlin,dlout,pd,fd,mfd1,mfd2,f1d,f2d,f3d,f4d,
+  #    t1adoe,t2adoe,t1e,t2e )
+  
+  return(ndf);
+}
+
+remover <- function(){
   # aparently we dont need to use remove afterall, we are not saving the entire workspace just the DTF objs
   
   # remove all unwanted vars, save only the dtf objs
-  rm(df,ndf,DTFLoader,predAtt_Loader,diffFunc);
-  
-  DTFRemover();
-  dataStructRemover();
-  predAtt_Remover();
-  libRemover();
+  # rm(dtf,ndf,DTFLoader,predAtt_Loader,diffFunc);
+  # 
+  # DTFRemover();
+  # dataStructRemover();
+  # predAtt_Remover();
+  # libRemover();
 }
 
 libLoader <- function(){
@@ -55,15 +163,15 @@ libLoader <- function(){
   library(rpart)
   library(tree)
 }
-# libRemover <- function(){
-  detach(package:plyr, unload=TRUE)
-  detach(package:e1071, unload=TRUE)
-  detach(package:C50, unload=TRUE)
-  detach(package:randomForest, unload=TRUE)
-  detach(package:ipred, unload=TRUE)
-  detach(package:RWeka, unload=TRUE)
-  detach(package:rpart, unload=TRUE)
-  detach(package:tree, unload=TRUE)
+libRemover <- function(){
+  # detach(package:plyr, unload=TRUE)
+  # detach(package:e1071, unload=TRUE)
+  # detach(package:C50, unload=TRUE)
+  # detach(package:randomForest, unload=TRUE)
+  # detach(package:ipred, unload=TRUE)
+  # detach(package:RWeka, unload=TRUE)
+  # detach(package:rpart, unload=TRUE)
+  # detach(package:tree, unload=TRUE)
 }
 
 DTFLoader <- function(){
@@ -74,13 +182,13 @@ DTFLoader <- function(){
   source("C:/TotalPrediction/totHtScoreCrfvEstimation.R"); 
   source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
 }
-# DTFRemover <- function(){
-  rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
-  rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv);
-  rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv);
-  rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv);
-  rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
-  rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
+DTFRemover <- function(){
+  # rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
+  # rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv);
+  # rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv);
+  # rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv);
+  # rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
+  # rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
   
 }
 
@@ -92,128 +200,22 @@ predAtt_Loader <- function(){
   source("C:/TotalPrediction/totFt_AttPredDataset.R");
   source("C:/TotalPrediction/totHt_AttPredDataset.R");
 }
-# predAtt_Remover <- function(){
-  rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
-  rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
-  rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
-  rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
-  rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
-  rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
+predAtt_Remover <- function(){
+  # rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
+  # rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
+  # rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
+  # rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
+  # rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
+  # rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
 }
 
 dataStructLoader <- function(){
   # the file with the description of the structure of the DTF obj
   source("C:/TotalPrediction/dataStructure.R");
 }
-# dataStructRemover <- function(){
-  rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
-  rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
+dataStructRemover <- function(){
+  # rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
+  # rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
 
-#create the ndf dataframe from the df dataframe
-diffFunc <- function(){
-  t1adoe <- df$t1AtackIn - abs(df$t2DefenseOut) # because defence is negative nr
-  t2adoe <- abs(df$t1DefenseIn) - df$t2AtackOut
-  t1e <- df$t1Atack - abs(df$t2Defense) # because defence is negative nr
-  t2e <- df$t2Atack - abs(df$t1Defense) 
-  #----------
-  datk <- df$t1Atack-df$t2Atack
-  datkin <- df$t1AtackIn-df$t2AtackIn
-  datkout <- df$t1AtackOut-df$t2AtackOut
-  ddef <- df$t1Defense-df$t2Defense
-  ddefin <- df$t1DefenseIn-df$t2DefenseIn
-  ddefout <- df$t1DefenseOut-df$t2DefenseOut
-  
-  
-  doav_ht <- df$t1AvgHtScoreIn-df$t2AvgHtScoreOut
-  doav_ft <- df$t1AvgFtScoreIn-df$t2AvgFtScoreOut
-  #----------
-  dav_htin <- df$t1AvgHtScoreIn-df$t2AvgHtScoreIn
-  dav_htout <-  df$t1AvgHtScoreOut-df$t2AvgHtScoreOut
-  dav_ftin <- df$t1AvgFtScoreIn-df$t2AvgFtScoreIn
-  dav_ftout <-  df$t1AvgFtScoreOut-df$t2AvgFtScoreOut
-  
-  
-  owd <- df$t1WinsIn-df$t2WinsOut
-  odd <- df$t1DrawsIn- df$t2DrawsOut
-  old <- df$t1LosesIn - df$t2LosesOut
-  #----------
-  dwin <- df$t1WinsIn-df$t2WinsIn
-  dwout <- df$t1WinsOut-df$t2WinsOut
-  ddin <- df$t1DrawsIn-df$t2DrawsIn
-  ddout <- df$t1DrawsOut-df$t2DrawsOut
-  dlin <- df$t1LosesIn-df$t2LosesIn
-  dlout <- df$t1LosesOut-df$t2LosesOut
-  
-  pd <- df$t1Points-df$t2Points
-  fd <- df$t1Form-df$t2Form
-  
-  mfd1<-c()
-  mfd2<-c()
-  for(i in 1:dim(df)[1]){mfd1[i] <- mean(df[i,13],df[i,14],df[i,15],df[i,16])}
-  for(i in 1:dim(df)[1]){mfd2[i] <- mean(df[i,39],df[i,40],df[i,41],df[i,42])}
-  #owd <- df$t1WinsIn-df$t2WinsOut
-  #odd <- df$t1DrawsIn- df$t2DrawsOut
-  #old <- df$t1LosesIn - df$t2LosesOut
-  #----------DF data
-  df$mfd1 <<-mfd1
-  df$mfd2 <<-mfd2
-  df$odd <<- odd
-  df$old <<- old
-  df$owd <<-owd
-  
-  #ttdf$mfd1 <-mfd1
-  #ttdf$mfd2 <-mfd2
-  #ttdf$odd <- odd
-  #tdf$old<- old
-  #tdf$owd <-owd
-  #----------------
-  
-  
-  f1d <- df[,13]-df[,39]
-  f2d <- df[,14]-df[,40]
-  f3d <- df[,15]-df[,41]                 
-  f4d <- df[,16]-df[,42]
-  #--------------
-  ndf <<- data.frame( 
-    mfd1,mfd2,pd,fd,
-    #  f1d,f2d,f3d,f4d,
-    t1adoe,t2adoe,t1e,t2e,
-    owd,odd,old,
-    dwin,dwout,ddin,ddout,dlin,dlout,
-    datk,datkin,datkout,ddef,ddefin,ddefout,
-    doav_ht,doav_ft,
-    dav_htin,dav_htout,dav_ftin,dav_ftout
-  )
-  
-  
-  ndf$week <<- df$week
-  ndf$headOutcome <<-df$headOutcome
-  ndf$scoreOutcome<<-df$scoreOutcome
-  ndf$ht1pOutcome <<-df$ht1pOutcome
-  ndf$ht2pOutcome <<-df$ht2pOutcome
-  ndf$ggOutcome <<-df$ggOutcome
-  ndf$totHtScore  <<- df$totHtScore 
-  ndf$totFtScore <<-df$totFtScore
-  ndf$t1 <<-df$t1
-  ndf$t2<<-df$t2
-  ndf$bet_1<<-df$bet_1
-  ndf$bet_X<<-df$bet_X
-  ndf$bet_2<<-df$bet_2
-  ndf$bet_O<<-df$bet_O
-  ndf$bet_U<<-df$bet_U
-  ndf$t1Classification<<-df$t1Classification
-  ndf$t2Classification<<-df$t2Classification
-  ndf$mfd <<- ndf$mfd1-ndf$mfd2
-  
-  ndf$t1Form <<- df$t1Form 
-  ndf$t2Form <<- df$t2Form 
-  ndf$f1d <<- f1d
-  ndf$f2d <<- f2d
-  ndf$f3d <<- f3d
-  ndf$f4d <<- f4d
-  
-  rm(datk,datkin,datkout,ddef,ddefin,ddefout,doav_ht,doav_ft,dav_htin,dav_htout,
-     dav_ftin,dav_ftout, owd,odd,old,dwin,dwout,ddin,ddout,dlin,dlout,pd,fd,mfd1,mfd2,f1d,f2d,f3d,f4d,
-     t1adoe,t2adoe,t1e,t2e )
-}
+#create the ndf dataframe from the dtf dataframe

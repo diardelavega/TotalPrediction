@@ -1,20 +1,5 @@
 
-#libraries required
-{
-  library(plyr)
-  library(e1071)  #svm
-  library(C50)
-  library(randomForest)
-  library(ipred)
-  library(RWeka)
-  library(rpart)
-  
-  #bestOfSize <- 3  
-}
-rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv)
-rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
-
-# supose we have df & ndf datasets
+# supose we have dtf & ndtf datasets
 p2CrfvInit <- function(){
   #initializes datasets and call for the crfv accuracy estimation
   folds <- 10;
@@ -26,14 +11,14 @@ p2CrfvInit <- function(){
   # crfv_p2_Struct[length(crfv_p2_Struct)+1:2] <<-ret
   p2Dtf$algoDataList[length(p2Dtf$algoDataList)+1:2]<<-ret
   
-  if(max(ndf$week)>20){  # second half dataset crfv
+  if(max(ndtf$week)>20){  # second half dataset crfv
     bestOfSize <-3
     ret <- p2PredFunc("f2",folds,bestOfSize)
     # crfv_p2_Struct[length(crfv_p2_Struct)+1:2] <<-ret
     p2Dtf$algoDataList[length(p2Dtf$algoDataList)+1:2]<<-ret
   }
   
-  if(max(ndf$week)>10){  # last 6 weeks dataset crfv
+  if(max(ndtf$week)>10){  # last 6 weeks dataset crfv
     bestOfSize <-1
     ret <- p2PredFunc("f5",folds,bestOfSize)
     # crfv_p2_Struct[length(crfv_p2_Struct)+1:2] <<-ret
@@ -51,11 +36,11 @@ p2PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   dds <- AlgoData$new(dtfCategory=dataframeCategory)  # to keep the instances of the  diff datasets
   
   switch (dataframeCategory,
-          "f" = {dataset_f <- df; dataset_d<- ndf},
-          "f2" = {dataset_f <- df[which(df$week>max(df$week)/2),]; 
-          dataset_d<- ndf[which(ndf$week>max(ndf$week)/2),]},
-          "f5" = {dataset_f <- df[which(df$week>max(df$week)-6),]; 
-          dataset_d<- ndf[which(ndf$week>max(ndf$week)-6),]}
+          "f" = {dataset_f <- dtf; dataset_d<- ndtf},
+          "f2" = {dataset_f <- dtf[which(dtf$week>max(dtf$week)/2),]; 
+          dataset_d<- ndtf[which(ndtf$week>max(ndtf$week)/2),]},
+          "f5" = {dataset_f <- dtf[which(dtf$week>max(dtf$week)-6),]; 
+          dataset_d<- ndtf[which(ndtf$week>max(ndtf$week)-6),]}
   )
   
   for(algorithm in c("C50"
