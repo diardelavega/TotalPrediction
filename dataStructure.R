@@ -7,9 +7,9 @@ Instance <- setRefClass("Instance",
                               if(length(predvec)!=length(ttResultsVec)){
                                 print("Prediction and results vector do not match");  return()}
                               switch (dfCategory,
-                                      "f" = {dflen <-dim(df)[1] },
-                                      "f2" = { dflen <-dim(df[which(df$week>max(df$week)/2),])[1] },
-                                      "f5" = { dflen <-dim(df[which(df$week>max(df$week)-6),])[1] }
+                                      "f" = {dflen <-dim(dtf)[1] },
+                                      "f2" = { dflen <-dim(dtf[which(dtf$week>max(dtf$week)/2),])[1] },
+                                      "f5" = { dflen <-dim(dtf[which(dtf$week>max(dtf$week)-6),])[1] }
                               )
                               cat(ptype,dfCategory,"\n")
                               if(ptype=="categoric"){accuracyReEvaluation(ttResultsVec, dflen)}
@@ -117,7 +117,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           },
           predCalcScore= function(tt){
             initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
-            newTt()# regulate tt with ndf and t1,t2 classification factors
+            newTt()# regulate tt with ndtf and t1,t2 classification factors
              algcount <-0
              
           # for (algdat in algoDataList) {
@@ -201,7 +201,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                  },
                                  predCalcScore= function(tt){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndf and t1,t2 classification factors
+                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -280,7 +280,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                 },
                                 predCalcScore= function(tt){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -359,7 +359,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                 },
                                 predCalcScore= function(tt){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -447,7 +447,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                               },
                               predCalcScore= function(tt){
                                 initMatrixes(dim(tt)[1]);
-                                newTt()# regulate tt with ndf and t1,t2 classification factors
+                                newTt()# regulate tt with ndtf and t1,t2 classification factors
                                 algcount <-0
                                 for (al_i in 1:length(algoDataList)) {
                                   algdat <- algoDataList[[al_i]]
@@ -535,7 +535,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                  },
                                  predCalcScore= function(tt){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndf and t1,t2 classification factors
+                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -589,14 +589,14 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   # get train based on df_category
   switch (dfCategory,
     f = {switch (fulDiff,
-                  "full" = {train <- df},
-                  "diff" = {train <- ndf})},
+                  "full" = {train <- dtf},
+                  "diff" = {train <- ndtf})},
     f2 = {switch (fulDiff,
-                  "full" = {train <- df[which(df$week>max(df$week)/2),]},
-                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)/2),]})},
+                  "full" = {train <- dtf[which(dtf$week>max(dtf$week)/2),]},
+                  "diff" = {train <- ndtf[which(ndtf$week>max(ndtf$week)/2),]})},
     f5 = {switch (fulDiff,
-                  "full" = {train <- df[which(df$week>max(df$week)-6),]},
-                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)-6),]})}
+                  "full" = {train <- dtf[which(dtf$week>max(dtf$week)-6),]},
+                  "diff" = {train <- ndtf[which(ndtf$week>max(ndtf$week)-6),]})}
   )
   
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)
