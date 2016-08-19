@@ -13,10 +13,14 @@ predict <- function(dtfPaths,trainPachs,testPaths){
   for(i in 1:lenght( dtfPaths)){
     dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
     
+    tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
+    # dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
+    # ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+    
+    
     dtf <<- read.csv(trainPachs[i]); # train datasets
     ndtf <<- diffFunc();
     
-    tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
     
     
     hDtf$predCalcScore(tt);
@@ -169,6 +173,8 @@ diffFunc <- function(){
   return(ndf);
 }
 newTT <- function(){
+  #  SO FAR APEARS TO BE UN NECESARY
+  
   #additional attributes for the tt dataset to  be congruent with the fh attributes
   mfd1<-c()
   mfd2<-c()

@@ -7,9 +7,9 @@ Instance <- setRefClass("Instance",
                               if(length(predvec)!=length(ttResultsVec)){
                                 print("Prediction and results vector do not match");  return()}
                               switch (dfCategory,
-                                      "f" = {dflen <-dim(df)[1] },
-                                      "f2" = { dflen <-dim(df[which(df$week>max(df$week)/2),])[1] },
-                                      "f5" = { dflen <-dim(df[which(df$week>max(df$week)-6),])[1] }
+                                      "f" = {dflen <-dim(dtf)[1] },
+                                      "f2" = { dflen <-dim(dtf[which(dtf$week>max(dtf$week)/2),])[1] },
+                                      "f5" = { dflen <-dim(dtf[which(dtf$week>max(dtf$week)-6),])[1] }
                               )
                               cat(ptype,dfCategory,"\n")
                               if(ptype=="categoric"){accuracyReEvaluation(ttResultsVec, dflen)}
@@ -117,11 +117,11 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           },
           predCalcScore= function(tt){
             initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
+
             newTt()# regulate tt with ndf and t1,t2 classification factors
             algcount <-0
-             
-            # for (algdat in algoDataList) {
-             # for (ins in algdat$instList) {
+
+            
             for (al_i in 1:length(algoDataList)) {
               algdat <- algoDataList[[al_i]]
               for (ins_j in 1:length( algdat$instList)) {
@@ -131,14 +131,20 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                 cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                 
                 model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                predVec <- as.vector(predict(model, tt, type = "class"))
-                print(predVec)
+               
+                if(ins$fullDiff =="full"){
+                  predVec <- as.vector(predict(model, tt, type = "class"))
+                }
+                else if(ins$fullDiff =="diff"){
+                  predVec <- as.vector(predict(model, ntt, type = "class"))  
+                }
+                # print(predVec)
                 
+                # store the prediction vector in the @Instance obj 
                 algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                # ins$predvec  <<-predVec
-                
+
+                # count the number of returned responses for every match (fot match1: 10-"1", 20-"X",5-"2")
                 retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
-                # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
                 
                 ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                 if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
@@ -201,7 +207,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                  },
                                  predCalcScore= function(tt){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndf and t1,t2 classification factors
+                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -280,7 +286,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                 },
                                 predCalcScore= function(tt){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -359,7 +365,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                 },
                                 predCalcScore= function(tt){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndf and t1,t2 classification factors
+                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -447,7 +453,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                               },
                               predCalcScore= function(tt){
                                 initMatrixes(dim(tt)[1]);
-                                newTt()# regulate tt with ndf and t1,t2 classification factors
+                                newTt()# regulate tt with ndtf and t1,t2 classification factors
                                 algcount <-0
                                 for (al_i in 1:length(algoDataList)) {
                                   algdat <- algoDataList[[al_i]]
@@ -535,7 +541,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                  },
                                  predCalcScore= function(tt){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndf and t1,t2 classification factors
+                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -589,14 +595,14 @@ modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   # get train based on df_category
   switch (dfCategory,
     f = {switch (fulDiff,
-                  "full" = {train <- df},
-                  "diff" = {train <- ndf})},
+                  "full" = {train <- dtf},
+                  "diff" = {train <- ndtf})},
     f2 = {switch (fulDiff,
-                  "full" = {train <- df[which(df$week>max(df$week)/2),]},
-                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)/2),]})},
+                  "full" = {train <- dtf[which(dtf$week>max(dtf$week)/2),]},
+                  "diff" = {train <- ndtf[which(ndtf$week>max(ndtf$week)/2),]})},
     f5 = {switch (fulDiff,
-                  "full" = {train <- df[which(df$week>max(df$week)-6),]},
-                  "diff" = {train <- ndf[which(ndf$week>max(ndf$week)-6),]})}
+                  "full" = {train <- dtf[which(dtf$week>max(dtf$week)-6),]},
+                  "diff" = {train <- ndtf[which(ndtf$week>max(ndtf$week)-6),]})}
   )
   
   ho = attDtsFunc(attDtsNr,bet,fulDiff,predAtt)

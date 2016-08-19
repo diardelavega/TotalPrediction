@@ -1,6 +1,10 @@
 !./ Human log.
 
 
+*** in the datastructure i hadn;t predicted the "prediction"" phase for the diff based attrubutes and datasets.
+    - about to change the @DTF object "predCalcScore" function to take into account the diff part pf the data.
+
+
 ------------------------------------------------------------
 !!! create & save Dtf obj in <<C:/BastData/DTF/"country"/"comp__compid".dtf.Rdata>>
 load with load(filename)
