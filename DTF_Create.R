@@ -10,7 +10,7 @@ runAll<- function(trPaths){
   dataStructLoader();
   
   for(path in trPaths){
-    browser();
+    # browser();
     # -1  create datasets to work with
     dtf <<- read.csv(path);
     ndtf <<- diffFunc();
@@ -217,9 +217,3 @@ dataStructRemover <- function(){
 }
 
 #create the ndf dataframe from the dtf dataframe
-
-#//-------
-fileName <- gsub("Pred/Data","DTF",patha);
-
-#create a new file and sotr the dtf objs created for the competition
-save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
