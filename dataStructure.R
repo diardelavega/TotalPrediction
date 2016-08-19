@@ -115,7 +115,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                 # ins$accuracyReavaluation(predResultVec)
               }}
           },
-          predCalcScore= function(tt){
+          predCalcScore= function(){
             initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
 
             newTt()# regulate tt with ndf and t1,t2 classification factors
@@ -129,31 +129,25 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                   
                 algcount=algcount+1
                 cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
-                
                 model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-               
                 if(ins$fullDiff =="full"){
                   predVec <- as.vector(predict(model, tt, type = "class"))
                 }
                 else if(ins$fullDiff =="diff"){
                   predVec <- as.vector(predict(model, ntt, type = "class"))  
                 }
-                # print(predVec)
                 
                 # store the prediction vector in the @Instance obj 
                 algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-
-                # count the number of returned responses for every match (fot match1: 10-"1", 20-"X",5-"2")
+                # count the number of returned responses for every match and add ito the results we have so far
+                # (fot match1: 10-"1", 20-"X",5-"2")
                 retMat <-scoreResultCount(as.vector(predVec),ins$accVal)
-                
                 ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                 if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                 else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                 else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                
                 if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                 else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                
                 if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                 else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
               }
@@ -205,9 +199,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                        algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                      }}
                                  },
-                                 predCalcScore= function(tt){
+                                 predCalcScore= function(){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -217,22 +210,20 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                        cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                        
                                        model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                       predVec <- as.vector(predict(model,tt, type = "class"))
-                                       print(predVec)
-                                       
+                                       if(ins$fullDiff =="full"){
+                                         predVec <- as.vector(predict(model, tt, type = "class"))
+                                       }
+                                       else if(ins$fullDiff =="diff"){
+                                         predVec <- as.vector(predict(model, ntt, type = "class"))  
+                                       }                                       
                                        algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                                       
                                        retMat <-headResultCount(as.vector(predVec),ins$accVal)
-                                       # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
-                                       
                                        ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                        if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                                        else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                        else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                       
                                        if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                        else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                       
                                        if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                                        else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
                                      }
@@ -284,9 +275,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                       algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                     }}
                                 },
-                                predCalcScore= function(tt){
+                                predCalcScore= function(){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -296,22 +286,20 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                       cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                       
                                       model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                      predVec <- as.vector(predict(model,tt, type = "class"))
-                                      print(predVec)
-                                      
+                                      if(ins$fullDiff =="full"){
+                                        predVec <- as.vector(predict(model, tt, type = "class"))
+                                      }
+                                      else if(ins$fullDiff =="diff"){
+                                        predVec <- as.vector(predict(model, ntt, type = "class"))  
+                                      }
                                       algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                                      
                                       retMat <-p2ResultCount(as.vector(predVec),ins$accVal)
-                                      # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
-                                      
                                       ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                       if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                                       else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                       else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                      
                                       if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                       else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                      
                                       if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                                       else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
                                     }
@@ -363,9 +351,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                       algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                     }}
                                 },
-                                predCalcScore= function(tt){
+                                predCalcScore= function(){
                                   initMatrixes(dim(tt)[1]);
-                                  newTt()# regulate tt with ndtf and t1,t2 classification factors
                                   algcount <-0
                                   for (al_i in 1:length(algoDataList)) {
                                     algdat <- algoDataList[[al_i]]
@@ -375,22 +362,20 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                       cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                       
                                       model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                      predVec <- as.vector(predict(model,tt, type = "class"))
-                                      print(predVec)
-                                      
+                                      if(ins$fullDiff =="full"){
+                                        predVec <- as.vector(predict(model, tt, type = "class"))
+                                      }
+                                      else if(ins$fullDiff =="diff"){
+                                        predVec <- as.vector(predict(model, ntt, type = "class"))  
+                                      }
                                       algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                                      
                                       retMat <-p1ResultCount(as.vector(predVec),ins$accVal)
-                                      # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
-                                      
                                       ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                       if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                                       else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                       else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                      
                                       if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                       else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                      
                                       if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                                       else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
                                     }
@@ -451,9 +436,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                     algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                   }}
                               },
-                              predCalcScore= function(tt){
+                              predCalcScore= function(){
                                 initMatrixes(dim(tt)[1]);
-                                newTt()# regulate tt with ndtf and t1,t2 classification factors
                                 algcount <-0
                                 for (al_i in 1:length(algoDataList)) {
                                   algdat <- algoDataList[[al_i]]
@@ -461,24 +445,21 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                     ins <- algdat$instList[[ins_j]]
                                     algcount=algcount+1
                                     cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
-                                    
                                     model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                    predVec <- as.vector(predict(model,tt))
-                                    print(predVec)
-                                    
+                                    if(ins$fullDiff =="full"){
+                                      predVec <- as.vector(predict(model, tt))
+                                    }
+                                    else if(ins$fullDiff =="diff"){
+                                      predVec <- as.vector(predict(model, ntt))  
+                                    }
                                     algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                                    
                                     retMat <-totFtResultCount(as.vector(predVec),ins$accVal)
-                                    # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
-                                    
                                     ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                     if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                                     else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                     else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                    
                                     if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                     else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                    
                                     if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                                     else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
                                   }
@@ -539,9 +520,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                        algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                                      }}
                                  },
-                                 predCalcScore= function(tt){
+                                 predCalcScore= function(){
                                    initMatrixes(dim(tt)[1]);
-                                   newTt()# regulate tt with ndtf and t1,t2 classification factors
                                    algcount <-0
                                    for (al_i in 1:length(algoDataList)) {
                                      algdat <- algoDataList[[al_i]]
@@ -549,25 +529,21 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                        ins <- algdat$instList[[ins_j]]
                                        algcount=algcount+1
                                        cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
-                                       
                                        model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                                       # if()
-                                       predVec <- as.vector(predict(model,tt))
-                                       print(predVec)
-                                       
+                                       if(ins$fullDiff =="full"){
+                                         predVec <- as.vector(predict(model, tt))
+                                       }
+                                       else if(ins$fullDiff =="diff"){
+                                         predVec <- as.vector(predict(model, ntt))  
+                                       }
                                        algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
-                                       
                                        retMat <-totHtResultCount(as.vector(predVec),ins$accVal)
-                                       # cat("retmat", dim(retMat), "     ensam",dim(ensambleMat),"\n" )
-                                       
                                        ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                        if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
                                        else if(algdat$dtfCategory =="f2"){f2mat <<- f2mat+retMat; f2count<<-f2count+1}
                                        else if(algdat$dtfCategory =="f5"){f5mat <<- f5mat+retMat; f5count<<-f5count+1}
-                                       
                                        if(ins$bet =="yes"){betmat <<- betmat+retMat; betcount<<-betcount+1}
                                        else if(ins$bet =="no"){nobetmat <<- nobetmat+retMat; nobetcount<<-nobetcount+1}
-                                       
                                        if(ins$fullDiff =="full"){fullmat <<- fullmat+retMat; fullcount<<-fullcount+1}
                                        else if(ins$fullDiff =="diff"){diffmat <<- diffmat+retMat; diffcount<<-diffcount+1}
                                      }
