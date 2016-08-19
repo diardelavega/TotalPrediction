@@ -1,6 +1,14 @@
 !./ Human log.
 
 
+------------------------------------------------------------
+!!! create & save Dtf obj in <<C:/BastData/DTF/"country"/"comp__compid".dtf.Rdata>>
+load with load(filename)
+
+!! implemented the first full crfv for the dft objs. The get ensamble etc funcs do not work on this
+    stage becuse we havent made a prediction yet.
+
+------------------------------------------------------------
 
 
 the recalculation function might not work becouse we call a variable and change its val instead of the actual object,(same problem as with the predVector ins asigment)

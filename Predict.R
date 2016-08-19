@@ -26,62 +26,8 @@ predict <- function(dtfPaths,trainPachs,testPaths){
     # thats why we use levels
     
     
-    # set tt acording to ndf
-    #tt <- ndf[which(ndf$week==max(ndf$week)),]
-    tt<<-ttdf
-    tt$t1 <<- factor(tt$t1, levels = levels(df$t1))
-    tt$t2 <<- factor(tt$t2, levels = levels(df$t2))
-    tt$t1Classification <<- factor(tt$t1Classification,levels = levels(df$t1Classification))
-    tt$t2Classification <<- factor(tt$t2Classification,levels = levels(df$t2Classification))
-    
-    algooh(ScaccDataFrameNdf,ndf,3)
-    algooh(ScaccDataFrameNdf2,ndf[which(ndf$week>max(ndf$week)/2),],3)
-    algooh(ScaccDataFrameNdf5,ndf[which(ndf$week>max(ndf$week)-6),],1)
-    
-    
-    # set tt acording to df
-    # tt <- df[which(df$week==max(df$week)),]
-    tt <<- read.csv("C:/BastData/Pred/Test/1_Liga/Austria_10_Test_2016-05-20")
-    
-    #additional attributes for the tt dataset to  be congruent with the fh attributes
-    mfd1<-c()
-    mfd2<-c()
-    for(i in 1:dim(tt)[1]){mfd1[i] <- mean(tt[i,13],tt[i,14],tt[i,15],tt[i,16])}
-    for(i in 1:dim(tt)[1]){mfd2[i] <- mean(tt[i,39],tt[i,40],tt[i,41],tt[i,42])}
-    owd <- tt$t1WinsIn-tt$t2WinsOut
-    odd <- tt$t1DrawsIn- tt$t2DrawsOut
-    old <- tt$t1LosesIn - tt$t2LosesOut
-    #----------DF data
-    tt$mfd1 <<-mfd1
-    tt$mfd2 <<-mfd2
-    tt$odd <<- odd
-    tt$old <<- old
-    tt$owd <<-owd
-    
-    tt$t1 <<- factor(tt$t1, levels = levels(df$t1))
-    tt$t2 <<- factor(tt$t2, levels = levels(df$t2))
-    tt$t1Classification <<- factor(tt$t1Classification,levels = levels(df$t1Classification))
-    tt$t2Classification <<- factor(tt$t2Classification,levels = levels(df$t2Classification))
-    
-    algofh(accDataFrameDf,df,3)
-    algofh(ScaccDataFrameDf2,df[which(df$week>max(df$week)/2),],3)
-    algofh(ScaccDataFrameDf5,df[which(df$week>max(df$week)-6),],1)
-    
-    
-    # count outcomes & summ their accuracy
-    datrotate()
-    
-    #show conclusions
-    resultsdMat/100
-    
-    tt[,c("t1","t2","t1Form","t2Form","mfd1","mfd2", "t1Points","t2Points")]
   }
-    #-------------------
     
-  }
-  
-  
-  
   
 }
 
@@ -221,4 +167,26 @@ diffFunc <- function(){
   #    t1adoe,t2adoe,t1e,t2e )
   
   return(ndf);
+}
+newTT <- function(){
+  #additional attributes for the tt dataset to  be congruent with the fh attributes
+  mfd1<-c()
+  mfd2<-c()
+  for(i in 1:dim(tt)[1]){mfd1[i] <- mean(tt[i,13],tt[i,14],tt[i,15],tt[i,16])}
+  for(i in 1:dim(tt)[1]){mfd2[i] <- mean(tt[i,39],tt[i,40],tt[i,41],tt[i,42])}
+  owd <- tt$t1WinsIn-tt$t2WinsOut
+  odd <- tt$t1DrawsIn- tt$t2DrawsOut
+  old <- tt$t1LosesIn - tt$t2LosesOut
+  #----------DF data
+  tt$mfd1 <<-mfd1
+  tt$mfd2 <<-mfd2
+  tt$odd <<- odd
+  tt$old <<- old
+  tt$owd <<-owd
+  
+  tt$t1 <<- factor(tt$t1, levels = levels(df$t1))
+  tt$t2 <<- factor(tt$t2, levels = levels(df$t2))
+  tt$t1Classification <<- factor(tt$t1Classification,levels = levels(df$t1Classification))
+  tt$t2Classification <<- factor(tt$t2Classification,levels = levels(df$t2Classification))
+  
 }

@@ -16,17 +16,14 @@ runAll<- function(trPaths){
     ndtf <<- diffFunc();
     
     # -2 start the object that will hold the pred data CREATION
-    headCrfvInit();          # ret :hDtf 
-    scoreCrfvInit();         # ret :csDtf 
-    p1CrfvInit();            # ret :p1Dtf 
-    p2CrfvInit();            # ret :p2Dtf 
-    totFtCrfvInit();         # ret :tftDtf 
+    # headCrfvInit();          # ret :hDtf 
+    # scoreCrfvInit();         # ret :csDtf 
+    # p1CrfvInit();            # ret :p1Dtf 
+    # p2CrfvInit();            # ret :p2Dtf 
+    # totFtCrfvInit();         # ret :tftDtf 
     totHtCrfvInit();         # ret :thtDtf 
+    fileMaker(path);
     
-    fileName <- gsub("Pred/Data","DTF",path);
-
-    #create a new file and sotr the dtf objs created for the competition
-    save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
   }
 }
 
@@ -139,16 +136,33 @@ diffFunc <- function(){
   return(ndf);
 }
 
+fileMaker <- function(file_path){
+  # file_path <- patha
+  fileName<- gsub("Pred/Data","DTF",file_path);
+  fileName<- gsub("__Data",".dtf.RData",fileName);
+  pathSegment <- strsplit(fileName,"/")[[1]];
+  dirName <- paste0(pathSegment[1:length(pathSegment)-1],collapse = "/")
+  if(!dir.exists("C:/DTF/hua")){
+    dir.create(dirName,recursive = T,mode = 753)
+  }
+  if(dir.exists(dirName)){
+    #create a new file and sotre the dtf objs created for the competition
+    save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=fileName);
+  }
+  print(fileName);
+}
+
+
 remover <- function(){
   # aparently we dont need to use remove afterall, we are not saving the entire workspace just the DTF objs
   
   # remove all unwanted vars, save only the dtf objs
-  # rm(dtf,ndf,DTFLoader,predAtt_Loader,diffFunc);
+  rm(dtf,ndf,DTFLoader,predAtt_Loader,diffFunc);
   # 
-  # DTFRemover();
-  # dataStructRemover();
-  # predAtt_Remover();
-  # libRemover();
+  DTFRemover();
+  dataStructRemover();
+  predAtt_Remover();
+  libRemover();
 }
 
 libLoader <- function(){
@@ -162,14 +176,14 @@ libLoader <- function(){
   library(tree)
 }
 libRemover <- function(){
-  # detach(package:plyr, unload=TRUE)
-  # detach(package:e1071, unload=TRUE)
-  # detach(package:C50, unload=TRUE)
-  # detach(package:randomForest, unload=TRUE)
-  # detach(package:ipred, unload=TRUE)
-  # detach(package:RWeka, unload=TRUE)
-  # detach(package:rpart, unload=TRUE)
-  # detach(package:tree, unload=TRUE)
+  detach(package:plyr, unload=TRUE)
+  detach(package:e1071, unload=TRUE)
+  detach(package:C50, unload=TRUE)
+  detach(package:randomForest, unload=TRUE)
+  detach(package:ipred, unload=TRUE)
+  detach(package:RWeka, unload=TRUE)
+  detach(package:rpart, unload=TRUE)
+  detach(package:tree, unload=TRUE)
 }
 
 DTFLoader <- function(){
@@ -181,12 +195,12 @@ DTFLoader <- function(){
   source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
 }
 DTFRemover <- function(){
-  # rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
-  # rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv);
-  # rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv);
-  # rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv);
-  # rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
-  # rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
+  rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
+  rm(scoreCrfvInit,scorePredFunc,scoreTreBestChoser,scoreCrfv);
+  rm(p2CrfvInit,p2PredFunc,p2TreBestChoser,p2Crfv);
+  rm(p1CrfvInit,p1PredFunc,p1TreBestChoser,p1Crfv);
+  rm(fulltotFtBet,fullTotFtNoBet,differencedTotFtBet,differencedTotFtNoBet)
+  rm(totHtCrfvInit,totHtPredFunc,totHtTreBestChoser,totHtCrfv);
   
 }
 
@@ -199,12 +213,12 @@ predAtt_Loader <- function(){
   source("C:/TotalPrediction/totHt_AttPredDataset.R");
 }
 predAtt_Remover <- function(){
-  # rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
-  # rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
-  # rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
-  # rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
-  # rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
-  # rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
+  rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
+  rm(fullScoreBet,fullScoreNoBet,differencedScoreBet,differencedScoreNoBet)
+  rm(full2pBet,full2pNoBet,differenced2pBet,differenced2pNoBet)
+  rm(full1pBet,full1pNoBet,differenced1pBet,differenced1pNoBet)
+  rm(totFtCrfvInit,totFtPredFunc,totFtTreBestChoser,totFtCrfv)
+  rm(fullTotHtBet,fullTotHtNoBet,differencedTotHtBet,differencedTotHtNoBet);
 }
 
 dataStructLoader <- function(){
@@ -212,8 +226,12 @@ dataStructLoader <- function(){
   source("C:/TotalPrediction/dataStructure.R");
 }
 dataStructRemover <- function(){
-  # rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
-  # rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
+  rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
+  rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
 
+<<<<<<< HEAD
 #create the ndf dataframe from the dtf dataframe
+=======
+
+>>>>>>> origin/master
