@@ -190,3 +190,8 @@ newTT <- function(){
   tt$t2Classification <<- factor(tt$t2Classification,levels = levels(df$t2Classification))
   
 }
+
+#-------------Test & try
+dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
+dim(dtf)
+ndf <- diffFunc()

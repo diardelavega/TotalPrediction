@@ -118,9 +118,9 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           predCalcScore= function(tt){
             initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
             newTt()# regulate tt with ndf and t1,t2 classification factors
-             algcount <-0
+            algcount <-0
              
-          # for (algdat in algoDataList) {
+            # for (algdat in algoDataList) {
              # for (ins in algdat$instList) {
             for (al_i in 1:length(algoDataList)) {
               algdat <- algoDataList[[al_i]]
@@ -131,7 +131,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                 cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                 
                 model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
-                predVec <- as.vector(predict(model,tt, type = "class"))
+                predVec <- as.vector(predict(model, tt, type = "class"))
                 print(predVec)
                 
                 algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
