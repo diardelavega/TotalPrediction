@@ -142,7 +142,7 @@ fileMaker <- function(file_path){
   fileName<- gsub("__Data",".dtf.RData",fileName);
   pathSegment <- strsplit(fileName,"/")[[1]];
   dirName <- paste0(pathSegment[1:length(pathSegment)-1],collapse = "/")
-  if(!dir.exists("C:/DTF/hua")){
+  if(!dir.exists(dirName)){
     dir.create(dirName,recursive = T,mode = 753)
   }
   if(dir.exists(dirName)){

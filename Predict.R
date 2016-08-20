@@ -5,7 +5,7 @@
 #think for the reevaluation of the prediction (after we have the actual results of the match) 
 
 # *paths are vectors of string with the paths to the files of every competition to be predicted
-predict <- function(dtfPaths,trainPachs,testPaths){
+predictAll <- function(dtfPaths,trainPachs,testPaths){
 
   predAtt_Loader();
   libLoader();
@@ -14,26 +14,44 @@ predict <- function(dtfPaths,trainPachs,testPaths){
     dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
     
     tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
-    # dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-    # ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-    
+    dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
+    ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
     
     dtf <<- read.csv(trainPachs[i]); # train datasets
     ndtf <<- diffFunc();
     
     
+    #  cal dtf objs to make prediction fotr the matches in hand
+    hDtf$predCalcScore();
+    csDtf$predCalcScore();
+    p1Dtf$predCalcScore();
+    p2Dtf$predCalcScore();
+    tftDtf$predCalcScore();
+    thtDtf$predCalcScore();
     
-    hDtf$predCalcScore(tt);
-    
+    # dirName <- path to temp directory 
     #--------------------
     # some algorithms require the same levels between train & test dataset attributes
     # thats why we use levels
     
     
   }
-    
-  
 }
+
+
+dirMker <- function(path){
+    # file_path <- patha
+    fileName<- gsub("DTF","WeekPredPoints",file_path);
+    fileName<- gsub(".dtf.RData",".csv",fileName);
+    pathSegment <- strsplit(fileName,"/")[[1]];
+    dirName <- paste0(pathSegment[1:length(pathSegment)-1],collapse = "/")
+    if(!dir.exists(dirName)){
+      dir.create(dirName,recursive = T,mode = 753)
+    }
+    if(dir.exists(dirName)){
+      print(dirName);
+    }
+  }
 
 dtfObjLoader <- function(path){
   # load the dtf ojects from the file
@@ -44,8 +62,8 @@ dtfobjcleaner <- function(){
   rm(list = c(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf));
 }
 
-
 libLoader <- function(){
+  # loads libraries needed for the predictive algorithms to work
   library(plyr)
   library(e1071)  #svm
   library(C50)
@@ -56,6 +74,7 @@ libLoader <- function(){
   library(tree)
 }
 predAtt_Loader <- function(){
+  # files containing pred_attribute dataset << pred_att ~ {att1,att2,...attn} >>
   source("C:/TotalPrediction/Head_AttPredDataset.R");
   source("C:/TotalPrediction/Score_AttPredDataset.R");
   source("C:/TotalPrediction/P1_AttPredDataset.R");
@@ -171,30 +190,6 @@ diffFunc <- function(){
   #    t1adoe,t2adoe,t1e,t2e )
   
   return(ndf);
-}
-newTT <- function(){
-  #  SO FAR APEARS TO BE UN NECESARY
-  
-  #additional attributes for the tt dataset to  be congruent with the fh attributes
-  mfd1<-c()
-  mfd2<-c()
-  for(i in 1:dim(tt)[1]){mfd1[i] <- mean(tt[i,13],tt[i,14],tt[i,15],tt[i,16])}
-  for(i in 1:dim(tt)[1]){mfd2[i] <- mean(tt[i,39],tt[i,40],tt[i,41],tt[i,42])}
-  owd <- tt$t1WinsIn-tt$t2WinsOut
-  odd <- tt$t1DrawsIn- tt$t2DrawsOut
-  old <- tt$t1LosesIn - tt$t2LosesOut
-  #----------DF data
-  tt$mfd1 <<-mfd1
-  tt$mfd2 <<-mfd2
-  tt$odd <<- odd
-  tt$old <<- old
-  tt$owd <<-owd
-  
-  tt$t1 <<- factor(tt$t1, levels = levels(df$t1))
-  tt$t2 <<- factor(tt$t2, levels = levels(df$t2))
-  tt$t1Classification <<- factor(tt$t1Classification,levels = levels(df$t1Classification))
-  tt$t2Classification <<- factor(tt$t2Classification,levels = levels(df$t2Classification))
-  
 }
 
 #-------------Test & try
