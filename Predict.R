@@ -9,11 +9,15 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
 
   predAtt_Loader();
   libLoader();
+  dataStructLoader();
+  # DTFLoader();
   
   for(i in 1:length( dtfPaths)){
     print(dtfPaths[i]);
     # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
     load(dtfPaths[i])
+    
+    tempdtf <<- read.csv(trainPachs[i]); # train datasets
     
     print(testPaths[i]);
     tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
@@ -24,9 +28,20 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
     tt$odd <<- ntt$odd 
     tt$old <<- ntt$old 
     tt$owd <<- ntt$owd 
+    tt$t1 <<- factor(tt$t1, levels = levels(tempdtf$t1))
+    tt$t2 <<- factor(tt$t2, levels = levels(tempdtf$t2))
+    tt$t1Classification <<- factor(tt$t1Classification,levels = levels(tempdtf$t1Classification))
+    tt$t2Classification <<- factor(tt$t2Classification,levels = levels(tempdtf$t2Classification))
+    
+    ntt$t1 <<- factor(ntt$t1, levels = levels(tt$t1))
+    ntt$t2 <<- factor(ntt$t2, levels = levels(tt$t2))
+    ntt$t1Classification <<- factor(ntt$t1Classification,levels = levels(tt$t1Classification))
+    ntt$t2Classification <<- factor(ntt$t2Classification,levels = levels(tt$t2Classification))
+    print(tt$t1)
+    
     
     print(trainPachs[i]);
-    dtf <<- read.csv(trainPachs[i]); # train datasets
+    dtf <<- tempdtf
     ndtf <<- diffFunc();
     
     
@@ -39,12 +54,6 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
     p2Dtf$predCalcScore();
     tftDtf$predCalcScore();
     thtDtf$predCalcScore();
-    
-    # dirName <- path to temp directory 
-    #--------------------
-    # some algorithms require the same levels between train & test dataset attributes
-    # thats why we use levels
-    
     
   }
 }
@@ -202,6 +211,21 @@ diffFunc <- function(){
   
   return(ndf);
 }
+
+
+dataStructLoader <- function(){
+  # the file with the description of the structure of the DTF obj
+  source("C:/TotalPrediction/dataStructure.R");
+}
+DTFLoader <- function(){
+  source("C:/TotalPrediction/HeadCrfvEstimation.R"); 
+  source("C:/TotalPrediction/ScoreCrfvEstimation.R"); 
+  source("C:/TotalPrediction/P1CrfvEstimation.R");
+  source("C:/TotalPrediction/P2CrfvEstimation.R"); 
+  source("C:/TotalPrediction/totHtScoreCrfvEstimation.R"); 
+  source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
+}
+
 
 #-------------Test & try
 dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
