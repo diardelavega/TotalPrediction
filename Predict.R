@@ -10,16 +10,27 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
   predAtt_Loader();
   libLoader();
   
-  for(i in 1:lenght( dtfPaths)){
-    dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
+  for(i in 1:length( dtfPaths)){
+    print(dtfPaths[i]);
+    # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
+    load(dtfPaths[i])
     
+    print(testPaths[i]);
     tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
     dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
     ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+    tt$mfd1 <<- ntt$mfd1
+    tt$mfd2 <<- ntt$mfd2
+    tt$odd <<- ntt$odd 
+    tt$old <<- ntt$old 
+    tt$owd <<- ntt$owd 
     
+    print(trainPachs[i]);
     dtf <<- read.csv(trainPachs[i]); # train datasets
     ndtf <<- diffFunc();
     
+    
+    print(hDtf$predAtt)
     
     #  cal dtf objs to make prediction fotr the matches in hand
     hDtf$predCalcScore();
@@ -196,3 +207,11 @@ diffFunc <- function(){
 dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
 dim(dtf)
 ndf <- diffFunc()
+
+trpath <-  "C:/BastData/Pred/Data/Norway/Eliteserien__112__Data"
+
+dtfpath <- "C:/BastData/DTF/Norway/Eliteserien__112.dtf.RData"
+
+tspath <-  "C:/BastData/Pred/Test/Norway/Eliteserien__112__Test__2016-07-29"
+
+
