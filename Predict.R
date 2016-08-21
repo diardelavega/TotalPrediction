@@ -26,31 +26,37 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
     csDtf$predCalcScore();
     p1Dtf$predCalcScore();
     p2Dtf$predCalcScore();
-    tftDtf$predCalcScore();
     thtDtf$predCalcScore();
-    
-    # dirName <- path to temp directory 
-    #--------------------
-    # some algorithms require the same levels between train & test dataset attributes
-    # thats why we use levels
+    tftDtf$predCalcScore();
     
     
+    
+   filNam = dirMker(testPaths[i]);
+    write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+    
+    dtfobjcleaner();
   }
 }
 
 
-dirMker <- function(path){
+dirMker <- function(test_path){
     # file_path <- patha
-    fileName<- gsub("DTF","WeekPredPoints",file_path);
-    fileName<- gsub(".dtf.RData",".csv",fileName);
+    fileName<- gsub("Pred/Test","WeekPredPoints",test_path);
+    fileName<- gsub("__Test","__Pred",fileName);
     pathSegment <- strsplit(fileName,"/")[[1]];
     dirName <- paste0(pathSegment[1:length(pathSegment)-1],collapse = "/")
     if(!dir.exists(dirName)){
       dir.create(dirName,recursive = T,mode = 753)
     }
     if(dir.exists(dirName)){
-      print(dirName);
+      file.create(fileName)
     }
+    return(fileName) ;
   }
 
 dtfObjLoader <- function(path){
@@ -192,7 +198,3 @@ diffFunc <- function(){
   return(ndf);
 }
 
-#-------------Test & try
-dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
-dim(dtf)
-ndf <- diffFunc()
