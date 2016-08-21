@@ -92,7 +92,9 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
         methods = list(
           scoreMatOrientation= function(){cat("1 row - O  \n2 row - U \n") },
           initMatrixes=function(ttlength){
+            
             print("init mats")
+            print(ttlength)
             #set to 0 all matrixes and counters
             rowlen <-2
             ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)
@@ -118,7 +120,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
           predCalcScore= function(){
             initMatrixes(dim(tt)[1]);# init the matrices based on the nr of matches in the today-playList
 
-            newTt()# regulate tt with ndf and t1,t2 classification factors
+           
             algcount <-0
 
             
@@ -178,6 +180,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                  headMatOrientation= function(){cat("1 row - 1  \n2 row - X \n3 row - 2 \n") },
                                  initMatrixes=function(ttlength){
                                    print("init mats")
+                                   print(ttlength)
                                    #set to 0 all matrixes and counters
                                    rowlen <-3
                                    ensambleMat <<-matrix(nrow =rowlen, ncol = ttlength, data = 0)

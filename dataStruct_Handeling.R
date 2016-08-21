@@ -87,7 +87,7 @@ bb$algoDataList <- hDtf$algoDataList
 bb$predAtt <- "head"
 bb$ensambleMat <- bb2$ensambleMat
 bb$ensambleCount <-bb2$ensambleCount 
-bb$predCalcScore(tt)
+bb$predCalcScore()
 
 
 cc <- CleanTotFtDtf$new()
