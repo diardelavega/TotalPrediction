@@ -16,44 +16,36 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
     print(dtfPaths[i]);
     # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
     load(dtfPaths[i])
+
     
+    print(testPaths[i]);    
     tempdtf <<- read.csv(trainPachs[i]); # train datasets
-    
-    print(testPaths[i]);
     tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
     dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
     ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-    tt$mfd1 <<- ntt$mfd1
-    tt$mfd2 <<- ntt$mfd2
-    tt$odd <<- ntt$odd 
-    tt$old <<- ntt$old 
-    tt$owd <<- ntt$owd 
-    tt$t1 <<- factor(tt$t1, levels = levels(tempdtf$t1))
-    tt$t2 <<- factor(tt$t2, levels = levels(tempdtf$t2))
-    tt$t1Classification <<- factor(tt$t1Classification,levels = levels(tempdtf$t1Classification))
-    tt$t2Classification <<- factor(tt$t2Classification,levels = levels(tempdtf$t2Classification))
-    
-    ntt$t1 <<- factor(ntt$t1, levels = levels(tt$t1))
-    ntt$t2 <<- factor(ntt$t2, levels = levels(tt$t2))
-    ntt$t1Classification <<- factor(ntt$t1Classification,levels = levels(tt$t1Classification))
-    ntt$t2Classification <<- factor(ntt$t2Classification,levels = levels(tt$t2Classification))
-    print(tt$t1)
-    
+    ttFixer(tempdtf)
     
     print(trainPachs[i]);
     dtf <<- tempdtf
     ndtf <<- diffFunc();
     
     
-    print(hDtf$predAtt)
-    
     #  cal dtf objs to make prediction fotr the matches in hand
+    print("------------------------------------: HEAD")
     hDtf$predCalcScore();
+    print("------------------------------------: SCORE")
     csDtf$predCalcScore();
+    print("------------------------------------: P1")
     p1Dtf$predCalcScore();
+    print("------------------------------------: P2")
     p2Dtf$predCalcScore();
+    print("------------------------------------: HT")
     thtDtf$predCalcScore();
+    print("------------------------------------: FT")
     tftDtf$predCalcScore();
+    
+    
+    tftDtf$getEnsamble()
     
     
    filNam = dirMker(testPaths[i]);
@@ -64,7 +56,7 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
     write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
     write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
     
-    dtfobjcleaner();
+    # dtfobjcleaner();
 
   }
 }
@@ -91,7 +83,7 @@ dtfObjLoader <- function(path){
 }
 dtfobjcleaner <- function(){
   # after we finished pur work with the dtf objs remove them to let space for the next set of them
-  rm(list = c(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf));
+  rm(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf);
 }
 
 libLoader <- function(){
@@ -224,20 +216,29 @@ diffFunc <- function(){
   return(ndf);
 }
 
-<<<<<<< HEAD
-=======
+ttFixer <- function(tempdtf){
+  tt$mfd1 <<- ntt$mfd1
+  tt$mfd2 <<- ntt$mfd2
+  tt$odd <<- ntt$odd 
+  tt$old <<- ntt$old 
+  tt$owd <<- ntt$owd 
+  
+  tt$t1 <<- factor(tt$t1, levels = levels(tempdtf$t1))
+  tt$t2 <<- factor(tt$t2, levels = levels(tempdtf$t2))
+  tt$t1Classification <<- factor(tt$t1Classification,levels = levels(tempdtf$t1Classification))
+  tt$t2Classification <<- factor(tt$t2Classification,levels = levels(tempdtf$t2Classification))
+  
+  ntt$t1 <<- factor(ntt$t1, levels = levels(tt$t1))
+  ntt$t2 <<- factor(ntt$t2, levels = levels(tt$t2))
+  ntt$t1Classification <<- factor(ntt$t1Classification,levels = levels(tt$t1Classification))
+  ntt$t2Classification <<- factor(ntt$t2Classification,levels = levels(tt$t2Classification))
+  print(tt$t1)
+  
+}
 
 dataStructLoader <- function(){
   # the file with the description of the structure of the DTF obj
   source("C:/TotalPrediction/dataStructure.R");
-}
-DTFLoader <- function(){
-  source("C:/TotalPrediction/HeadCrfvEstimation.R"); 
-  source("C:/TotalPrediction/ScoreCrfvEstimation.R"); 
-  source("C:/TotalPrediction/P1CrfvEstimation.R");
-  source("C:/TotalPrediction/P2CrfvEstimation.R"); 
-  source("C:/TotalPrediction/totHtScoreCrfvEstimation.R"); 
-  source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
 }
 
 
@@ -253,4 +254,3 @@ dtfpath <- "C:/BastData/DTF/Norway/Eliteserien__112.dtf.RData"
 tspath <-  "C:/BastData/Pred/Test/Norway/Eliteserien__112__Test__2016-07-29"
 
 
->>>>>>> b6fb5f6325531225151139d4e28ddad961683392

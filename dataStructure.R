@@ -450,12 +450,12 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                     cat(algcount,ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt,"\n")
                                     model <- modelFunc(ins$algo,ins$attsDtsNr,ins$bet,ins$fullDiff,algdat$dtfCategory,predAtt)
                                     if(ins$fullDiff =="full"){
-                                      predVec <- as.vector(predict(model, tt))
-                                    }
+                                      predVec <- as.vector(predict(model, tt)) }
                                     else if(ins$fullDiff =="diff"){
-                                      predVec <- as.vector(predict(model, ntt))  
-                                    }
+                                      predVec <- as.vector(predict(model, ntt)) }
+                                    print(predVec);
                                     algoDataList[[al_i]]$instList[[ins_j]]$predvec  <<-predVec
+                                    
                                     retMat <-totFtResultCount(as.vector(predVec),ins$accVal)
                                     ensambleMat <<- ensambleMat+retMat; ensambleCount<<-ensambleCount+1
                                     if(algdat$dtfCategory =="f"){fmat <<- fmat+retMat; fcount<<-fcount+1}
@@ -567,7 +567,6 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
 
 
 #@ TODO test score Dtf an if succesfull implement head, 2p, 1p cleanDtfs
-
 modelFunc <- function(algorithm,attDtsNr,bet,fulDiff,dfCategory,predAtt){
   #generates a model for prediction based on the parameters from the best crfv results
   # print("modelFunc")

@@ -82,12 +82,15 @@ csDtf<- aa
 # aa$predCalcScore(tt)
 # aa$getEnsamble()
 
+pinhDtf <- hDtf
+
 bb <- CleanHeadDtf$new()
 bb$algoDataList <- hDtf$algoDataList
 bb$predAtt <- "head"
 bb$ensambleMat <- bb2$ensambleMat
 bb$ensambleCount <-bb2$ensambleCount 
 bb$predCalcScore()
+hdtf <- bb
 
 
 cc <- CleanTotFtDtf$new()
