@@ -1,9 +1,13 @@
 !./ Human log.
 
 
+!! implemented reevaluation of accuracy, to be used after the prediction  untested
+ 
+------------------------------------------
 *** in the datastructure i hadn;t predicted the "prediction"" phase for the diff based attrubutes and datasets.
     - about to change the @DTF object "predCalcScore" function to take into account the diff part pf the data.
     !! remove tt as parameter for the "predCalcScore" function since it is going to be global <tt> & <ntt>
+    *\/ DONE
     
 
 

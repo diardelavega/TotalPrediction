@@ -16,11 +16,11 @@ runAll<- function(trPaths){
     ndtf <<- diffFunc();
     
     # -2 start the object that will hold the pred data CREATION
-    # headCrfvInit();          # ret :hDtf 
-    # scoreCrfvInit();         # ret :csDtf 
-    # p1CrfvInit();            # ret :p1Dtf 
-    # p2CrfvInit();            # ret :p2Dtf 
-    # totFtCrfvInit();         # ret :tftDtf 
+    headCrfvInit();          # ret :hDtf
+    scoreCrfvInit();         # ret :csDtf
+    p1CrfvInit();            # ret :p1Dtf
+    p2CrfvInit();            # ret :p2Dtf
+    totFtCrfvInit();         # ret :tftDtf
     totHtCrfvInit();         # ret :thtDtf 
     fileMaker(path);
     
