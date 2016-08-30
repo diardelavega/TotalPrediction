@@ -230,8 +230,5 @@ dataStructRemover <- function(){
   rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
 
-<<<<<<< HEAD
-#create the ndf dataframe from the dtf dataframe
-=======
 
->>>>>>> origin/master
+#create the ndf dataframe from the dtf dataframe
