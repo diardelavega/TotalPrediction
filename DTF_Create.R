@@ -10,19 +10,32 @@ runAll<- function(trPaths){
   dataStructLoader();
   
   for(path in trPaths){
-    # browser();
-    # -1  create datasets to work with
-    dtf <<- read.csv(path);
-    ndtf <<- diffFunc();
     
-    # -2 start the object that will hold the pred data CREATION
-    headCrfvInit();          # ret :hDtf
-    scoreCrfvInit();         # ret :csDtf
-    p1CrfvInit();            # ret :p1Dtf
-    p2CrfvInit();            # ret :p2Dtf
-    totFtCrfvInit();         # ret :tftDtf
-    totHtCrfvInit();         # ret :thtDtf 
-    fileMaker(path);
+    tryCatch({
+      # -1  create datasets to work with
+      dtf <<- read.csv(path);
+      ndtf <<- diffFunc();
+      
+      # -2 start the object that will hold the pred data CREATION
+      headCrfvInit();          # ret :hDtf
+      scoreCrfvInit();         # ret :csDtf
+      p1CrfvInit();            # ret :p1Dtf
+      p2CrfvInit();            # ret :p2Dtf
+      totFtCrfvInit();         # ret :tftDtf
+      totHtCrfvInit();         # ret :thtDtf 
+      
+      fileMaker(path);   # create folder/subfolders & save the dtfs
+    },
+    error = function(err) {
+      # error handler picks up where error was generated
+      print(paste("MY_ERROR:  ",err))
+      
+    }, 
+    finally = {
+      # in case of error save whatever can be saved
+      fileMaker(path);   # create folder/subfolders & save the dtfs
+    }) # END tryCatch
+    
     
   }
 }
@@ -231,4 +244,18 @@ dataStructRemover <- function(){
 }
 
 
-#create the ndf dataframe from the dtf dataframe
+test <- function(v, vec){
+	dir_nam <- 'C:/ff1/ff2/ff3/ff5';
+	fil_nam <- paste(dir_nam,'marioFile.mar',sep="/");
+	dir.create(dir_nam,recursive = T,mode = 753)
+
+	for(i in 1:v){
+		write(i,fil_nam,append=TRUE);
+	}
+	for(i in 1:length(vec)){
+		write(vec[i],fil_nam,append=TRUE);
+	}
+	
+	return(v+4);
+}
+

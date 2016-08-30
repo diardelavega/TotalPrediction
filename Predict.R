@@ -12,100 +12,63 @@ predictAll <- function(dtfPaths,trainPachs,testPaths){
   dataStructLoader();
   # DTFLoader();
   
-  for(i in 1:length( dtfPaths)){
-    print(dtfPaths[i]);
-    # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
-    load(dtfPaths[i])
-
-    
-    print(testPaths[i]);    
-    tempdtf <<- read.csv(trainPachs[i]); # train datasets
-    tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
-    dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-    ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-    ttFixer(tempdtf)
-    
-    print(trainPachs[i]);
-    dtf <<- tempdtf
-    ndtf <<- diffFunc();
-    
-    
-    #  cal dtf objs to make prediction fotr the matches in hand
-    print("------------------------------------: HEAD")
-    hDtf$predCalcScore();
-    print("------------------------------------: SCORE")
-    csDtf$predCalcScore();
-    print("------------------------------------: P1")
-    p1Dtf$predCalcScore();
-    print("------------------------------------: P2")
-    p2Dtf$predCalcScore();
-    print("------------------------------------: HT")
-    thtDtf$predCalcScore();
-    print("------------------------------------: FT")
-    tftDtf$predCalcScore();
-    
-    
-    tftDtf$getEnsamble()
-    
-    
-   filNam = dirMker(testPaths[i]);
-    write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    
-    # after the DTH objs have been updated with the vector in each instance save them again 
-    for(i in 1:length( dtfPaths)){
-      print(dtfPaths[i]);
-      # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
-      load(dtfPaths[i])
+     for(i in 1:length( dtfPaths)){
+       tryCatch({
+         
+          load(dtfPaths[i])
+          
+          tempdtf <<- read.csv(trainPachs[i]); # train datasets
+          tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
+          dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
+          ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+          ttFixer(tempdtf)
+          
+          dtf <<- tempdtf
+          ndtf <<- diffFunc();
+          
+          
+          #  cal dtf objs to make prediction fotr the matches in hand
+          print("------------------------------------: HEAD")
+          hDtf$predCalcScore();
+          print("------------------------------------: SCORE")
+          csDtf$predCalcScore();
+          print("------------------------------------: P1")
+          p1Dtf$predCalcScore();
+          print("------------------------------------: P2")
+          p2Dtf$predCalcScore();
+          print("------------------------------------: HT")
+          thtDtf$predCalcScore();
+          print("------------------------------------: FT")
+          tftDtf$predCalcScore();
+          
+          # write in the output(prediction file) the points for each prediction we made
+          #  the order in which the objs are written is importan so that they can be understood when they are read
+          filNam = dirMker(testPaths[i]);
+          write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          
+          # after the DTH objs have been updated with the vector in each instance save them again 
+          save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
+          dtfobjcleaner();
+      },
+      error = function(err) {
+        # error handler picks up where error was generated
+        print(paste("MY_ERROR:  ",err))
+        
+      }, 
+      finally = {
+        # in case of error save whatever can be saved
+        save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
+        dtfobjcleaner();
+      }) # END tryCatch
+       
       
-      
-      print(testPaths[i]);    
-      tempdtf <<- read.csv(trainPachs[i]); # train datasets
-      tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
-      dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-      ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-      ttFixer(tempdtf)
-      
-      print(trainPachs[i]);
-      dtf <<- tempdtf
-      ndtf <<- diffFunc();
-      
-      
-      #  cal dtf objs to make prediction fotr the matches in hand
-      print("------------------------------------: HEAD")
-      hDtf$predCalcScore();
-      print("------------------------------------: SCORE")
-      csDtf$predCalcScore();
-      print("------------------------------------: P1")
-      p1Dtf$predCalcScore();
-      print("------------------------------------: P2")
-      p2Dtf$predCalcScore();
-      print("------------------------------------: HT")
-      thtDtf$predCalcScore();
-      print("------------------------------------: FT")
-      tftDtf$predCalcScore();
-      
-      
-      filNam = dirMker(testPaths[i]);
-      write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-      
-      # after the DTH objs have been updated with the vector in each instance save them again 
-      save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
-      dtfobjcleaner();
-      
-    }
-    # dtfobjcleaner();
-
-  }
+    }# for
+  
 }
 
 
