@@ -1,7 +1,9 @@
 #page to be used for loading /7 initiating all the data for the creation of DTF obj
 
-runAll<- function(trPaths){
-  #trPaths is a vector with all the tr paths of a competition
+runAll<- function(trPaths,dtfKind){
+  #trPaths is a vector with all the tr paths of the competitions
+  # dtfKind is a vector with the kind of dtf that we want to create {h,s,p1,p2,ht,ft}
+  
   
   # -0 load the dtf-crfv-estimation files (head,score,1p,2p,ht,ft)
   DTFLoader();
@@ -16,15 +18,57 @@ runAll<- function(trPaths){
       dtf <<- read.csv(path);
       ndtf <<- diffFunc();
       
-      # -2 start the object that will hold the pred data CREATION
-      headCrfvInit();          # ret :hDtf
-      scoreCrfvInit();         # ret :csDtf
-      p1CrfvInit();            # ret :p1Dtf
-      p2CrfvInit();            # ret :p2Dtf
-      totFtCrfvInit();         # ret :tftDtf
-      totHtCrfvInit();         # ret :thtDtf 
+     dirNam<- dirmaker(path);# create the folder of the competiton where tho dtf object files will be stored
       
-      fileMaker(path);   # create folder/subfolders & save the dtfs
+      # -2 start the object that will hold the pred data CREATION
+     
+     if("h" %in% dtfKind){
+       if(!ishead(dirNam)){       # if file doesnt exzist
+        headCrfvInit();          # ret :hDtf  calculate
+         headmaker(dirNam)       # store
+       }}
+     
+     if("s" %in% dtfKind){
+       if(!isscore(dirNam)){
+         scoreCrfvInit();         # ret :csDtf 
+         scoremaker(dirNam)
+       }}
+     
+     if("ft" %in% dtfKind){
+       if(!isft(dirNam)){
+         totFtCrfvInit();         # ret :tftDtf  
+         ftmaker(dirNam);
+       }}
+     
+     
+     if(mean(dtf$t1AvgHtScoreIn)<=0){
+       # average of ht scores is 0 or less (-1) ->  no real ht results
+       # so skip the ht dtf objects
+       next;
+     }
+     
+     if("p1" %in% dtfKind){
+       if(!isp1(dirNam)){
+         p1CrfvInit();            # ret :p1Dtf 
+         p1maker(dirNam);
+       }}
+     
+     
+     if("p2" %in% dtfKind){  
+       if(!isp2(dirNam)){
+          p2CrfvInit();            # ret :p2Dtf
+         p2maker(dirNam);
+       }}
+     
+       if("ht" %in% dtfKind){  
+     if(!isht(dirNam)){
+       totHtCrfvInit();         # ret :thtDtf 
+       htmaker(dirNam);
+     }}
+     
+      
+      
+      
     },
     error = function(err) {
       # error handler picks up where error was generated
@@ -165,6 +209,87 @@ fileMaker <- function(file_path){
   print(fileName);
 }
 
+dirmaker<- function(trPath){
+  dirName  <- gsub("Pred/Data","DTF",trPath);
+  dirName  <- gsub("__Data","",dirName);
+  if(!dir.exists(dirName)){
+    dir.create(dirName);
+    # print(dirName);
+  }
+  return(dirName);
+}
+
+ishead<-function(dirPath){
+  headFile<- paste0(dirPath,"/head.dtf.RData");
+  if(file.exists(headFile)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+headmaker<- function(dirPath){
+  headFile<- paste0(dirPath,"/head.dtf.RData");
+    save(hDtf,file=headFile);
+}
+
+isscore<-function(dirPath){
+  scoreFile<- paste0(dirPath,"/score.dtf.RData");
+  if(file.exists(scoreFile)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+scoremaker<- function(dirPath){
+  scoreFile<- paste0(dirPath,"/score.dtf.RData");
+  save(csDtf,file=scoreFile);
+}
+
+isp1<-function(dirPath){
+  p1File<- paste0(dirPath,"/p1.dtf.RData");
+  if(file.exists(p1File)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+p1maker<- function(dirPath){
+  p1File<- paste0(dirPath,"/p1.dtf.RData");
+  save(p1Dtf,file=p1File);
+}
+
+isp2<-function(dirPath){
+  p2File<- paste0(dirPath,"/p2.dtf.RData");
+  if(file.exists(p2File)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+p2maker<- function(dirPath){
+  p2File<- paste0(dirPath,"/p2.dtf.RData");
+  save(p2Dtf,file=p2File);
+}
+
+isht<-function(dirPath){
+  htFile<- paste0(dirPath,"/ht.dtf.RData");
+  if(file.exists(htFile)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+htmaker<- function(dirPath){
+  htFile<- paste0(dirPath,"/ht.dtf.RData");
+  save(thtDtf,file=htFile);
+}
+
+isft<-function(dirPath){
+  ftFile<- paste0(dirPath,"/ft.dtf.RData");
+  if(file.exists(ftFile)){
+    return (TRUE);
+  }
+  return(FALSE);
+}
+ftmaker<- function(dirPath){
+  ftFile<- paste0(dirPath,"/ft.dtf.RData");
+  save(tftDtf,file=ftFile);
+}
 
 remover <- function(){
   # aparently we dont need to use remove afterall, we are not saving the entire workspace just the DTF objs
