@@ -18,7 +18,7 @@ runAll<- function(trPaths,dtfKind){
       dtf <<- read.csv(path);
       ndtf <<- diffFunc();
       
-     dirNam<- dirmaker(path);# create the folder of the competiton where tho dtf object files will be stored
+     dirNam<- dirmaker(path);# create the folder of the competiton where the dtf object files will be stored
       
       # -2 start the object that will hold the pred data CREATION
      
@@ -213,7 +213,7 @@ dirmaker<- function(trPath){
   dirName  <- gsub("Pred/Data","DTF",trPath);
   dirName  <- gsub("__Data","",dirName);
   if(!dir.exists(dirName)){
-    dir.create(dirName);
+    dir.create(dirName,recursive = T,mode = 753);
     # print(dirName);
   }
   return(dirName);
