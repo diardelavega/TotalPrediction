@@ -2,6 +2,8 @@
 
 reEvalAll <- function(dtfPaths, testPaths){
   
+  log <- "C:/BastData/R_LOG";
+  write("RE_EVAL...", file = log, ncolumns = 10, append = T, sep = ",")
   for(i in 1:length( dtfPaths)){
     tryCatch({
       
@@ -19,6 +21,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           hDtf$accuracyRecalc(tt$headOutcome)
           save(hDtf, file=fnam);
           rm(hDtf);
+          write("HEAD", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -29,6 +32,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           csDtf$predCalcScore(tt$scoreOutcome);
           save(csDtf, file=fnam);
           rm(csDtf);
+          write("SCORE", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -39,6 +43,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           p1Dtf$predCalcScore(tt$ht1pOutcome);
           save(p1Dtf, file=fnam);
           rm(p1Dtf);
+          write("P1", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -49,6 +54,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           p2Dtf$predCalcScore(tt$ht2pOutcome);
           save(p2Dtf, file=fnam);
           rm(p2Dtf);
+          write("P2", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -59,6 +65,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           thtDtf$predCalcScore(tt$totHtScore);
           save(thtDtf, file=fnam);
           rm(thtDtf);
+          write("HT", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -69,6 +76,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           tftDtf$predCalcScorett$totFtScore();
           save(tftDtf, file=fnam);
           rm(tftDtf);
+          write("FT", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       

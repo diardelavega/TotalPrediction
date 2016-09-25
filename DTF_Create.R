@@ -11,7 +11,11 @@ runAll<- function(trPaths,dtfKind){
   libLoader();
   dataStructLoader();
   
+  log <- "C:/BastData/R_LOG";
+  write("DTF...", file = log, ncolumns = 10, append = T, sep = ",")
   for(path in trPaths){
+    
+    write(paste0(path," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
     
     tryCatch({
       # -1  create datasets to work with
@@ -21,63 +25,82 @@ runAll<- function(trPaths,dtfKind){
      dirNam<- dirmaker(path);# create the folder of the competiton where the dtf object files will be stored
       
       # -2 start the object that will hold the pred data CREATION
-     
+     tryCatch({
      if("h" %in% dtfKind){
        if(!ishead(dirNam)){       # if file doesnt exzist
         headCrfvInit();          # ret :hDtf  calculate
          headmaker(dirNam)       # store
+         write("h", file = log, ncolumns = 10, append = T, sep = ",")
        }}
+     })
      
+     tryCatch({
      if("s" %in% dtfKind){
        if(!isscore(dirNam)){
          scoreCrfvInit();         # ret :csDtf 
          scoremaker(dirNam)
+         write("s", file = log, ncolumns = 10, append = T, sep = ",")
        }}
+     })
      
+     tryCatch({
      if("ft" %in% dtfKind){
        if(!isft(dirNam)){
          totFtCrfvInit();         # ret :tftDtf  
          ftmaker(dirNam);
+         write("ft", file = log, ncolumns = 10, append = T, sep = ",")
        }}
+     })
      
      
-     if(mean(dtf$t1AvgHtScoreIn)<=0){
-       # average of ht scores is 0 or less (-1) ->  no real ht results
-       # so skip the ht dtf objects
-       next;
-     }
-     
+     #  tryCatch({
+     # if(mean(dtf$t1AvgHtScoreIn)<=0){
+     #   write("mean(dtf$t1AvgHtScoreIn)<=0", file = log, ncolumns = 10, append = T, sep = ",")
+     #   # average of ht scores is 0 or less (-1) ->  no real ht results
+     #   # so skip the ht dtf objects
+     #   next;
+     # }
+     #  })
+         
+     tryCatch({
      if("p1" %in% dtfKind){
        if(!isp1(dirNam)){
          p1CrfvInit();            # ret :p1Dtf 
          p1maker(dirNam);
+         write("p1", file = log, ncolumns = 10, append = T, sep = ",")
        }}
+     })
      
-     
+     tryCatch({
      if("p2" %in% dtfKind){  
        if(!isp2(dirNam)){
           p2CrfvInit();            # ret :p2Dtf
          p2maker(dirNam);
+         write("p2", file = log, ncolumns = 10, append = T, sep = ",")
        }}
-     
+     })
+             
+     tryCatch({      
        if("ht" %in% dtfKind){  
      if(!isht(dirNam)){
        totHtCrfvInit();         # ret :thtDtf 
        htmaker(dirNam);
+       write("ht", file = log, ncolumns = 10, append = T, sep = ",")
      }}
-     
+    })
       
       
       
     },
     error = function(err) {
       # error handler picks up where error was generated
-      print(paste("MY_ERROR:  ",err))
+      print(paste("MY_ERROR:  ",err));
+      write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
       
     }, 
     finally = {
       # in case of error save whatever can be saved
-      fileMaker(path);   # create folder/subfolders & save the dtfs
+      #fileMaker(path);   # create folder/subfolders & save the dtfs
     }) # END tryCatch
     
     

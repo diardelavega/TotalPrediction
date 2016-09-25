@@ -5,7 +5,7 @@
 #think for the reevaluation of the prediction (after we have the actual results of the match) 
 
 # *paths are vectors of string with the paths to the files of every competition to be predicted
-predictAll <- function(dtfPaths,,testPaths,dtfKind){
+predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 
   # dtfPaths is a vector of the DTF dirPath of the competition in hand
   
@@ -13,6 +13,9 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
   libLoader();
   dataStructLoader();
   # DTFLoader();
+  
+  log <- "C:/BastData/R_LOG";
+  write("PREDICT...", file = log, ncolumns = 10, append = T, sep = ",")
   
      for(i in 1:length( dtfPaths)){
        tryCatch({
@@ -43,6 +46,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 # after the DTH objs have been updated with the vector in each instance save them again 
                 save(hDtf,file=fnam)
                 rm(hDtf)
+                write("head", file = log, ncolumns = 10, append = T, sep = ",")
               } }
           })
           
@@ -58,6 +62,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(csDtf,file=fnam)
                 rm(csDtf)
+                write("score", file = log, ncolumns = 10, append = T, sep = ",")
               } }
           })
           
@@ -73,6 +78,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(tftDtf,file=fnam)
                 rm(tftDtf)
+                write("ft", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           
@@ -88,6 +94,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(p2Dtf,file=fnam)
                 rm(p2Dtf)
+                write("p2", file = log, ncolumns = 10, append = T, sep = ",")
             } } 
           })
           
@@ -102,6 +109,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(p1Dtf,file=fnam)
                 rm(p1Dtf)
+                write("p1", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           
@@ -117,6 +125,7 @@ predictAll <- function(dtfPaths,,testPaths,dtfKind){
                 write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(thtDtf,file=fnam)
                 rm(thtDtf)
+                write("ht", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           # print("------------------------------------: HEAD")
