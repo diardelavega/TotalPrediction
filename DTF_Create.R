@@ -12,10 +12,10 @@ runAll<- function(trPaths,dtfKind){
   dataStructLoader();
   
   log <- "C:/BastData/R_LOG";
-  write("DTF...", file = log, ncolumns = 10, append = T, sep = ",")
+  write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   for(path in trPaths){
     
-    write(paste0(path," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
+    write(path, file = log, ncolumns = 10, append = T, sep = ",")
     
     tryCatch({
       # -1  create datasets to work with

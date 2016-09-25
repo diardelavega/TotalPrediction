@@ -15,7 +15,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
   # DTFLoader();
   
   log <- "C:/BastData/R_LOG";
-  write("PREDICT...", file = log, ncolumns = 10, append = T, sep = ",")
+  write(paste0("PREDICT..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   
      for(i in 1:length( dtfPaths)){
        tryCatch({
