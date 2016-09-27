@@ -18,7 +18,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
   write(paste0("PREDICT..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   
      for(i in 1:length( dtfPaths)){
-	  write(path, file = log, ncolumns = 10, append = T, sep = ",")
+	   write(path, file = log, ncolumns = 10, append = T, sep = ",")
 	  
        tryCatch({
          
@@ -32,8 +32,9 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
           ndtf <<- diffFunc();
           
           filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
-          
-          #  cal dtf objs to make prediction fotr the matches in hand
+		  
+          write("LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
+		  
           tryCatch({
             if("h" %in% dtfKind){
             fnam=paste0(dtfPaths[i],"/head.dtf.RData");
