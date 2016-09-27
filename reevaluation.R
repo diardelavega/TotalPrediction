@@ -5,11 +5,11 @@ reEvalAll <- function(dtfPaths, testPaths){
   log <- "C:/BastData/R_LOG";
   write("RE_EVAL...", file = log, ncolumns = 10, append = T, sep = ",")
   for(i in 1:length( dtfPaths)){
+	write(path, file = log, ncolumns = 10, append = T, sep = ",")
+	
     tryCatch({
       
-      # print(dtfPaths[i]);
-      # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
-      
+       # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
       
       tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
       
@@ -99,7 +99,7 @@ reEvalAll <- function(dtfPaths, testPaths){
       error = function(err) {
         # error handler picks up where error was generated
         print(paste("MY_ERROR:  ",err))
-      
+        write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
     }, 
     finally = {
       # in case of error save whatever can be saved
