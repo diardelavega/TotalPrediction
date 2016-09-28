@@ -5,10 +5,9 @@ reEvalAll <- function(dtfPaths, testPaths){
   log <- "C:/BastData/R_LOG";
   write("RE_EVAL...", file = log, ncolumns = 10, append = T, sep = ",")
   for(i in 1:length( dtfPaths)){
-	write(path, file = log, ncolumns = 10, append = T, sep = ",")
-	
+		
     tryCatch({
-      
+      write(testPaths[i], file = log, ncolumns = 10, append = T, sep = ",")	   
        # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
       
       tt <<- read.csv(testPaths[i])  #test dataset/weekly matches

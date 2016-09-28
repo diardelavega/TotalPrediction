@@ -15,9 +15,8 @@ runAll<- function(trPaths,dtfKind){
   write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   for(path in trPaths){
     
-    write(path, file = log, ncolumns = 10, append = T, sep = ",")
-    
     tryCatch({
+		write(path, file = log, ncolumns = 10, append = T, sep = ",")
       # -1  create datasets to work with
       dtf <<- read.csv(path);
       ndtf <<- diffFunc();

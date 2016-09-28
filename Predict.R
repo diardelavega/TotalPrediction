@@ -18,10 +18,10 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
   write(paste0("PREDICT..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   
      for(i in 1:length( dtfPaths)){
-	   write(path, file = log, ncolumns = 10, append = T, sep = ",")
 	  
        tryCatch({
-         
+       	  write(dtfPaths[i], file = log, ncolumns = 10, append = T, sep = ",")	   
+		  
           tempdtf <<- read.csv(trainPaths[i]); # train datasets
           tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
           dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
@@ -162,6 +162,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
         write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
       }, 
       finally = {
+	   write(c("ENDED:  ","SOMEHOW"), file = log, ncolumns = 10, append = T, sep = ",")
         # in case of error save whatever can be saved
         # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
         # dtfobjcleaner();
