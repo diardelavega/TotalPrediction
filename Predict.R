@@ -15,12 +15,12 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
   # DTFLoader();
   
   log <- "C:/BastData/R_LOG";
-  write(paste0("PREDICT..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
+  write(c("PREDICT....",date(),dtfKind), file = log, ncolumns = 10, append = T, sep = " ")
   
      for(i in 1:length( dtfPaths)){
 	  
        tryCatch({
-       	  write(dtfPaths[i], file = log, ncolumns = 10, append = T, sep = ",")	   
+       	  write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
 		  
           tempdtf <<- read.csv(trainPaths[i]); # train datasets
           tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
@@ -33,7 +33,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
           
           filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
 		  
-          write("LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
+          write("\t LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
 		  
           tryCatch({
             if("h" %in% dtfKind){
@@ -47,7 +47,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 # after the DTH objs have been updated with the vector in each instance save them again 
                 save(hDtf,file=fnam)
                 rm(hDtf)
-                write("head", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t head", file = log, ncolumns = 10, append = T, sep = ",")
               } }
           })
           
@@ -63,7 +63,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(csDtf,file=fnam)
                 rm(csDtf)
-                write("score", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t score", file = log, ncolumns = 10, append = T, sep = ",")
               } }
           })
           
@@ -79,7 +79,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(tftDtf,file=fnam)
                 rm(tftDtf)
-                write("ft", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t ft", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           
@@ -95,7 +95,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(p2Dtf,file=fnam)
                 rm(p2Dtf)
-                write("p2", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t p2", file = log, ncolumns = 10, append = T, sep = ",")
             } } 
           })
           
@@ -110,7 +110,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(p1Dtf,file=fnam)
                 rm(p1Dtf)
-                write("p1", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t p1", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           
@@ -126,7 +126,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
                 save(thtDtf,file=fnam)
                 rm(thtDtf)
-                write("ht", file = log, ncolumns = 10, append = T, sep = ",")
+                write("\t ht", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
           # print("------------------------------------: HEAD")
@@ -159,10 +159,10 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
       error = function(err) {
         # error handler picks up where error was generated
         print(paste("MY_ERROR:  ",err))
-        write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+        write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
       }, 
       finally = {
-	   write(c("ENDED:  ","SOMEHOW"), file = log, ncolumns = 10, append = T, sep = ",")
+	   write(" \t ENDED.....:  ", file = log, ncolumns = 10, append = T, sep = ",")
         # in case of error save whatever can be saved
         # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
         # dtfobjcleaner();

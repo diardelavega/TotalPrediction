@@ -16,7 +16,7 @@ runAll<- function(trPaths,dtfKind){
   for(path in trPaths){
     
     tryCatch({
-		write(path, file = log, ncolumns = 10, append = T, sep = ",")
+		write(c("\t", path), file = log, ncolumns = 10, append = T, sep = ",")
       # -1  create datasets to work with
       dtf <<- read.csv(path);
       ndtf <<- diffFunc();
@@ -29,7 +29,7 @@ runAll<- function(trPaths,dtfKind){
        if(!ishead(dirNam)){       # if file doesnt exzist
         headCrfvInit();          # ret :hDtf  calculate
          headmaker(dirNam)       # store
-         write("h", file = log, ncolumns = 10, append = T, sep = ",")
+         write("\t HEAD", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
      
@@ -38,7 +38,7 @@ runAll<- function(trPaths,dtfKind){
        if(!isscore(dirNam)){
          scoreCrfvInit();         # ret :csDtf 
          scoremaker(dirNam)
-         write("s", file = log, ncolumns = 10, append = T, sep = ",")
+         write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
      
@@ -47,7 +47,7 @@ runAll<- function(trPaths,dtfKind){
        if(!isft(dirNam)){
          totFtCrfvInit();         # ret :tftDtf  
          ftmaker(dirNam);
-         write("ft", file = log, ncolumns = 10, append = T, sep = ",")
+         write("\t  FT", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
      
@@ -66,7 +66,7 @@ runAll<- function(trPaths,dtfKind){
        if(!isp1(dirNam)){
          p1CrfvInit();            # ret :p1Dtf 
          p1maker(dirNam);
-         write("p1", file = log, ncolumns = 10, append = T, sep = ",")
+         write("\t P1", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
      
@@ -75,7 +75,7 @@ runAll<- function(trPaths,dtfKind){
        if(!isp2(dirNam)){
           p2CrfvInit();            # ret :p2Dtf
          p2maker(dirNam);
-         write("p2", file = log, ncolumns = 10, append = T, sep = ",")
+         write("\t P2", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
              
@@ -84,7 +84,7 @@ runAll<- function(trPaths,dtfKind){
      if(!isht(dirNam)){
        totHtCrfvInit();         # ret :thtDtf 
        htmaker(dirNam);
-       write("ht", file = log, ncolumns = 10, append = T, sep = ",")
+       write("\t HT", file = log, ncolumns = 10, append = T, sep = ",")
      }}
     })
       
@@ -94,7 +94,7 @@ runAll<- function(trPaths,dtfKind){
     error = function(err) {
       # error handler picks up where error was generated
       print(paste("MY_ERROR:  ",err));
-      write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+      write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
       
     }, 
     finally = {

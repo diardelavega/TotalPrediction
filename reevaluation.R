@@ -7,7 +7,7 @@ reEvalAll <- function(dtfPaths, testPaths){
   for(i in 1:length( dtfPaths)){
 		
     tryCatch({
-      write(testPaths[i], file = log, ncolumns = 10, append = T, sep = ",")	   
+      write(c("\t", testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
        # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
       
       tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
@@ -20,7 +20,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           hDtf$accuracyRecalc(tt$headOutcome)
           save(hDtf, file=fnam);
           rm(hDtf);
-          write("HEAD", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t HEAD", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -31,7 +31,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           csDtf$predCalcScore(tt$scoreOutcome);
           save(csDtf, file=fnam);
           rm(csDtf);
-          write("SCORE", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -42,7 +42,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           p1Dtf$predCalcScore(tt$ht1pOutcome);
           save(p1Dtf, file=fnam);
           rm(p1Dtf);
-          write("P1", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t P1", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -53,7 +53,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           p2Dtf$predCalcScore(tt$ht2pOutcome);
           save(p2Dtf, file=fnam);
           rm(p2Dtf);
-          write("P2", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t P2", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -64,7 +64,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           thtDtf$predCalcScore(tt$totHtScore);
           save(thtDtf, file=fnam);
           rm(thtDtf);
-          write("HT", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t HT", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -75,7 +75,7 @@ reEvalAll <- function(dtfPaths, testPaths){
           tftDtf$predCalcScorett$totFtScore();
           save(tftDtf, file=fnam);
           rm(tftDtf);
-          write("FT", file = log, ncolumns = 10, append = T, sep = ",")
+          write("\t  FT", file = log, ncolumns = 10, append = T, sep = ",")
         }
       })
       
@@ -98,9 +98,10 @@ reEvalAll <- function(dtfPaths, testPaths){
       error = function(err) {
         # error handler picks up where error was generated
         print(paste("MY_ERROR:  ",err))
-        write(paste("MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+        write(paste(" \t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
     }, 
     finally = {
+	write(" \t ENDED.....:  ", file = log, ncolumns = 10, append = T, sep = ",")
       # in case of error save whatever can be saved
       # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
       # dtfobjcleaner();
