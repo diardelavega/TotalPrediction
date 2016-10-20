@@ -15,12 +15,12 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
   # DTFLoader();
   
   log <- "C:/BastData/R_LOG";
-  write(c("PREDICT....",date(),dtfKind), file = log, ncolumns = 10, append = T, sep = " ")
+  write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),,"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
   
      for(i in 1:length( dtfPaths)){
 	  
        tryCatch({
-       	  write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
+       	  write(c("\t",dtfPaths[i],), file = log, ncolumns = 10, append = T, sep = ",")	   
 		  
           tempdtf <<- read.csv(trainPaths[i]); # train datasets
           tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
@@ -162,7 +162,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
         write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
       }, 
       finally = {
-	   write(" \t ENDED.....:  ", file = log, ncolumns = 10, append = T, sep = ",")
+	   write(paste(" \t ENDED.....:   i of for:",i), file = log, ncolumns = 10, append = T, sep = ",")
         # in case of error save whatever can be saved
         # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
         # dtfobjcleaner();

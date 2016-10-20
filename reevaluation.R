@@ -3,7 +3,7 @@
 reEvalAll <- function(dtfPaths, testPaths){
   
   log <- "C:/BastData/R_LOG";
-  write("RE_EVAL...", file = log, ncolumns = 10, append = T, sep = ",")
+  write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
   for(i in 1:length( dtfPaths)){
 		
     tryCatch({
