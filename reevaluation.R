@@ -110,4 +110,5 @@ reEvalAll <- function(dtfPaths, testPaths){
     
   }
   
+  return("ReEVAL_FUNC_END");
 }

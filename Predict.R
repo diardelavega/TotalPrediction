@@ -170,7 +170,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
        
       
     }# for
-  
+  return("PRED_FUNC_END");
 }
 
 

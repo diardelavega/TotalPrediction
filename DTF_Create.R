@@ -101,9 +101,9 @@ runAll<- function(trPaths,dtfKind){
       # in case of error save whatever can be saved
       #fileMaker(path);   # create folder/subfolders & save the dtfs
     }) # END tryCatch
-    
-    
   }
+  
+  return("DTF_FUNC_END");
 }
 
 diffFunc <- function(){
