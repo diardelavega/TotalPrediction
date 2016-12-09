@@ -229,9 +229,3 @@ dataStructRemover <- function(){
   rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
   rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
-
-<<<<<<< HEAD
-#create the ndf dataframe from the dtf dataframe
-=======
-
->>>>>>> origin/master
