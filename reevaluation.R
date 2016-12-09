@@ -1,7 +1,8 @@
 # Re-evaluation. After we have the actual results we can confront them with the prediction and alter the accuracy value acoardingly 
 
 reEvalAll <- function(dtfPaths, testPaths){
-  
+  library(methods);
+  print("methods");
   log <- "C:/BastData/R_LOG";
   write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
   for(i in 1:length( dtfPaths)){
