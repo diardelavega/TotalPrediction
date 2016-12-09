@@ -5,60 +5,172 @@
 #think for the reevaluation of the prediction (after we have the actual results of the match) 
 
 # *paths are vectors of string with the paths to the files of every competition to be predicted
-predictAll <- function(dtfPaths,trainPachs,testPaths){
+predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 
+  # dtfPaths is a vector of the DTF dirPath of the competition in hand
+  
   predAtt_Loader();
   libLoader();
   dataStructLoader();
   # DTFLoader();
   
-  for(i in 1:length( dtfPaths)){
-    print(dtfPaths[i]);
-    # dtfObjLoader(dtfPaths[i]);  #fuppose that from here we have dtf objs
-    load(dtfPaths[i])
-
-    
-    print(testPaths[i]);    
-    tempdtf <<- read.csv(trainPachs[i]); # train datasets
-    tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
-    dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-    ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-    ttFixer(tempdtf)
-    
-    print(trainPachs[i]);
-    dtf <<- tempdtf
-    ndtf <<- diffFunc();
-    
-    
-    #  cal dtf objs to make prediction fotr the matches in hand
-    print("------------------------------------: HEAD")
-    hDtf$predCalcScore();
-    print("------------------------------------: SCORE")
-    csDtf$predCalcScore();
-    print("------------------------------------: P1")
-    p1Dtf$predCalcScore();
-    print("------------------------------------: P2")
-    p2Dtf$predCalcScore();
-    print("------------------------------------: HT")
-    thtDtf$predCalcScore();
-    print("------------------------------------: FT")
-    tftDtf$predCalcScore();
-    
-    
-    tftDtf$getEnsamble()
-    
-    
-   filNam = dirMker(testPaths[i]);
-    write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
-    
-    # dtfobjcleaner();
-
-  }
+  log <- "C:/BastData/R_LOG";
+  write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),,"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
+  
+     for(i in 1:length( dtfPaths)){
+	  
+       tryCatch({
+       	  write(c("\t",dtfPaths[i],), file = log, ncolumns = 10, append = T, sep = ",")	   
+		  
+          tempdtf <<- read.csv(trainPaths[i]); # train datasets
+          tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
+          dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
+          ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+          ttFixer(tempdtf)
+          
+          dtf <<- tempdtf
+          ndtf <<- diffFunc();
+          
+          filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
+		  
+          write("\t LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
+		  
+          tryCatch({
+            if("h" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/head.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: HEAD")
+                hDtf$predCalcScore();
+                write("#head", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                # after the DTH objs have been updated with the vector in each instance save them again 
+                save(hDtf,file=fnam)
+                rm(hDtf)
+                write("\t head", file = log, ncolumns = 10, append = T, sep = ",")
+              } }
+          })
+          
+          
+          tryCatch({
+            if("s" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/score.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: SCORE")
+                csDtf$predCalcScore();
+                write("#score", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                save(csDtf,file=fnam)
+                rm(csDtf)
+                write("\t score", file = log, ncolumns = 10, append = T, sep = ",")
+              } }
+          })
+          
+          
+          tryCatch({
+            if("ft" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/ft.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: FT")
+                tftDtf$predCalcScore();
+                write("#ft", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                save(tftDtf,file=fnam)
+                rm(tftDtf)
+                write("\t ft", file = log, ncolumns = 10, append = T, sep = ",")
+            } }
+          })
+          
+          
+          tryCatch({
+            if("p2" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/p2.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: P2")
+                p2Dtf$predCalcScore();
+                write("#p2", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                save(p2Dtf,file=fnam)
+                rm(p2Dtf)
+                write("\t p2", file = log, ncolumns = 10, append = T, sep = ",")
+            } } 
+          })
+          
+          tryCatch({
+          if("p1" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/p1.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: P1")
+                p1Dtf$predCalcScore();
+                write("#p1", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                save(p1Dtf,file=fnam)
+                rm(p1Dtf)
+                write("\t p1", file = log, ncolumns = 10, append = T, sep = ",")
+            } }
+          })
+          
+          
+          tryCatch({
+            if("ht" %in% dtfKind){
+            fnam=paste0(dtfPaths[i],"/ht.dtf.RData");
+            if(file.exists(fnam)){
+                load(fnam)
+                print("------------------------------------: HT")
+                thtDtf$predCalcScore();
+                write("#ht", file = filNam, ncolumns = 10, append = T, sep = ",")
+                write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+                save(thtDtf,file=fnam)
+                rm(thtDtf)
+                write("\t ht", file = log, ncolumns = 10, append = T, sep = ",")
+            } }
+          })
+          # print("------------------------------------: HEAD")
+          # hDtf$predCalcScore();
+          # print("------------------------------------: SCORE")
+          # csDtf$predCalcScore();
+          # print("------------------------------------: P1")
+          # p1Dtf$predCalcScore();
+          # print("------------------------------------: P2")
+          # p2Dtf$predCalcScore();
+          # print("------------------------------------: HT")
+          # thtDtf$predCalcScore();
+          # print("------------------------------------: FT")
+          # tftDtf$predCalcScore();
+          # 
+          # # write in the output(prediction file) the points for each prediction we made
+          # #  the order in which the objs are written is importan so that they can be understood when they are read
+          # filNam = dirMker(testPaths[i]);
+          # write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          # write(csDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          # write(p1Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          # write(p2Dtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          # write(thtDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          # write(tftDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")
+          
+          # after the DTH objs have been updated with the vector in each instance save them again 
+          # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
+          # dtfobjcleaner();
+      },
+      error = function(err) {
+        # error handler picks up where error was generated
+        print(paste("MY_ERROR:  ",err))
+        write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+      }, 
+      finally = {
+	   write(paste(" \t ENDED.....:   i of for:",i), file = log, ncolumns = 10, append = T, sep = ",")
+        # in case of error save whatever can be saved
+        # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
+        # dtfobjcleaner();
+      }) # END tryCatch
+       
+      
+    }# for
+  return("PRED_FUNC_END");
 }
 
 

@@ -1,4 +1,4 @@
-
+# set the letter 'M' for missing results on a match (so it won;t be considered in reevaluation)
 Instance <- setRefClass("Instance",
                         fields = list(algo="character", attsDtsNr="numeric",dfCategory="character",ptype="character",
                         accVal="numeric",original_accVal="numeric",fullDiff="character",bet="character",predvec="vector"),
@@ -17,20 +17,30 @@ Instance <- setRefClass("Instance",
                             },
                           errorReEvaluation = function(ttResultsVec, dflen){
                             #in case the prediction attriute is totFt || totHt that have numeric values calc mean square root error
-                            curent_errr <- sqrt(1/length(predvec) * sum( (tpredvec-tttResultsVec)^2 ))
-                            nac <- (accVal * dflen + curent_errr * length(ttResultsVec)) / (dflen +  length(ttResultsVec))
+                            sqrErrSum=0; # sore the sum of the squared difference
+                            counter=0;
+                            for(i in 1:ttResultsVec){
+                              if(ttResultsVec[i]=='M'){next;} # skip missing values
+                              sqrErrSum=sqrErrSum + ((predvec[i]- ttResultsVec[i])^2);
+                              counter=counter+1;
+                            }
+                            curent_errr <- sqrt(1/counter * sqrErrSum)
+                            nac <- (accVal * dflen + curent_errr * counter) / (dflen +  counter)
                             accVal<<-nac 
                           },
                           accuracyReEvaluation= function(ttResultsVec, dflen){
                             #in case the prediction attriute is of descrete value (1,x,2;o,u;Y,N) calc the accuracy
                             ttacc<-0;  # calculate prediction acccuracy
+                            counter=0;
                             for(i in 1:length(ttResultsVec)){
+                              if(ttResultsVec[i]=='M'){next;} # skip missing values
                               if(ttResultsVec[i]==predvec[i]){ttacc=ttacc+1}
+                              counter=counter+1
                             }
-                            ttacc=ttacc/length(ttResultsVec)
+                            ttacc=ttacc/counter
                            
                             #value of new accuracy with the new component
-                            nac <- (accVal * dflen + ttacc * length(ttResultsVec)) / (dflen +  length(ttResultsVec))
+                            nac <- (accVal * dflen + ttacc * counter) / (dflen +  counter)
                             accVal<<-nac                          
                           }
                         )
