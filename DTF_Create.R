@@ -3,15 +3,24 @@
 runAll<- function(trPaths,dtfKind){
   #trPaths is a vector with all the tr paths of the competitions
   # dtfKind is a vector with the kind of dtf that we want to create {h,s,p1,p2,ht,ft}
-  
+  print(paste("trPaths :",trPaths));
+  print(paste("dtfKind :",dtfKind));
   
   # -0 load the dtf-crfv-estimation files (head,score,1p,2p,ht,ft)
-  DTFLoader();
-  predAtt_Loader();
+  library(methods);
+  print("methods");
   libLoader();
+  print("libLoader");
+  DTFLoader();
+  print("DTFLoader");
+  predAtt_Loader();
+  print("predAtt_Loader");
+  print("@ DataStructLoader");
   dataStructLoader();
+  print("dataStructLoader");
   
   log <- "C:/BastData/R_LOG";
+  print("@ log-> funcs loaded");
   write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
   for(path in trPaths){
     
@@ -389,6 +398,8 @@ dataStructRemover <- function(){
   rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
   rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
+<<<<<<< HEAD
+=======
 
 
 test <- function(v, vec){
@@ -406,3 +417,7 @@ test <- function(v, vec){
 	return(v+4);
 }
 
+#----------------------------------------------------
+#----------------------------------------------------
+#----------------------------------------------------
+>>>>>>> 47dcf3e6d23cfb9da554012b78635a8ba04bb407

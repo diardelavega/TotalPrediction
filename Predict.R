@@ -8,7 +8,8 @@
 predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 
   # dtfPaths is a vector of the DTF dirPath of the competition in hand
-  
+  library(methods);
+  print("methods");
   predAtt_Loader();
   libLoader();
   dataStructLoader();
