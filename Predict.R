@@ -9,33 +9,41 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 
   # dtfPaths is a vector of the DTF dirPath of the competition in hand
   library(methods);
-  print("methods");
   predAtt_Loader();
+  print("predAtt_Loader");
   libLoader();
+  print("libLoader");
   dataStructLoader();
-  # DTFLoader();
+  print("dataStructLoader");
+  #DTFLoader();
+  #print("DTFLoader");
   
   log <- "C:/BastData/R_LOG";
-  write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),,"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
+  write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
   
      for(i in 1:length( dtfPaths)){
-	  
+		print(dtfPaths[i]);
        tryCatch({
-       	  write(c("\t",dtfPaths[i],), file = log, ncolumns = 10, append = T, sep = ",")	   
+       	  write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
 		  
           tempdtf <<- read.csv(trainPaths[i]); # train datasets
+		  print("tempdtf");
           tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
+		  print("tt");
           dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-          ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-          ttFixer(tempdtf)
-          
+          print("dtf");
+		  ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+          print("ntt");
+		  ttFixer(tempdtf)
+          print("ttFixer");
           dtf <<- tempdtf
+		  print("dtf -2");
           ndtf <<- diffFunc();
-          
+          print("ndtf");
           filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
-		  
+		  print(filNam);
           write("\t LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
-		  
+		  print("write");
           tryCatch({
             if("h" %in% dtfKind){
             fnam=paste0(dtfPaths[i],"/head.dtf.RData");
@@ -356,14 +364,14 @@ dataStructLoader <- function(){
 
 
 #-------------Test & try
-dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
-dim(dtf)
-ndf <- diffFunc()
+#dtf <- read.csv("c:/BastData/Pred/Data/Norway/Eliteserien__112__Data")
+#dim(dtf)
+#ndf <- diffFunc()
 
-trpath <-  "C:/BastData/Pred/Data/Norway/Eliteserien__112__Data"
+#trpath <-  "C:/BastData/Pred/Data/Norway/Eliteserien__112__Data"
 
-dtfpath <- "C:/BastData/DTF/Norway/Eliteserien__112.dtf.RData"
+#dtfpath <- "C:/BastData/DTF/Norway/Eliteserien__112.dtf.RData"
 
-tspath <-  "C:/BastData/Pred/Test/Norway/Eliteserien__112__Test__2016-07-29"
+#tspath <-  "C:/BastData/Pred/Test/Norway/Eliteserien__112__Test__2016-07-29"
 
 
