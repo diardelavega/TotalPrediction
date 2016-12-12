@@ -1,6 +1,7 @@
 #page to be used for loading /7 initiating all the data for the creation of DTF obj
 
 runAll<- function(trPaths,dtfKind){
+  exit <- "DTF_END_OK";
   #trPaths is a vector with all the tr paths of the competitions
   # dtfKind is a vector with the kind of dtf that we want to create {h,s,p1,p2,ht,ft}
   print(paste("trPaths :",trPaths));
@@ -19,20 +20,21 @@ runAll<- function(trPaths,dtfKind){
   dataStructLoader();
   print("dataStructLoader");
   
-  log <- "C:/BastData/R_LOG";
-  print("@ log-> funcs loaded");
-  write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
-  for(path in trPaths){
+  dtfExit <- tryCatch({
+		log <- "C:/BastData/R_LOG";
+		print("@ log-> funcs loaded");
+		write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
+		for(path in trPaths){
     
-    tryCatch({
+   
 		write(c("\t", path), file = log, ncolumns = 10, append = T, sep = ",")
-      # -1  create datasets to work with
-      dtf <<- read.csv(path);
-      ndtf <<- diffFunc();
+		# -1  create datasets to work with
+		dtf <<- read.csv(path);
+		ndtf <<- diffFunc();
+		
+		dirNam<- dirmaker(path);# create the folder of the competiton where the dtf object files will be stored
       
-     dirNam<- dirmaker(path);# create the folder of the competiton where the dtf object files will be stored
-      
-      # -2 start the object that will hold the pred data CREATION
+		# -2 start the object that will hold the pred data CREATION
      tryCatch({
      if("h" %in% dtfKind){
        if(!ishead(dirNam)){       # if file doesnt exzist
@@ -99,20 +101,23 @@ runAll<- function(trPaths,dtfKind){
       
       
       
-    },
+    
+		}
+		return(exit);
+	},
     error = function(err) {
-      # error handler picks up where error was generated
-      print(paste("MY_ERROR:  ",err));
-      write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
-      
+		# error handler picks up where error was generated
+		#print(paste("MY_ERROR:  ",err));
+		write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+		exit <- "DTF_ERR_END";
+		return(exit);
     }, 
     finally = {
       # in case of error save whatever can be saved
       #fileMaker(path);   # create folder/subfolders & save the dtfs
     }) # END tryCatch
-  }
   
-  return("DTF_FUNC_END");
+  return(dtfExit);
 }
 
 diffFunc <- function(){

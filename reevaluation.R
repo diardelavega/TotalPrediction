@@ -1,13 +1,13 @@
 # Re-evaluation. After we have the actual results we can confront them with the prediction and alter the accuracy value acoardingly 
 
 reEvalAll <- function(dtfPaths, testPaths){
+  exit <- "REEVAL_END_OK";
   library(methods);
   print("methods");
-  log <- "C:/BastData/R_LOG";
-  write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
-  for(i in 1:length( dtfPaths)){
-		
-    tryCatch({
+  reevExit <- tryCatch({
+	log <- "C:/BastData/R_LOG";
+	write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
+	for(i in 1:length( dtfPaths)){
       write(c("\t", testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
        # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
       
@@ -95,11 +95,15 @@ reEvalAll <- function(dtfPaths, testPaths){
       # after the DTH objs have been updated with the new Accuracy in each instance save them again 
       # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
       # dtfobjcleaner();
-    },
-      error = function(err) {
+    }
+    return(exit)
+  },
+   error = function(err) {
         # error handler picks up where error was generated
-        print(paste("MY_ERROR:  ",err))
+        #print(paste("MY_ERROR:  ",err))
         write(paste(" \t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+		exit <- "REEVAL_ERR_END";
+		return(exit)
     }, 
     finally = {
 	write(" \t ENDED.....:  ", file = log, ncolumns = 10, append = T, sep = ",")
@@ -108,8 +112,6 @@ reEvalAll <- function(dtfPaths, testPaths){
       # dtfobjcleaner();
     }) # END tryCatch
     
-    
-  }
   
-  return("ReEVAL_FUNC_END");
+  return(reevExit);
 }

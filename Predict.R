@@ -6,44 +6,47 @@
 
 # *paths are vectors of string with the paths to the files of every competition to be predicted
 predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
-
+	exit <- "PRED_END_OK";
   # dtfPaths is a vector of the DTF dirPath of the competition in hand
-  library(methods);
-  predAtt_Loader();
-  print("predAtt_Loader");
-  libLoader();
-  print("libLoader");
-  dataStructLoader();
-  print("dataStructLoader");
-  #DTFLoader();
-  #print("DTFLoader");
   
-  log <- "C:/BastData/R_LOG";
-  write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
+	library(methods);
+	predAtt_Loader();
+	print("predAtt_Loader");
+	libLoader();
+	print("libLoader");
+	dataStructLoader();
+	print("dataStructLoader");
+	#DTFLoader();
+	#print("DTFLoader");
+	  
+  predExit <-	tryCatch({
+		log <- "C:/BastData/R_LOG";
+		write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
   
-     for(i in 1:length( dtfPaths)){
-		print(dtfPaths[i]);
-       tryCatch({
-       	  write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
+		for(i in 1:length( dtfPaths)){
+			print(dtfPaths[i]);
+      
+			write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
 		  
-          tempdtf <<- read.csv(trainPaths[i]); # train datasets
-		  print("tempdtf");
-          tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
-		  print("tt");
-          dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
-          print("dtf");
-		  ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
-          print("ntt");
-		  ttFixer(tempdtf)
-          print("ttFixer");
-          dtf <<- tempdtf
-		  print("dtf -2");
-          ndtf <<- diffFunc();
-          print("ndtf");
-          filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
-		  print(filNam);
-          write("\t LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
-		  print("write");
+			tempdtf <<- read.csv(trainPaths[i]); # train datasets
+			print("tempdtf");
+			tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
+			print("tt");
+			dtf <<- tt        #to call the diffFunc with the hardcoded "dtf" as dataframe
+			print("dtf");
+			ntt <<- diffFunc();   #with ntt for the diff based  attributes & datasets
+			print("ntt");
+			ttFixer(tempdtf)
+			print("ttFixer");
+			dtf <<- tempdtf
+			print("dtf -2");
+			ndtf <<- diffFunc();
+			print("ndtf");
+			filNam = dirMker(testPaths[i]);   # exists the posibility that the file will be empty
+			print(filNam);
+			write("\t LOADED & FIXED PARAMETERS", file = log, ncolumns = 10, append = T, sep = ",") 
+			print("write");
+			
           tryCatch({
             if("h" %in% dtfKind){
             fnam=paste0(dtfPaths[i],"/head.dtf.RData");
@@ -60,7 +63,6 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
               } }
           })
           
-          
           tryCatch({
             if("s" %in% dtfKind){
             fnam=paste0(dtfPaths[i],"/score.dtf.RData");
@@ -76,7 +78,6 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
               } }
           })
           
-          
           tryCatch({
             if("ft" %in% dtfKind){
             fnam=paste0(dtfPaths[i],"/ft.dtf.RData");
@@ -91,7 +92,6 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write("\t ft", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
-          
           
           tryCatch({
             if("p2" %in% dtfKind){
@@ -122,7 +122,6 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
                 write("\t p1", file = log, ncolumns = 10, append = T, sep = ",")
             } }
           })
-          
           
           tryCatch({
             if("ht" %in% dtfKind){
@@ -164,11 +163,17 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
           # after the DTH objs have been updated with the vector in each instance save them again 
           # save(hDtf,csDtf,p1Dtf,p2Dtf,tftDtf,thtDtf,file=dtfPaths[i]);
           # dtfobjcleaner();
-      },
+      
+      
+		}# for
+		return(exit);
+	},
       error = function(err) {
         # error handler picks up where error was generated
-        print(paste("MY_ERROR:  ",err))
+        #print(paste("MY_ERROR:  ",err))
         write(paste("\t MY_ERROR:  ",err), file = log, ncolumns = 10, append = T, sep = ",")
+		exit <- "PRED_ERR_END";
+		return(exit);
       }, 
       finally = {
 	   write(paste(" \t ENDED.....:   i of for:",i), file = log, ncolumns = 10, append = T, sep = ",")
@@ -177,9 +182,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
         # dtfobjcleaner();
       }) # END tryCatch
        
-      
-    }# for
-  return("PRED_FUNC_END");
+  return(predExit);
 }
 
 
