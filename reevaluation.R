@@ -1,16 +1,20 @@
 # Re-evaluation. After we have the actual results we can confront them with the prediction and alter the accuracy value acoardingly 
 
-reEvalAll <- function(dtfPaths, testPaths){
+reEvalAll <- function(dtfPaths,trainPaths, testPaths){
   exit <- "REEVAL_END_OK";
   library(methods);
   print("methods");
+  source("C:/TotalPrediction/dataStructure.R");
+  print("dataStructure loader");
+  
   reevExit <- tryCatch({
 	log <- "C:/BastData/R_LOG";
 	write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
 	for(i in 1:length( dtfPaths)){
-      write(c("\t", testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
+      write(c("\t", dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
        # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
-      
+      dtf <<- read.csv(trainPaths[i])  #read training from file because its length is needed in the calculation
+			# to be studied later if it is more efficient to store a number @ datastructure$ instance and update it(increas its size, corresponding to the size of the training files rows size);
       tt <<- read.csv(testPaths[i])  #test dataset/weekly matches
       
       #  cal dtf objs and recalcualte their accuracy based on previous prediction
@@ -18,8 +22,14 @@ reEvalAll <- function(dtfPaths, testPaths){
         fnam=paste0(dtfPaths[i],"/head.dtf.RData");
         if(file.exists(fnam)){
           print("------------------------------------: HEAD")
-          hDtf$accuracyRecalc(tt$headOutcome)
+          #hDtf$accuracyRecalc(tt$headOutcome)
+		  load(fnam)
+		  print(fnam)
+			  
+		  hDtf$accuracyRecalc(tt$headOutcome);
+		  
           save(hDtf, file=fnam);
+		  print("savePoint");
           rm(hDtf);
           write("\t HEAD", file = log, ncolumns = 10, append = T, sep = ",")
         }
@@ -29,8 +39,11 @@ reEvalAll <- function(dtfPaths, testPaths){
         fnam=paste0(dtfPaths[i],"/score.dtf.RData");
         if(file.exists(fnam)){
           print("------------------------------------: SCORE")
-          csDtf$predCalcScore(tt$scoreOutcome);
+		  load(fnam)
+          print(fnam)
+		  csDtf$accuracyRecalc(tt$headOutcome)
           save(csDtf, file=fnam);
+		  print("savePoint");
           rm(csDtf);
           write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
         }
