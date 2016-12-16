@@ -53,6 +53,7 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
             if(file.exists(fnam)){
                 load(fnam)
                 print("------------------------------------: HEAD")
+				#during prediction every instance of the dtfObj is assigned with the prediction vector, to be used for reevaluation
                 hDtf$predCalcScore();
                 write("#head", file = filNam, ncolumns = 10, append = T, sep = ",")
                 write(hDtf$getEnsamble(), file = filNam, ncolumns = dim(tt)[1], append = T, sep = ",")

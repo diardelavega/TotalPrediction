@@ -123,7 +123,8 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
             # for every Instance obj in the Dtf, call accuracy re-evaluation
             for (al_i in 1:length(algoDataList)) {
               for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
-                algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
+				#algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
                 # ins$accuracyReavaluation(predResultVec)
               }}
           },
@@ -285,7 +286,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                   # for every Instance obj in the Dtf, call accuracy re-evaluation
                                   for (al_i in 1:length(algoDataList)) {
                                     for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
-                                      algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                                      algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                     }}
                                 },
                                 predCalcScore= function(){
@@ -361,7 +362,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                   # for every Instance obj in the Dtf, call accuracy re-evaluation
                                   for (al_i in 1:length(algoDataList)) {
                                     for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
-                                      algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                                      algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                     }}
                                 },
                                 predCalcScore= function(){
@@ -446,7 +447,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                 # for every Instance obj in the Dtf, call accuracy re-evaluation
                                 for (al_i in 1:length(algoDataList)) {
                                   for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
-                                    algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                                    algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                   }}
                               },
                               predCalcScore= function(){
@@ -530,7 +531,7 @@ CleanScoreDtf <- setRefClass("CleanScoreDtf",
                                    # for every Instance obj in the Dtf, call accuracy re-evaluation
                                    for (al_i in 1:length(algoDataList)) {
                                      for (ins_j in 1:length( algoDataList[[al_i]]$instList)) {
-                                       algoDataList[[al_i]]$instList[[ins_j]]$accuracyReavaluation(predResultVec)
+                                       algoDataList[[al_i]]$instList[[ins_j]]$reEvaluate(predResultVec)
                                      }}
                                  },
                                  predCalcScore= function(){

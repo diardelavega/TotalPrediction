@@ -22,14 +22,13 @@ reEvalAll <- function(dtfPaths,trainPaths, testPaths){
         fnam=paste0(dtfPaths[i],"/head.dtf.RData");
         if(file.exists(fnam)){
           print("------------------------------------: HEAD")
-          #hDtf$accuracyRecalc(tt$headOutcome)
 		  load(fnam)
-		  print(fnam)
-			  
+		  print(fnam)  
 		  hDtf$accuracyRecalc(tt$headOutcome);
 		  
+		  
           save(hDtf, file=fnam);
-		  print("savePoint");
+		  print("savePoint head");
           rm(hDtf);
           write("\t HEAD", file = log, ncolumns = 10, append = T, sep = ",")
         }
@@ -41,9 +40,9 @@ reEvalAll <- function(dtfPaths,trainPaths, testPaths){
           print("------------------------------------: SCORE")
 		  load(fnam)
           print(fnam)
-		  csDtf$accuracyRecalc(tt$headOutcome)
+		  csDtf$accuracyRecalc(tt$scoreOutcome)
           save(csDtf, file=fnam);
-		  print("savePoint");
+		  print("savePoint score");
           rm(csDtf);
           write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
         }

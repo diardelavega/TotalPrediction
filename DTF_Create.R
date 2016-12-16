@@ -403,9 +403,6 @@ dataStructRemover <- function(){
   rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
   rm(modelFunc,attDtsFunc,scoreResultCount,headResultCount,p2ResultCount,p1ResultCount,totFtResultCount,totHtResultCount);
 }
-<<<<<<< HEAD
-=======
-
 
 test <- function(v, vec){
 	dir_nam <- 'C:/ff1/ff2/ff3/ff5';
@@ -425,4 +422,4 @@ test <- function(v, vec){
 #----------------------------------------------------
 #----------------------------------------------------
 #----------------------------------------------------
->>>>>>> 47dcf3e6d23cfb9da554012b78635a8ba04bb407
+
