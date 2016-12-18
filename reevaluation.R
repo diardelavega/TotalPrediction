@@ -11,7 +11,7 @@ reEvalAll <- function(dtfPaths,trainPaths, testPaths){
 	log <- "C:/BastData/R_LOG";
 	write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
 	for(i in 1:length( dtfPaths)){
-      write(c("\t", dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
+      write(c("\t", testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
        # dtfPaths is a vector with the path of the folder containing the competitions dtf file objects
       dtf <<- read.csv(trainPaths[i])  #read training from file because its length is needed in the calculation
 			# to be studied later if it is more efficient to store a number @ datastructure$ instance and update it(increas its size, corresponding to the size of the training files rows size);

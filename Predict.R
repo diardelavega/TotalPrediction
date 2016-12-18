@@ -21,12 +21,12 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 	  
   predExit <-	tryCatch({
 		log <- "C:/BastData/R_LOG";
-		write(c("PREDICT....",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
+		write(c("PREDICT....;  on:",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
   
 		for(i in 1:length( dtfPaths)){
 			print(dtfPaths[i]);
       
-			write(c("\t",dtfPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
+			write(c("\t",testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   
 		  
 			tempdtf <<- read.csv(trainPaths[i]); # train datasets
 			print("tempdtf");

@@ -20,12 +20,13 @@ Instance <- setRefClass("Instance",
                             sqrErrSum=0; # sore the sum of the squared difference
                             counter=0;
                             for(i in 1:ttResultsVec){
-                              if(ttResultsVec[i]=='M'){next;} # skip missing values
+                              if(ttResultsVec[i]=='NA' || ttResultsVec[i]=='M'){next;} # skip missing values
                               sqrErrSum=sqrErrSum + ((predvec[i]- ttResultsVec[i])^2);
                               counter=counter+1;
                             }
                             curent_errr <- sqrt(1/counter * sqrErrSum)
                             nac <- (accVal * dflen + curent_errr * counter) / (dflen +  counter)
+							#cat(accVal," -> ",nac) # to be implemented in the next dtf calc
                             accVal<<-nac 
                           },
                           accuracyReEvaluation= function(ttResultsVec, dflen){
@@ -33,7 +34,7 @@ Instance <- setRefClass("Instance",
                             ttacc<-0;  # calculate prediction acccuracy
                             counter=0;
                             for(i in 1:length(ttResultsVec)){
-                              if(ttResultsVec[i]=='M'){next;} # skip missing values
+                              if(ttResultsVec[i]=='NA' || ttResultsVec[i]=='M'){next;} # skip missing values
                               if(ttResultsVec[i]==predvec[i]){ttacc=ttacc+1}
                               counter=counter+1
                             }
@@ -41,6 +42,7 @@ Instance <- setRefClass("Instance",
                            
                             #value of new accuracy with the new component
                             nac <- (accVal * dflen + ttacc * counter) / (dflen +  counter)
+							#cat(accVal," -> ",nac) # to be implemented in the next dtf calc
                             accVal<<-nac                          
                           }
                         )
