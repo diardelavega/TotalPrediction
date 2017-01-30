@@ -40,7 +40,9 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
           "f5" = {dataset_f <- dtf[which(dtf$week>max(dtf$week)-6),];  dataset_d<- ndtf[which(ndtf$week>max(ndtf$week)-6),]}
   )
   
-  for(algorithm in c("C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR" )){
+  ###### original line / with all the initial algorithms.
+  #for(algorithm in c("C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR" )){
+  for(algorithm in c("C50","J48","svm","naiveBayes","rpart","JRip", "OneR" )){
     print(algorithm)
     
     set.seed(1234)
