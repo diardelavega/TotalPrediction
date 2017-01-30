@@ -52,8 +52,8 @@ runAll<- function(trPaths,dtfKind){
          write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
        }}
      })
-     
      tryCatch({
+     
      if("ft" %in% dtfKind){
        if(!isft(dirNam)){
          totFtCrfvInit();         # ret :tftDtf  
