@@ -4,6 +4,12 @@
 
 #think for the reevaluation of the prediction (after we have the actual results of the match) 
 
+os<-Sys.info()["sysname"];  # find the operating system
+base<-"/home/user/Git"; 	# the base for the files to load
+if(grepl("win",tolower(os))){
+	base <- "C:";
+}
+
 # *paths are vectors of string with the paths to the files of every competition to be predicted
 predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 	exit <- "PRED_END_OK";
@@ -20,7 +26,10 @@ predictAll <- function(dtfPaths,trainPaths,testPaths,dtfKind){
 	#print("DTFLoader");
 	  
   predExit <-	tryCatch({
-		log <- "C:/BastData/R_LOG";
+		log <- "/home/user/BastData/R_LOG";# initial log file path is for linux o-systems
+		if(grepl("win",tolower(os))){
+			log <- "C:/BastData/R_LOG";
+		}
 		write(c("PREDICT....;  on:",date(),dtfKind,"dtf_len :",length(dtfPaths),"train_len :",length(trainPaths),"test_len :",length(testPaths)), file = log, ncolumns = 13, append = T, sep = " ")
   
 		for(i in 1:length( dtfPaths)){
@@ -223,13 +232,20 @@ libLoader <- function(){
   library(tree)
 }
 predAtt_Loader <- function(){
-  # files containing pred_attribute dataset << pred_att ~ {att1,att2,...attn} >>
-  source("C:/TotalPrediction/Head_AttPredDataset.R");
-  source("C:/TotalPrediction/Score_AttPredDataset.R");
-  source("C:/TotalPrediction/P1_AttPredDataset.R");
-  source("C:/TotalPrediction/P2_AttPredDataset.R");
-  source("C:/TotalPrediction/totFt_AttPredDataset.R");
-  source("C:/TotalPrediction/totHt_AttPredDataset.R");
+  ### files containing pred_attribute dataset << pred_att ~ {att1,att2,...attn} >>
+  #source("C:/TotalPrediction/Head_AttPredDataset.R");
+  #source("C:/TotalPrediction/Score_AttPredDataset.R");
+  #source("C:/TotalPrediction/P1_AttPredDataset.R");
+  #source("C:/TotalPrediction/P2_AttPredDataset.R");
+  #source("C:/TotalPrediction/totFt_AttPredDataset.R");
+  #source("C:/TotalPrediction/totHt_AttPredDataset.R");
+  
+  source(paste0(base,"/TotalPrediction/Head_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/Score_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/P1_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/P2_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/totFt_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/totHt_AttPredDataset.R"));
 }
 
 diffFunc <- function(){
@@ -362,8 +378,9 @@ ttFixer <- function(tempdtf){
 }
 
 dataStructLoader <- function(){
-  # the file with the description of the structure of the DTF obj
-  source("C:/TotalPrediction/dataStructure.R");
+  ### the file with the description of the structure of the DTF obj
+  #source("C:/TotalPrediction/dataStructure.R");
+  source(paste0(base,"/TotalPrediction/dataStructure.R"));
 }
 
 

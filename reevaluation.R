@@ -1,14 +1,28 @@
 # Re-evaluation. After we have the actual results we can confront them with the prediction and alter the accuracy value acoardingly 
 
+
+os<-Sys.info()["sysname"];  # find the operating system
+base<-"/home/user/Git"; 	# the base for the files to load
+if(grepl("win",tolower(os))){
+	base <- "C:";
+}
+
+
 reEvalAll <- function(dtfPaths,trainPaths, testPaths){
   exit <- "REEVAL_END_OK";
   library(methods);
   print("methods");
-  source("C:/TotalPrediction/dataStructure.R");
+  #source("C:/TotalPrediction/dataStructure.R");
+  source(paste0(base,"/TotalPrediction/dataStructure.R"));
   print("dataStructure loader");
   
   reevExit <- tryCatch({
-	log <- "C:/BastData/R_LOG";
+	log <- "/home/user/BastData/R_LOG";# initial log file path is for linux o-systems
+		if(grepl("win",tolower(os))){
+			log <- "C:/BastData/R_LOG";
+		}
+  
+  
 	write("RE_EVALUATION...", file = log, ncolumns = 10, append = T, sep = ",")
 	for(i in 1:length( dtfPaths)){
       write(c("\t", testPaths[i]), file = log, ncolumns = 10, append = T, sep = ",")	   

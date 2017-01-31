@@ -11,6 +11,10 @@ dtfKind <- eval( parse(text=args[4]) )
 #print(trainPaths);
 #print(testPaths);
 #print(dtfKind);
-
-source("C:/TotalPrediction/Predict.R")
-predictAll(dtfPaths,trainPaths,testPaths,dtfKind)
+os<-Sys.info()["sysname"];  # find the operating system
+base<-"/home/user/Git"; 	# the base for the files to load
+if(grepl("win",tolower(os))){
+	base <- "C:";
+}
+source(paste0(base,"/TotalPrediction/Predict.R");
+predictAll(dtfPaths,trainPaths,testPaths,dtfKind);

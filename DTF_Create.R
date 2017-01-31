@@ -1,5 +1,7 @@
 #page to be used for loading /7 initiating all the data for the creation of DTF obj
 
+
+os<-Sys.info()["sysname"];  # find the operating system
 runAll<- function(trPaths,dtfKind){
   exit <- "DTF_END_OK";
   #trPaths is a vector with all the tr paths of the competitions
@@ -21,7 +23,12 @@ runAll<- function(trPaths,dtfKind){
   print("dataStructLoader");
   
   dtfExit <- tryCatch({
-		log <- "C:/BastData/R_LOG";
+		#os<-Sys.info()["sysname"];
+		log <- "/home/user/BastData/R_LOG";# initial log file path is for linux o-systems
+		if(grepl("win",tolower(os))){
+			log <- "C:/BastData/R_LOG";
+		}
+		
 		print("@ log-> funcs loaded");
 		write(paste0("DTF..."," ",dtfKind), file = log, ncolumns = 10, append = T, sep = ",")
 		for(path in trPaths){
@@ -361,12 +368,17 @@ libRemover <- function(){
 }
 
 DTFLoader <- function(){
-  source("C:/TotalPrediction/HeadCrfvEstimation.R"); 
-  source("C:/TotalPrediction/ScoreCrfvEstimation.R"); 
-  source("C:/TotalPrediction/P1CrfvEstimation.R");
-  source("C:/TotalPrediction/P2CrfvEstimation.R"); 
-  source("C:/TotalPrediction/totHtScoreCrfvEstimation.R"); 
-  source("C:/TotalPrediction/totFtScoreCrfvEstimation.R"); 
+	base<-"/home/user/Git";  #initial base directory is for linux
+	if(grepl("win",tolower(os))){
+		base <- "C:";
+	}
+
+  source(paste0(base,"/TotalPrediction/HeadCrfvEstimation.R")); 
+  source(paste0(base,"/TotalPrediction/ScoreCrfvEstimation.R")); 
+  source(paste0(base,"/TotalPrediction/P1CrfvEstimation.R"));
+  source(paste0(base,"/TotalPrediction/P2CrfvEstimation.R")); 
+  source(paste0(base,"/TotalPrediction/totHtScoreCrfvEstimation.R")); 
+  source(paste0(base,"/TotalPrediction/totFtScoreCrfvEstimation.R")); 
 }
 DTFRemover <- function(){
   rm(headCrfvInit,headPredFunc,headTreBestChoser,headCrfv);
@@ -379,12 +391,16 @@ DTFRemover <- function(){
 }
 
 predAtt_Loader <- function(){
-  source("C:/TotalPrediction/Head_AttPredDataset.R");
-  source("C:/TotalPrediction/Score_AttPredDataset.R");
-  source("C:/TotalPrediction/P1_AttPredDataset.R");
-  source("C:/TotalPrediction/P2_AttPredDataset.R");
-  source("C:/TotalPrediction/totFt_AttPredDataset.R");
-  source("C:/TotalPrediction/totHt_AttPredDataset.R");
+	base<-"/home/user/Git";  #initial base directory is for linux
+	if(grepl("win",tolower(os))){
+		base <- "C:";
+	}
+  source(paste0(base,"/TotalPrediction/Head_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/Score_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/P1_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/P2_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/totFt_AttPredDataset.R"));
+  source(paste0(base,"/TotalPrediction/totHt_AttPredDataset.R"));
 }
 predAtt_Remover <- function(){
   rm(fullHeadBet,fullHeadNoBet,differencedHeadBet,differencedHeadNoBet)
@@ -396,8 +412,12 @@ predAtt_Remover <- function(){
 }
 
 dataStructLoader <- function(){
+	base<-"/home/user/Git";  #initial base directory is for linux
+	if(grepl("win",tolower(os))){
+		base <- "C:";
+	}
   # the file with the description of the structure of the DTF obj
-  source("C:/TotalPrediction/dataStructure.R");
+  source(paste0(base,"/TotalPrediction/dataStructure.R"));
 }
 dataStructRemover <- function(){
   rm(Instance,AlgoData,CleanScoreDtf,CleanHeadDtf,Clean2pDtf,Clean1pDtf,CleanTotFtDtf,CleanTotHtDtf)
@@ -405,7 +425,11 @@ dataStructRemover <- function(){
 }
 
 test <- function(v, vec){
-	dir_nam <- 'C:/ff1/ff2/ff3/ff5';
+	base<-"/home/user/Git";  #initial base directory is for linux
+	if(grepl("win",tolower(os))){
+		base <- "C:";
+	}
+	dir_nam <- paste0(base,'/ff1/ff2/ff3/ff5');
 	fil_nam <- paste(dir_nam,'marioFile.mar',sep="/");
 	dir.create(dir_nam,recursive = T,mode = 753)
 
