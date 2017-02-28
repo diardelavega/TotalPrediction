@@ -1,33 +1,44 @@
 
 # supose we have dtf & ndtf datasets
-totFtCrfvInit <- function(){
-  folds <- 10;
+totFtCrfvInit <- function(fld=10, betNoBet='nobet',fff='f5'){
+  #fld =folds, 
+#betNoBet={bet,nobet,betnobet}, 
+#fff{f2,f5,f25}(f is assumed, specify additional partial calc.)
+
+  
+  
+  #initializes datasets and call for the crfv(cross fold validation) accuracy estimation
+  folds <- fld;
   tftDtf <<- CleanTotFtDtf$new(predAtt="totFt")
   
   # crfv_TotFtscore_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <- 3
-  ret <- totFtScorePredFunc("f",folds,bestOfSize)   # complet dataset crfv
+  ret <- totFtScorePredFunc("f",folds,bestOfSize,betNoBet)   # complet dataset crfv
   # crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
   tftDtf$algoDataList[length(tftDtf$algoDataList)+1:2]<<-ret
 
-  if(max(ndtf$week)>20){  # second half dataset crfv
-    bestOfSize <- 3
-    ret <- totFtScorePredFunc("f2",folds,bestOfSize)
-    # crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
-    tftDtf$algoDataList[length(tftDtf$algoDataList)+1:2]<<-ret
+  if(fff=='f2' || fff=='f25'){
+	  if(max(ndtf$week)>20){  # second half dataset crfv
+		bestOfSize <- 3
+		ret <- totFtScorePredFunc("f2",folds,bestOfSize,betNoBet)
+		# crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
+		tftDtf$algoDataList[length(tftDtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
-  if(max(ndtf$week)>10){  # last 6 weeks dataset crfv
-    bestOfSize <- 1
-    ret <- totFtScorePredFunc("f5",folds,bestOfSize)
-    # crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
-    tftDtf$algoDataList[length(tftDtf$algoDataList)+1:2]<<-ret
+  if(fff=='f5' || fff=='f25'){
+	  if(max(ndtf$week)>10){  # last 6 weeks dataset crfv
+		bestOfSize <- 1
+		ret <- totFtScorePredFunc("f5",folds,bestOfSize,betNoBet)
+		# crfv_TotFtscore_Struct[length(crfv_TotFtscore_Struct)+1:2] <<-ret
+		tftDtf$algoDataList[length(tftDtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
   #------- someway to store the  crfv_dts_Struct
 }
 
-totFtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
+totFtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize,betNoBet){
   # executes the crfv for all the algorithms we provide and stores the best results
   #  since we are handling goals the accuracy value is actually the squared mean error rate of the prediction algorithms
   # we leave the var acc & accuracy for conventon
@@ -56,31 +67,38 @@ totFtScorePredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:fullTotFtBet(-1)){
-      acc <- totFtScoreCrfv(fullTotFtBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
-    for(i in 1:fullTotFtNoBet(-1)){
-      acc <- totFtScoreCrfv(fullTotFtNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
+	if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:fullTotFtBet(-1)){
+		  acc <- totFtScoreCrfv(fullTotFtBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:fullTotFtNoBet(-1)){
+		  acc <- totFtScoreCrfv(fullTotFtNoBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full",dfCategory=dataframeCategory,ptype="numeric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
     #--- choose 3 instances with best results
     cur3best <- totFtTreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
-    
-    for(i in 1:differencedTotFtBet(-1)){
-      acc <- totFtScoreCrfv(differencedTotFtBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins 
-    }
-    for(i in 1:differencedTotFtNoBet(-1)){
-      acc <- totFtScoreCrfv(differencedTotFtNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins
-    }
+    if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:differencedTotFtBet(-1)){
+		  acc <- totFtScoreCrfv(differencedTotFtBet(i),algorithm,folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins 
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:differencedTotFtNoBet(-1)){
+		  acc <- totFtScoreCrfv(differencedTotFtNoBet(i),algorithm, folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff",dfCategory=dataframeCategory,ptype="numeric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins
+		}
+	}
     #--- choose 3 instances with best results
     cur3best <- totFtTreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best

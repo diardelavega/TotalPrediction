@@ -1,33 +1,45 @@
 
 # supose we have dtf & ndtf datasets
-headCrfvInit <- function(){
-  # creates a Object (from datastruct prediction_Attribute_object) for a competition that has accumulated weeks of matches
-  # in the dtf & ndtf dataframes
+headCrfvInit <- function(fld=10, betNoBet='nobet',fff='f5'){
+# creates a Object (from datastruct prediction_Attribute_object) for a competition that has accumulated weeks of matches
+# in the dtf & ndtf dataframes
+  
+  
+#fld =folds, 
+#betNoBet={bet,nobet,betnobet}, 
+#fff{f2,f5,f25}(f is assumed, specify additional partial calc.)
+
+  
   
   #initializes datasets and call for the crfv(cross fold validation) accuracy estimation
-  folds <- 10;
+  folds <- fld;
   hDtf <<- CleanHeadDtf$new(predAtt="head")
   
   # calc for all the data available (all the weeks of competition)
   bestOfSize <-3                                           #nr of top from best results to chose from
-  ret <- headPredFunc("f" ,folds,bestOfSize)               # complet dataset crfv
+  ret <- headPredFunc("f" ,folds,bestOfSize,betNoBet)               # complet dataset crfv
   hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret   # the ret val contains two algodata vals from full (dtf) & diff(ndtf)
-  
-  if(max(ndtf$week)>20){  # calc the second half dataset crfv
-    bestOfSize <-3
-    ret <- headPredFunc("f2",folds,bestOfSize)
-    hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
+ 
+ # ### Skip the f2 calc too time consumming
+  if(fff=='f2' || fff=='f25'){
+	  if(max(ndtf$week)>20){  # calc the second half dataset crfv
+	   bestOfSize <-3
+	   ret <- headPredFunc("f2",folds,bestOfSize,betNoBet)
+	   hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
-  if(max(ndtf$week)>10){  # calc last 6 weeks dataset crfv
-    bestOfSize <-1
-    ret <- headPredFunc("f5",folds,bestOfSize)
-    hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
+  if(fff=='f5' || fff=='f25'){
+	  if(max(ndtf$week)>10){  # calc last 6 weeks dataset crfv
+		bestOfSize <-1
+		ret <- headPredFunc("f5",folds,bestOfSize,betNoBet)
+		hDtf$algoDataList[length(hDtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
 }
 
-headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
+headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize,betNoBet){
   # executes the crfv for all the algorithms we provide and stores the best results
   # return  AlgoData obj of the requested dataframe category {f,f2,f5}
   
@@ -42,7 +54,8 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   
   ###### original line / with all the initial algorithms.
   #for(algorithm in c("C50","J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR" )){
-  for(algorithm in c("C50","J48","svm","naiveBayes","rpart","JRip", "OneR" )){
+  #for(algorithm in c("C50","J48","svm","naiveBayes","rpart","JRip", "OneR" )){
+  for(algorithm in c("C50","J48","svm","naiveBayes","OneR" )){
     print(algorithm)
     
     set.seed(1234)
@@ -52,32 +65,39 @@ headPredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     
     accuracy_df <- list()
     accuracy_ndf <- list()
-    
-    for(i in 1:fullHeadBet(-1)){
-      acc <- headCrfv(fullHeadBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
-    for(i in 1:fullHeadNoBet(-1)){
-      acc <- headCrfv(fullHeadNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
+	
+    if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:fullHeadBet(-1)){
+		  acc <- headCrfv(fullHeadBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:fullHeadNoBet(-1)){
+		  acc <- headCrfv(fullHeadNoBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
     #--- choose nr of instances with best results
     cur3best <- headTreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
-    
-    for(i in 1:differencedHeadBet(-1)){
-      acc <- headCrfv(differencedHeadBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins
-    }
-    for(i in 1:differencedHeadNoBet(-1)){
-      acc <- headCrfv(differencedHeadNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins
-    }
+    if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:differencedHeadBet(-1)){
+		  acc <- headCrfv(differencedHeadBet(i),algorithm,folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:differencedHeadNoBet(-1)){
+		  acc <- headCrfv(differencedHeadNoBet(i),algorithm, folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins
+		}
+	}
     #--- choose 3 instances with best results
     cur3best <- headTreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
@@ -95,16 +115,18 @@ headTreBestChoser <- function(lst,bestOfSize){
   bv[1]<- lst[1]
   #browser()
   for (i in 2:length(lst)){
+  
     if(bv[[length(bv)]]$accVal == lst[[i]]$accVal){ next }
     else if (length(bv)<bestOfSize) { 
       bv[length(bv)+1] <- lst[i] 
     }
-    else{ # with 3 instances in, compare to find and eliminate the worst
-      if(bestOfSize==1){
+	
+	
+    else{ 
+      if(bestOfSize==1){#@TODO fix for best of size ==1
         if(bv[[1]]$accVal < lst[[i]]$accVal) { bv[[1]] <- lst[[i]]}
       }
-      else if(bestOfSize==3){
-        #@TODO fix for best of size ==1
+      else if(bestOfSize==3){# with 3 instances in, compare to find and eliminate the worst
         if(bv[[1]]$accVal < bv[[2]]$accVal) {
           tmpInstance <-bv[[1]];  bv[[1]] <- bv[[2]];  bv[[2]] <- tmpInstance; }
         if(bv[[2]]$accVal < bv[[3]]$accVal) {

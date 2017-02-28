@@ -2,7 +2,7 @@
 
 
 os<-Sys.info()["sysname"];  # find the operating system
-runAll<- function(trPaths,dtfKind){
+runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
   exit <- "DTF_END_OK";
   #trPaths is a vector with all the tr paths of the competitions
   # dtfKind is a vector with the kind of dtf that we want to create {h,s,p1,p2,ht,ft}
@@ -45,7 +45,7 @@ runAll<- function(trPaths,dtfKind){
      tryCatch({
      if("h" %in% dtfKind){
        if(!ishead(dirNam)){       # if file doesnt exzist
-        headCrfvInit();          # ret :hDtf  calculate
+        headCrfvInit(fld,betNoBet,fff);          # ret :hDtf  calculate
          headmaker(dirNam)       # store
          write("\t HEAD", file = log, ncolumns = 10, append = T, sep = ",")
        }}
@@ -54,7 +54,7 @@ runAll<- function(trPaths,dtfKind){
      tryCatch({
      if("s" %in% dtfKind){
        if(!isscore(dirNam)){
-         scoreCrfvInit();         # ret :csDtf 
+         scoreCrfvInit(fld,betNoBet,fff);         # ret :csDtf 
          scoremaker(dirNam)
          write("\t SCORE", file = log, ncolumns = 10, append = T, sep = ",")
        }}
@@ -63,7 +63,7 @@ runAll<- function(trPaths,dtfKind){
      
      if("ft" %in% dtfKind){
        if(!isft(dirNam)){
-         totFtCrfvInit();         # ret :tftDtf  
+         totFtCrfvInit(fld,betNoBet,fff);         # ret :tftDtf  
          ftmaker(dirNam);
          write("\t  FT", file = log, ncolumns = 10, append = T, sep = ",")
        }}
@@ -82,7 +82,7 @@ runAll<- function(trPaths,dtfKind){
      tryCatch({
      if("p1" %in% dtfKind){
        if(!isp1(dirNam)){
-         p1CrfvInit();            # ret :p1Dtf 
+         p1CrfvInit(fld,betNoBet,fff);            # ret :p1Dtf 
          p1maker(dirNam);
          write("\t P1", file = log, ncolumns = 10, append = T, sep = ",")
        }}
@@ -91,7 +91,7 @@ runAll<- function(trPaths,dtfKind){
      tryCatch({
      if("p2" %in% dtfKind){  
        if(!isp2(dirNam)){
-          p2CrfvInit();            # ret :p2Dtf
+          p2CrfvInit(fld,betNoBet,fff);            # ret :p2Dtf
          p2maker(dirNam);
          write("\t P2", file = log, ncolumns = 10, append = T, sep = ",")
        }}
@@ -100,7 +100,7 @@ runAll<- function(trPaths,dtfKind){
      tryCatch({      
        if("ht" %in% dtfKind){  
      if(!isht(dirNam)){
-       totHtCrfvInit();         # ret :thtDtf 
+       totHtCrfvInit(fld,betNoBet,fff);         # ret :thtDtf 
        htmaker(dirNam);
        write("\t HT", file = log, ncolumns = 10, append = T, sep = ",")
      }}

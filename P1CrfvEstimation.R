@@ -1,35 +1,45 @@
 
 
 # supose we have dtf & ndtf datasets
-p1CrfvInit <- function(){
-  #initializes datasets and call for the crfv accuracy estimation
-  folds <- 10;
+p1CrfvInit <- function(fld=10, betNoBet='nobet',fff='f5'){
+  #fld =folds, 
+#betNoBet={bet,nobet,betnobet}, 
+#fff{f2,f5,f25}(f is assumed, specify additional partial calc.)
+
+  
+  
+  #initializes datasets and call for the crfv(cross fold validation) accuracy estimation
+  folds <- fld;
   p1Dtf <<- Clean1pDtf$new(predAtt="p1")
   
   # crfv_p1_Struct <<- c() # the struct that will keep all the dataStores created
   bestOfSize <-3
-  ret <- p1PredFunc("f" ,folds,bestOfSize)   # complet dataset crfv
+  ret <- p1PredFunc("f" ,folds,bestOfSize,betNoBet)   # complet dataset crfv
   # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
   p1Dtf$algoDataList[length(p1Dtf$algoDataList)+1:2]<<-ret
   
-  if(max(ndtf$week)>20){  # second half dataset crfv
-    bestOfSize <-3
-    ret <- p1PredFunc("f2",folds,bestOfSize)
-    # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
-    p1Dtf$algoDataList[length(p1Dtf$algoDataList)+1:2]<<-ret
+  if(fff=='f2' || fff=='f25'){
+	  if(max(ndtf$week)>20){  # second half dataset crfv
+		bestOfSize <-3
+		ret <- p1PredFunc("f2",folds,bestOfSize,betNoBet)
+		# crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
+		p1Dtf$algoDataList[length(p1Dtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
-  if(max(ndtf$week)>10){  # last 6 weeks dataset crfv
-    bestOfSize <-1
-    ret <- p1PredFunc("f5",folds,bestOfSize)
-    # crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
-    p1Dtf$algoDataList[length(p1Dtf$algoDataList)+1:2]<<-ret
+  if(fff=='f5' || fff=='f25'){
+	  if(max(ndtf$week)>10){  # last 6 weeks dataset crfv
+		bestOfSize <-1
+		ret <- p1PredFunc("f5",folds,bestOfSize,betNoBet)
+		# crfv_p1_Struct[length(crfv_p1_Struct)+1:2] <<-ret
+		p1Dtf$algoDataList[length(p1Dtf$algoDataList)+1:2]<<-ret
+	  }
   }
   
   #------- someway to store the  crfv_dts_Struct
 }
 
-p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
+p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize,betNoBet){
   # executes the crfv for all the algorithms we provide and stores the best results
   # return  AlgoData obj of the requested dataframe category {f,f2,f5}
   
@@ -46,7 +56,8 @@ p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
   
   ###### original line / with all the initial algorithms.
   #for(algorithm in c("C50" ,"J48","svm","naiveBayes","randomForest","rpart","bagging", "PART","JRip","AdaBoostM1", "OneR" )){
-  for(algorithm in c("C50","J48","svm","naiveBayes","rpart","JRip", "OneR" )){
+  #for(algorithm in c("C50","J48","svm","naiveBayes","rpart","JRip", "OneR" )){
+  for(algorithm in c("C50","J48","svm","naiveBayes","OneR" )){
     print(algorithm)
     
     set.seed(1234)
@@ -58,31 +69,38 @@ p1PredFunc <- function(dataframeCategory,crfoldNr,bestOfSize){
     accuracy_df <- list()
     accuracy_ndf <- list()
     
-    for(i in 1:full1pBet(-1)){
-      acc <- p1Crfv(full1pBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
-    for(i in 1:full1pNoBet(-1)){
-      acc <- p1Crfv(full1pNoBet(i),algorithm,folds_f)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_df[length(accuracy_df)+1] <- ins
-    }
+	if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:full1pBet(-1)){
+		  acc <- p1Crfv(full1pBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:full1pNoBet(-1)){
+		  acc <- p1Crfv(full1pNoBet(i),algorithm,folds_f)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="full", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_df[length(accuracy_df)+1] <- ins
+		}
+	}
     #--- choose 3 instances with best results
     cur3best <- p1TreBestChoser(accuracy_df,bestOfSize)
     fds$instList[length(fds$instList)+1 :length(cur3best)]  <- cur3best
     
-    
-    for(i in 1:differenced1pBet(-1)){
-      acc <- p1Crfv(differenced1pBet(i),algorithm,folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins
-    }
-    for(i in 1:differenced1pNoBet(-1)){
-      acc <- p1Crfv(differenced1pNoBet(i),algorithm, folds_d)
-      ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
-      accuracy_ndf[length(accuracy_ndf)+1] <- ins
-    }
+    if(betNoBet=='betnobet' || betNoBet=='bet' ){
+		for(i in 1:differenced1pBet(-1)){
+		  acc <- p1Crfv(differenced1pBet(i),algorithm,folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="yes", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins
+		}
+	}
+	if(betNoBet=='betnobet' || betNoBet=='nobet' ){
+		for(i in 1:differenced1pNoBet(-1)){
+		  acc <- p1Crfv(differenced1pNoBet(i),algorithm, folds_d)
+		  ins<- Instance$new(algo = algorithm, attsDtsNr=i, accVal=acc, original_accVal=acc, bet="no", fullDiff="diff", dfCategory=dataframeCategory,ptype="categoric")
+		  accuracy_ndf[length(accuracy_ndf)+1] <- ins
+		}
+	}
     #--- choose 3 instances with best results
     cur3best <- p1TreBestChoser(accuracy_ndf,bestOfSize)
     dds$instList[length(dds$instList)+1 :length(cur3best)]  <- cur3best
