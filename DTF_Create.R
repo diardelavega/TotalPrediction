@@ -44,6 +44,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
 		# -2 start the object that will hold the pred data CREATION
      tryCatch({
      if("h" %in% dtfKind){
+		print("\t ------: HEAD");
        if(!ishead(dirNam)){       # if file doesnt exzist
         headCrfvInit(fld,betNoBet,fff);          # ret :hDtf  calculate
          headmaker(dirNam)       # store
@@ -52,6 +53,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
      })
      
      tryCatch({
+		print("\t ------: SCORE");
      if("s" %in% dtfKind){
        if(!isscore(dirNam)){
          scoreCrfvInit(fld,betNoBet,fff);         # ret :csDtf 
@@ -62,6 +64,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
      tryCatch({
      
      if("ft" %in% dtfKind){
+	 	print("\t ------: FT");
        if(!isft(dirNam)){
          totFtCrfvInit(fld,betNoBet,fff);         # ret :tftDtf  
          ftmaker(dirNam);
@@ -81,6 +84,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
          
      tryCatch({
      if("p1" %in% dtfKind){
+	  	print("\t ------: P1");
        if(!isp1(dirNam)){
          p1CrfvInit(fld,betNoBet,fff);            # ret :p1Dtf 
          p1maker(dirNam);
@@ -90,6 +94,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
      
      tryCatch({
      if("p2" %in% dtfKind){  
+	  	print("\t ------: P2");
        if(!isp2(dirNam)){
           p2CrfvInit(fld,betNoBet,fff);            # ret :p2Dtf
          p2maker(dirNam);
@@ -99,6 +104,7 @@ runAll<- function(trPaths,dtfKind, fld=10, betNoBet='nobet',fff='f5'){
              
      tryCatch({      
        if("ht" %in% dtfKind){  
+	    	print("\t ------: HT");
      if(!isht(dirNam)){
        totHtCrfvInit(fld,betNoBet,fff);         # ret :thtDtf 
        htmaker(dirNam);
