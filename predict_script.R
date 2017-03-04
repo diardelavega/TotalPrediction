@@ -16,5 +16,5 @@ base<-"/home/user/Git"; 	# the base for the files to load
 if(grepl("win",tolower(os))){
 	base <- "C:";
 }
-source(paste0(base,"/TotalPrediction/Predict.R");
+source(paste0(base,"/TotalPrediction/Predict.R"));
 predictAll(dtfPaths,trainPaths,testPaths,dtfKind);

@@ -13,5 +13,5 @@ base<-"/home/user/Git"; 	# the base for the files to load
 if(grepl("win",tolower(os))){
 	base <- "C:";
 }
-source(paste0(base,"/TotalPrediction/reevaluation.R"))
-reEvalAll(dtfPaths,trainPaths,testPaths)
+source(paste0(base,"/TotalPrediction/reevaluation.R"));
+reEvalAll(dtfPaths,trainPaths,testPaths);
